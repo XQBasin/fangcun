@@ -1,0 +1,501 @@
+<template>
+    <view>
+        <!-- 自定义导航栏 -->
+        <ui-nav-bar slot="nav-bar" custom-style="{{ {backgroundColor:'#FFFFFF'} }}">
+            <ui-row height="{{DEFAULT_HEADER_HEIGHT}}" class="nav_bar">
+                <ui-col vertical-align="middle" class="nav-bar-col" align="left" width="100px" bindtap="navigateBack">
+                    <view class="containertitle">
+                        <view class='dingwei'>
+                            <ui-icon type="zuojiantou" color="#333333" size="20px;"></ui-icon>
+                        </view>
+                    </view>
+                </ui-col>
+                <ui-col vertical-align="middle" class="nav-bar-col">
+                    <view class="nav-bar-title">活动圈</view>
+                </ui-col>
+                <ui-col vertical-align="middle" class="nav-bar-col" align="right"  width="100px">
+                </ui-col>
+            </ui-row>
+        </ui-nav-bar>
+        <view style="height:{{NAV_HEIGHT}}"></view>
+        <view class="search">
+            <ui-icon type="sousuo" color="#848484" size="13px;"></ui-icon>
+            <input type='text' placeholder="搜索看看" placeholder-style="color:#848484;" confirm-type='search'>
+        </view>
+        <!-- 自动播放广告 -->
+        <view class="swiper-container">
+            <swiper circular autoplay interval="5000" duration="500" bindchange="swiperChange" class="swiper">
+                <block wx:for="{{banner}}" wx:key="unique">
+                    <swiper-item>
+                        <image src="{{item.src}}" class="img" mode="aspectFill" data-route='show' data-param='activityid=3' bindtap='navigateToShow'/>
+                    </swiper-item>
+                </block>
+            </swiper>
+            <!-- 广告切换图标 -->
+            <view class="dots">
+                <block wx:for="{{banner}}" wx:key="unique">
+                    <view class="dot{{index == swiperCurrent ? ' active' : ''}}"></view>
+                </block>
+            </view>
+        </view>
+        <!-- 活动内容 -->
+        <view class='content'>
+            <view class="tab-panel-item" wx:key="activitykey" wx:for="{{activities}}" wx:for-item="activity">
+                <view class="flex-acwrp">
+                    <view class="ac_green">
+                        <image src="{{activity.userInfo.avatar}}"/>
+                    </view>
+                    <view class="ac_red">
+                        <view class='ac_title'>
+                            <view>{{activity.userInfo.username}}</view>
+                            <view><ui-icon type="xiangxiajiantou" color="#888888" style="margin:0px 0px 0px 2px;" size="14px;"></ui-icon></view>
+                        </view>
+                        <view class='ac_description'>
+                            <view>发布时间：{{activity.createtime}}</view>
+                            <view>128粉丝</view>
+                        </view>
+                    </view>
+                </view>
+                <view class="flex-wrp" data-id="{{activity.id}}" bindtap='getActInfo'>
+                    <view class="bc_green">
+                        <image src="{{activity.image}}" mode="aspectFill"/>
+                    </view>
+                    <view class="bc_title">
+                        {{activity.title}}
+                    </view>
+                </view>
+                <!-- 评论菜单 -->
+                <view class='sj_description_btn'>
+                    <view>
+                        <button class="fenxiang-btn" data-route="comments" data-param="activityid={{activity.id}}" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
+                            <ui-icon type="wodefankui" color="#888888" size="14px;"> {{activity.comnum}}</ui-icon>
+                        </button>
+                    </view>
+                    <view>
+                        <button class="fenxiang-btn" data-route="comments" data-param="activityid={{activity.id}}" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
+                            <ui-icon type="jushoucang" color="#888888" size="14px;"> {{activity.likenum}}</ui-icon>
+                        </button>
+                    </view>
+                    <view>
+                        <button class="fenxiang-btn" data-route="comments" data-param="activityid={{activity.id}}" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
+                            <ui-icon type="fenxiang" color="#888888" size="14px;"> {{activity.shanum}}</ui-icon>
+                        </button>
+                    </view>
+                </view>
+            </view>
+        </view>
+        <!-- 加载更多 -->
+        <view class="weui-loadmore" hidden="{{isHideLoadMore}}">
+            <view class="weui-loading"></view>
+            <view class="weui-loadmore__tips" style="font-size:13px; color:#848484;">加载中...</view>
+        </view>
+        <!-- 公众号关注向导 -->
+        <official-account></official-account>
+        <!-- 底部授权信息 -->
+        <view class="footer">
+            <view class="page__bd page__bd_spacing">
+                <view class="weui-footer">
+                    <view class="weui-footer__links">
+                        <button open-type="contact" bindcontact="handleContact" class="weui-footer_link">方寸奶爸</button>
+                    </view>
+                    <view class="weui-footer__text">Copyright © 2008-2019 fcdaddy.com</view>
+                </view>
+            </view>
+        </view>
+        <!-- 底部导航 -->
+        <ui-fixed-view bottom="0" left="0" right="0">
+            <view class='groupsources'>
+                <button class="button-style-huodong" data-route="create" data-param="uid={{uid}}" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo"><text>发布</text></button>
+            </view>
+        </ui-fixed-view>
+        <!-- 导航占位 -->
+        <view style="height:52px;"></view>
+    </view>
+</template>
+
+<script>
+export default {
+    config: {
+        navigationBarTitleText: '活动圈',
+        navigationBarTextStyle: 'black',
+        backgroundColor: "#F8F8F8",
+        backgroundTextStyle: "light",
+        enablePullDownRefresh: true
+    },
+    data: {
+        NAV_HEIGHT:wx.STATUS_BAR_HEIGHT+wx.DEFAULT_HEADER_HEIGHT+'px',
+        DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
+        banner: [
+            {src: 'http://file.taoyuantoday.com/213/20190118/696af11d6687092383174fddfb463137.jpg_0x0.jpg'},
+        ],
+        swiperCurrent: 0,
+        activities: [],
+        uid: '',                // 用户标识
+        isHideLoadMore: false,  // 初始显示加载更多
+    },
+    onLoad(options) {
+        var that = this
+        that.getActivities(1)
+        wx.login({
+            success(res) {
+                if (res.code) {
+                    //发起网络请求
+                    wx.request({
+                        url: 'https://wx.taoyuantoday.com/mini.Weactivity/wxQuickLogin.html',
+                        data: {
+                            code: res.code
+                        },
+                        header: {
+                            'content-type': 'application/json' // 默认值
+                        },
+                        success(res) {
+                            if (res.data != "") {
+                                that.setData({
+                                    uid: res.data
+                                })
+                            }
+                        }
+                    })
+                } else {
+                    console.log('登录失败，请检查网络设置！' + res.errMsg)
+                }
+            }
+        })
+        wx.showShareMenu({
+            withShareTicket: true
+        })
+    },
+    //下拉刷新
+    onPullDownRefresh:function() {
+        wx.showNavigationBarLoading() //在标题栏中显示加载
+        //模拟加载
+        this.getActivities(1)
+        setTimeout(function() {
+            // complete
+            wx.hideNavigationBarLoading() //完成停止加载
+            wx.stopPullDownRefresh() //停止下拉刷新
+        }, 1500);
+    },
+    //加载更多
+    onReachBottom: function () {
+        console.log('加载更多')
+        setTimeout(() => {
+            this.setData({
+                isHideLoadMore: true,
+            })
+        }, 2000)
+    },
+    // 获取用户基本信息
+    bindGetUserInfo(e) {
+        var that = this;
+        // 判断是否同意授权
+        if (e.detail.userInfo == undefined) {
+            wx.showModal({
+                title: '温馨提示',
+                content: '请先允许授权再继续！',
+                showCancel: false,
+                confirmColor: '#ffd100',
+                confirmText: '我知道啦',
+                success(res) {
+                    if (res.confirm) {
+                        console.log('用户已确认看到提示！')
+                    }
+                }
+            })
+        } else {
+            that.updateUser(e.detail.userInfo, that.data.uid, e)
+        }
+    },
+    // 更新用户信息
+    updateUser: function (userInfo, uid, e) {
+        var that = this;
+        wx.request({
+            url: 'https://wx.taoyuantoday.com/mini.Weactivity/updateUser.html',
+            data: {
+                userInfo: userInfo,
+                uid: uid
+            },
+            header: {
+                'content-type': 'application/json' // 默认值
+            },
+            success(res) {
+                that.navigateToShow(e)
+            }
+        })
+    },
+    // 获取路由页面
+    navigateToShow: function (e) {
+        let route = e.currentTarget.dataset.route
+        let param = e.currentTarget.dataset.param
+        wx.navigateTo({
+            url: './' + route + '?' + param
+        })
+    },
+    swiperChange: function(option) {
+        this.setData({
+            swiperCurrent: option.detail.current
+        })
+    },
+    // 活动列表
+    getActivities: function (status) {
+        var that = this;
+        wx.request({
+            url: 'https://wx.taoyuantoday.com/mini.Weactivity/index.html',
+            data: {
+                status: status,
+            },
+            header: {
+                'content-type': 'application/json' // 默认值
+            },
+            success(res) {
+                if (res.data != "") {
+                    that.setData({
+                        activities: res.data
+                    })
+                }
+            }
+        })
+    },
+    // 查看活动详情
+    getActInfo: function (option) {
+        let activityid = option.currentTarget.dataset.id
+        wx.navigateTo({
+            url: './info?activityid='+activityid
+        })
+    },
+    // 客服消息
+    handleContact(e) {
+        console.log(e.path)
+        console.log(e.query)
+    },
+    // 导航返回
+    navigateBack () {
+        wx.navigateBack()
+    },
+}
+</script>
+
+<style lang="less">
+@import '../../static/styles/weui.wxss';
+// 自定义导航栏
+.nav_bar {
+    .mix-flex-center();
+    .nav-bar-col {
+        text-align: center;
+        .containertitle {
+            padding: 6px 10px;
+            display: flex;
+            background-color: #FFFFFF;
+            .dingwei {
+                height: 25px;
+                display: flex;
+                .mix-flex-y-center();
+            }
+            .dingwei text {
+                size: 16px;
+                color: #FFFFFF;
+                margin: 0px 3px;
+            }
+        }
+        .nav-bar-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+    }
+}
+// 搜索框
+.search {
+    width: 90%;
+    height: 28px;
+    border-radius: 30px;
+    padding: 2px 10px;
+    display: flex;
+    position: absolute;     /* 初始化为相对定位 滑动时改为绝对定位fixed*/
+    top: 78px;
+    left: 0;
+    right: 0;               /* 决定了搜索框置顶 */
+    opacity: 0.6;           /* 搜索框半透明效果 */
+    z-index: 2;
+    background-color: #FFFFFF;
+    margin: auto;
+    .mix-flex-y-center();
+    input {
+        width: 100%;
+        padding: 2px 5px;
+        margin: 2px;
+        font-size: 13px;
+    }
+}
+// 自动播放广告
+.swiper-container {
+    position: relative;
+}
+.swiper-container .swiper {
+    height: 180px;
+}
+.swiper-container .swiper .img {
+    width: 100%;
+    height: 100%;
+}
+.swiper-container .dots{
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 10px;
+    display: flex;
+    justify-content: center;
+    z-index:9;
+}
+.swiper-container .dots .dot{
+    margin: 10px 2px;
+    width: 5px;
+    height: 5px;
+    background: #FFFFFF;
+    border-radius: 2px;
+}
+.swiper-container .dots .dot.active{
+    width: 12px;
+    background: #ffd100;
+}
+// 活动列表
+.tab-panel-item {
+    background: #FFFFFF;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin: 10px;
+    box-shadow: 0 3px 6px 0 rgb(240, 240, 240);
+}
+.flex-acwrp {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    .mix-flex-y-center();
+    padding: 5px 0px;
+}
+.ac_green {
+    width: 45px;
+    height: 45px;
+    .mix-flex-center();
+}
+.ac_green image {
+    width:40px; 
+    height:40px;
+    border-radius: 50%;
+}
+.ac_red {
+    height: 45px;
+    width: 85%;
+}
+.ac_title {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    color: #ffd100;
+    font-size: 14px;
+}
+.ac_title view {
+    .mix-text-overflow();
+}
+.ac_description {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    color: #848484;
+    font-size: 12px;
+}
+.ac_description view {
+    .mix-text-overflow();
+}
+.flex-wrp {
+    display: flex;
+    flex-direction: column;
+    .mix-flex-y-center();
+    padding: 5px 0px;
+    position:relative;
+}
+.bc_green {
+    width: 100%;
+    height: 150px;
+    border-radius: 10px;
+    .mix-flex-center();
+}
+.bc_green image {
+    width: 100%;
+    height: 150px;
+    border-radius: 10px;
+}
+.bc_title {
+    background-color: #FFFFFF;
+    position: absolute;  /* 初始化为相对定位 滑动时改为绝对定位fixed*/
+    top: 120px;
+    left: 0;
+    right: 0;           /* 决定了搜索框置顶 */
+    opacity: 0.8;       /* 搜索框半透明效果 */
+    height: 35px;
+    padding: 5px;
+    .mix-text-overflow();
+    .mix-flex-y-center();
+}
+.bc_red {
+    width: 100%;
+}
+.bc_red view {
+    color: #888888;
+    font-size: 14px;
+    .mix-text-overflow();
+}
+// 评论菜单
+.sj_description_btn {
+    display: flex;
+    margin-top: 5px;
+    flex-direction: row;
+    justify-content: flex-end;
+    color: #848484;
+    font-size: 12px;
+    .fenxiang-btn {
+        border: none;
+        background-color: #FFFFFF;
+    }
+    .fenxiang-btn::after {
+        border: none;
+    }
+}
+// 底部导航
+.groupsources {
+    padding: 2px 10px;
+    .mix-flex-center();
+    .mix-1px(1, 0, 0, 0, #ccc);
+    background-color: #FFFFFF;
+    button {
+        width: 100%;
+        height: 44px;
+        border-radius: 30px;
+        .mix-flex-center();
+        text {
+            font-size: 18px;
+            font-weight: 600;
+        }
+    }
+    .button-style-huodong {
+        background-color: #ffd100;
+        color: #FFFFFF;
+    }
+    .button-style-huodong::after{
+        border: none;
+    }
+}
+// 底部授权信息
+.footer {
+    margin: 25px 0px;
+    .weui-footer_link {
+        color: #ffd100;
+        border: none;
+        background-color: #F4F4F4;
+    }
+    .weui-footer_link::after {
+        border: none
+    }
+}
+</style>

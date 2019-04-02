@@ -1,0 +1,56 @@
+<template>
+    <view>
+        <!-- 指向微信公众平台首页的web-view -->
+        <web-view src="https://wx.taoyuantoday.com/"></web-view>
+    </view>
+</template>
+
+<script>
+export default {
+    config: {
+        navigationBarTitleText: '方寸商城',
+        navigationBarTextStyle: 'black',
+        enablePullDownRefresh: true
+    },
+    data: {
+        NAV_HEIGHT:wx.STATUS_BAR_HEIGHT+wx.DEFAULT_HEADER_HEIGHT+'px',
+        DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
+        uid: '',                // 桃园用户标识
+    },
+    onLoad(options) {
+        var that = this
+        wx.login({
+            success(res) {
+                if (res.code) {
+                    //发起网络请求
+                    wx.request({
+                        url: 'https://wx.taoyuantoday.com/mini.Index/wxQuickLogin.html',
+                        data: {
+                            code: res.code
+                        },
+                        header: {
+                            'content-type': 'application/json' // 默认值
+                        },
+                        success(res) {
+                            if (res.data != "") {
+                                that.setData({
+                                    uid: res.data
+                                })
+                            }
+                        }
+                    })
+                } else {
+                    console.log('登录失败，请检查网络设置！' + res.errMsg)
+                }
+            }
+        })
+        wx.showShareMenu({
+            withShareTicket: true
+        })
+    },
+}
+</script>
+
+<style lang="less">
+
+</style>

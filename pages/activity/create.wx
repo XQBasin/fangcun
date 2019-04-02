@@ -1,0 +1,690 @@
+<template>
+    <view>
+        <!-- 自定义导航栏 -->
+        <ui-nav-bar slot="nav-bar" custom-style="{{ {backgroundColor:'#FFFFFF'} }}">
+            <ui-row height="{{DEFAULT_HEADER_HEIGHT}}" class="nav_bar">
+                <ui-col vertical-align="middle" class="nav-bar-col" align="left" width="100px" bindtap="navigateBack">
+                    <view class="containertitle">
+                        <view class='dingwei'>
+                            <ui-icon type="zuojiantou" color="#333333" size="20px;"></ui-icon>
+                        </view>
+                    </view>
+                </ui-col>
+                <ui-col vertical-align="middle" class="nav-bar-col">
+                    <view class="nav-bar-title">活动发布</view>
+                </ui-col>
+                <ui-col vertical-align="middle" class="nav-bar-col" align="right"  width="100px">
+                </ui-col>
+            </ui-row>
+        </ui-nav-bar>
+        <view style="height:{{NAV_HEIGHT}}"></view>
+        <!-- 发布活动内容 -->
+        <view class="content">
+            <view class="row-column" bindtap="chooseImage">
+                <view class="image" wx:if="{{localSrc == ''}}">
+                    <image style="width:100%; height:100%" src="../../static/image/activity/create.png" mode="aspectFill"/>
+                </view>
+                <view class="image" wx:else>
+                    <image style="width:100%; height:100%" src="{{localSrc}}" mode="aspectFill"/>
+                </view>
+            </view>
+            <view class="row-column">
+                <view class="label">主题：</view>
+                <view  class="content">
+                    <view class="placep">
+                        <view class="place">
+                            <input name="title" value="{{title}}" placeholder="活动主题" maxlength="40" placeholder-style="color:#888888;" bindinput="handleTitleInput"/>
+                        </view>
+                        <view class="desp">{{titleCount}}/40</view>
+                    </view>
+                </view>
+            </view>
+            <view class="row-column">
+                <view class="label">时间：</view>
+                <view  class="content">
+                    <view class="datestr">
+                        <view class="place">
+                            <picker mode="date" value="{{startdate}}" bindchange="bindStartDateChange">
+                                <input name="startdate" value="{{startdate}}" placeholder="开始日期" disabled/>
+                            </picker>
+                        </view>
+                        <view class="des">
+                            <ui-icon type="gengduo" style="margin:0px 0px 0px 2px;" size="14px;"></ui-icon>
+                        </view>
+                    </view>
+                    <view class="dateend">
+                        <view class="place">
+                            <picker mode="time" value="{{starttime}}" bindchange="bindStartDateChange">
+                                <input name="starttime" value="{{starttime}}" placeholder="开始时间" disabled/>
+                            </picker>
+                        </view>
+                        <view class="des">
+                            <ui-icon type="gengduo" style="margin:0px 0px 0px 2px;" size="14px;"></ui-icon>
+                        </view>
+                    </view>
+                </view>
+            </view>
+            <view class="row-column">
+                <view class="label"></view>
+                <view class="content">
+                    <view class="datestr">
+                        <view class="place">
+                            <picker mode="date" value="{{enddate}}" bindchange="bindEndDateChange">
+                                <input name="enddate" value="{{enddate}}" placeholder="结束日期" disabled/>
+                            </picker>
+                        </view>
+                        <view class="des">
+                            <ui-icon type="gengduo" style="margin:0px 0px 0px 2px;" size="14px;"></ui-icon>
+                        </view>
+                    </view>
+                    <view class="dateend">
+                        <view class="place">
+                            <picker mode="time" value="{{endtime}}" bindchange="bindEndDateChange">
+                                <input name="endtime" value="{{endtime}}" placeholder="结束时间" disabled/>
+                            </picker>
+                        </view>
+                        <view class="des">
+                            <ui-icon type="gengduo" style="margin:0px 0px 0px 2px;" size="14px;"></ui-icon>
+                        </view>
+                    </view>
+                </view>
+            </view>
+            <view class="row-column">
+                <view class="label">属性：</view>
+                <view class="content">
+                    <view class="placep">
+                        <radio-group class="radio-group" bindchange="typeChange" name="type" value="{{type}}">
+                            <label class="radio" wx:key="type" wx:for="{{typeitems}}">
+                                <radio value="{{item.name}}" checked="{{item.checked}}" style="margin:0px 10px;"/>
+                                {{item.value}}
+                            </label>
+                        </radio-group>
+                    </view>
+                </view>
+            </view>
+            <view wx:if="{{showtype == true}}">
+                <view class="row-column">
+                    <view class="label">地点：</view>
+                    <view  class="content">
+                        <view class="placep">
+                            <view class="place">
+                                <picker mode="region" value="{{address}}" bindchange="bindAddressChange">
+                                    <input name="address" value="{{address}}" placeholder="活动地点" disabled/>
+                                </picker>
+                            </view>
+                            <view class="desp">
+                                <ui-icon type="gengduo" style="margin:0px 0px 0px 2px;" size="14px;"></ui-icon>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+                <view class="row-column">
+                    <view class="label"></view>
+                    <view class="content">
+                        <view class="placep">
+                            <picker mode="region" value="{{addressdes}}">
+                                <input name="addressdes" value="{{addressdes}}" placeholder="地址详情"/>
+                            </picker>
+                        </view>
+                    </view>
+                </view>
+            </view>
+            <view class="row-column">
+                <view class="label">收费：</view>
+                <view class="content">
+                    <view class="placep">
+                        <view class="place">
+                            <input type="digit" name="money" value="{{money}}" placeholder="报名费用"/>
+                        </view>
+                        <view class="desp">
+                            寸金 <ui-icon type="wenhao" color="#FFD100" style="margin:0px 0px 0px 2px;" size="16px;"></ui-icon>
+                        </view>
+                    </view>
+                </view>
+            </view>
+            <view class="textarea">
+                <view class="title-column">
+                    <view class="label">详情：</view>
+                    <view class="content">{{contentCount}}/800</view>
+                </view>
+                <textarea wx:if="{{!isShowText}}" name="content" value="{{content}}" bindblur="onContentInput" bindconfirm="onShowText" auto-focus="{{onFocus}}" maxlength="800" placeholder-style="margin:10px;" style="width:100%;" bindinput="handleContentInput"></textarea>
+                <view wx:else class="view-text" bindtap="onShowTextare">{{content}}<ui-icon type="gengduo" style="margin:0px 0px 0px 2px;" size="14px;"></ui-icon></view>
+            </view>
+            <view class="row-column-group" wx:if="{{showmore == true}}">
+                <view class="row-column">
+                    <view class="label">设置：</view>
+                    <view class="content">
+                        <view class="placep" data-route='fieldset' bindtap='navigateToFieldSet'>
+                            <view class="place">
+                                <input type="digit" name="money" value="{{money}}" placeholder="报名设置，如姓名、联系电话等" disabled/>
+                            </view>
+                            <view class="desp">
+                                <ui-icon type="gengduo" style="margin:0px 0px 0px 2px;" size="14px;"></ui-icon>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+                <view class="row-column">
+                    <view class="label">电话：</view>
+                    <view class="content">
+                        <view class="placep">
+                            <input name="addressdes" value="{{addressdes}}" placeholder="联系电话"/>
+                        </view>
+                    </view>
+                </view>
+                <view class="row-column" style="height: 40px;" bindtap="showTypeChange" data-value="0">
+                    收起 <ui-icon type="shangjiantou-copy" style="margin:0px 0px 0px 2px;" size="16px;" data-value="0"></ui-icon>
+                </view>
+            </view>
+            <view class="row-column-group" wx:else>
+                <view class="row-column" style="height: 40px;" bindtap="showTypeChange" data-value="1">
+                    更多设置 <ui-icon type="xiangxiajiantou" style="margin:0px 0px 0px 2px;" size="16px;" data-value="1"></ui-icon>
+                </view>
+            </view>
+            <view class="yewu-column" style="margin-top: 5px;">
+                <view class="label">加入方寸奶爸流量增长计划 <ui-icon type="wenhao" color="#FFD100" style="margin:0px 0px 0px 2px;" size="16px;"></ui-icon></view>
+                <view class="des"><switch checked name="checked" bindchange="switchChange"/></view>
+            </view>
+            <checkbox-group name="agree" bindchange="checkboxChange" style="margin:8px; color:#576b95;">
+                <label class="checkbox" wx:key="agree" wx:for="{{items}}">
+                    <checkbox checked value="{{item.name}}"/>{{item.value}}
+                </label>
+            </checkbox-group>
+        </view>
+        <!-- 公众号关注向导 -->
+        <official-account></official-account>
+        <!-- 底部授权信息 -->
+        <view class="footer">
+            <view class="page__bd page__bd_spacing">
+                <view class="weui-footer">
+                    <view class="weui-footer__links">
+                        <button open-type="contact" bindcontact="handleContact" class="weui-footer_link">方寸奶爸</button>
+                    </view>
+                    <view class="weui-footer__text">Copyright © 2008-2019 fcdaddy.com</view>
+                </view>
+            </view>
+        </view>
+        <!-- 底部导航 -->
+        <ui-fixed-view bottom="0" left="0" right="0">
+            <view class='groupsources'>
+                <view>存为草稿</view>
+                <view>预览</view>
+                <button class="button-style-huodong" bindtap="submitForm">发布活动</button>
+            </view>
+        </ui-fixed-view>
+        <!-- 导航占位 -->
+        <view style="height:52px;"></view>
+    </view>
+</template>
+
+<script>
+import { $init, $digest } from '../../static/utils/common.util'
+import WxValidate from '../../static/utils/WxValidate.js'
+export default {
+    config: {
+        navigationBarTitleText: '发布活动',
+        navigationBarTextStyle: 'black',
+        backgroundColor: "#888888",
+        backgroundTextStyle: "light",
+    },
+    data: {
+        NAV_HEIGHT:wx.STATUS_BAR_HEIGHT+wx.DEFAULT_HEADER_HEIGHT+'px',
+        DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
+        titleCount: 0,      // 标题字数
+        contentCount: 0,    // 正文字数
+        id: '',             // 活动标识
+        title: '',          // 标题内容
+        localSrc: '',       // 本地路径
+        serverSrc: '',      // 服务器路径
+        starttime: '',      // 开始时间
+        endtime: '',        // 结束时间
+        address: '',        // 活动地址
+        content: '',        // 正文内容
+        onFocus: false,     // textarea焦点是否选中
+        isShowText: false,  // 控制显示 textarea 还是 text
+        switch: true,       // 默认同意加入流量增长计划
+        agree: 1,           // 默认同意服务协议
+        items: [{
+            name: '1',
+            value: '我同意《方寸奶爸服务协议》'
+        }],
+        showtype: true,     // 默认为线上活动
+        showmore: false,    // 默认为线上活动
+        typeitems: [{
+            name: '1',
+            value: '线下',
+            checked: 'true'
+        },{
+            name: '0',
+            value: '线上'
+        }],
+        uid: '',            // 用户标识
+    },
+    onLoad(options) {
+        this.initValidate()
+        this.data.uid = options.uid
+        $init(this)
+    },
+    // 初始化表单校验
+    initValidate(){
+        // 验证字段的规则
+        const rules = {
+            image: {
+                required: true,
+            },
+            title: {
+                required: true,
+            },
+            starttime: {
+                required: true,
+            },
+            endtime: {
+                required: true,
+            },
+            address: {
+                required: true,
+            },
+            content: {
+                required: true,
+            },
+            agree: {
+                equalTo: 1          // 输入值必须和 field 相同。
+            },
+        }
+        // 验证字段的提示信息，若不传则调用默认的信息
+        const messages = {
+            image: {
+                required: '请先选择活动海报！',
+            },
+            title: {
+                required: '请输入活动主题！',
+            },
+            starttime: {
+                required: '请选择开始日期！',
+            },
+            endtime: {
+                required: '请选择结束日期！',
+            },
+            address: {
+                required: '请选择活动地点！',
+            },
+            content: {
+                required: '请描述活动详情！',
+            },
+            agree: {
+                equalTo: '必须同意方寸奶爸服务协议！',
+            }
+        }
+        // 创建实例对象
+        this.validate = new WxValidate(rules, messages)
+    },
+    handleTitleInput(e) {
+        const value = e.detail.value
+        this.data.title = value
+        this.data.titleCount = value.length     //计算已输入的标题字数
+        $digest(this)
+    },
+    bindStartDateChange: function(e) {
+        const value = e.detail.value
+        this.data.starttime = value
+        $digest(this)
+    },
+    bindEndDateChange: function(e) {
+        const value = e.detail.value
+        this.data.endtime = value
+        $digest(this)
+    },
+    bindAddressChange: function(e) {
+        const value = e.detail.value
+        this.data.address = value
+        $digest(this)
+    },
+    handleContentInput(e) {
+        const value = e.detail.value
+        this.data.content = value
+        this.data.contentCount = value.length       //计算已输入的正文字数
+        $digest(this)
+    },
+    chooseImage(e) {
+        var that = this;
+        wx.chooseImage({
+            sizeType: ['original', 'compressed'],   //可选择原图或压缩后的图片
+            sourceType: ['album', 'camera'],        //可选择性开放访问相册、相机
+            success: res => {
+                const images = res.tempFilePaths
+                that.data.localSrc = images[0]
+                wx.uploadFile({
+                    url: 'https://wx.taoyuantoday.com/upload/alone', //仅为示例，非真实的接口地址
+                    filePath: images[0],
+                    name: 'file',
+                    success (res) {
+                        const result = JSON.parse(res.data)
+                        that.data.serverSrc = result.data.url
+                        $digest(that)
+                    }
+                })
+            }
+        })
+    },
+    removeImage(e) {
+        const idx = e.target.dataset.idx
+        this.data.images.splice(idx, 1)
+        $digest(this)
+    },
+    onShowTextare() {                   //显示textare
+        this.data.isShowText = false
+        this.data.onFacus = true
+        $digest(this)
+    },
+    onShowText() {                      // 显示text
+        this.data.isShowText = true
+        this.data.onFacus = false
+        $digest(this)
+    },
+    onContentInput(event) {              // 保存输入框填写内容
+        var value = event.detail.value
+        this.data.content = value
+        this.data.isShowText = true
+        this.data.onFacus = false
+        $digest(this)
+    },
+    switchChange: function (e) {
+        var value = e.detail.value
+        this.data.switch = value
+        $digest(this)
+    },
+    checkboxChange: function(e) {
+        var value = e.detail.value
+        this.data.agree = value.length
+        $digest(this)
+    },
+    submitForm(e) {
+        var that = this
+        var param = {
+            image: that.data.serverSrc,
+            title: that.data.title,
+            starttime: that.data.starttime,
+            endtime: that.data.endtime,
+            address: that.data.address,
+            content: that.data.content,
+            agree: that.data.agree,
+        }
+        // 校验表单
+        if (!this.validate.checkForm(param)) {
+            const error = this.validate.errorList[0];
+            wx.showToast({
+                title: error.msg,
+                icon: 'none'
+            })
+            return false
+        }
+        wx.showLoading({
+            title: '请稍后...',
+            mask: true
+        })
+        wx.request({
+            url: 'https://wx.taoyuantoday.com/mini.Weactivity/create.html',
+            data: {
+                id: that.data.id,
+                title: that.data.title,
+                image: that.data.serverSrc,
+                starttime: that.data.starttime,
+                endtime: that.data.endtime,
+                address: that.data.address,
+                content: that.data.content,
+                switch: that.data.switch,
+                uid: that.data.uid
+            },
+            header: {
+                'Content-Type': 'application/x-www-form-urlencoded'     // 默认值
+            },
+            method: "POST",
+            success(res) {
+                if (res.data != "") {
+                    wx.hideLoading()
+                    wx.showToast({
+                        title: '发布成功',
+                        icon: 'success',
+                        duration: 2000
+                    })
+                    wx.navigateBack()
+                } else {
+                    wx.showToast({
+                        title: '发布失败',
+                        icon: 'none',
+                        duration: 2000
+                    })
+                }
+            }
+        })
+    },
+    // 活动属性切换
+    typeChange: function (e) {
+        var value = e.detail.value
+        this.setData({
+            showtype:value
+        })
+    },
+    // 获取路由页面
+    navigateToFieldSet: function (e) {
+        let route = e.currentTarget.dataset.route
+        wx.navigateTo({
+            url: './' + route
+        })
+    },
+    // 更多显示属性切换
+    showTypeChange: function (e) {
+        var value = e.target.dataset.value
+        this.setData({
+            showmore:value
+        })
+    },
+    // 客服消息
+    handleContact(e) {
+        console.log(e.path)
+        console.log(e.query)
+    },
+    // 导航返回
+    navigateBack () {
+        wx.navigateBack()
+    },
+}
+</script>
+
+<style lang="less">
+@import '../../static/styles/weui.wxss';
+// 自定义导航栏
+.nav_bar {
+    .mix-flex-center();
+    .nav-bar-col {
+        text-align: center;
+        .containertitle {
+            padding: 6px 10px;
+            display: flex;
+            background-color: #FFFFFF;
+            .dingwei {
+                height: 25px;
+                display: flex;
+                .mix-flex-y-center();
+            }
+            .dingwei text {
+                size: 16px;
+                color: #FFFFFF;
+                margin: 0px 3px;
+            }
+        }
+        .nav-bar-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+    }
+}
+// 活动内容
+.content {
+    margin: 5px;
+    display: flex;
+    flex-direction: column;
+}
+.image {
+    width: 100%;
+    height: 200px;
+    background-color: #FFFFFF;
+}
+.row-column-group {
+    margin-top: 5px;
+}
+.row-column {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: #FFFFFF;
+    .mix-flex-center();
+    .label {
+        width: 15%;
+        .mix-flex-center();
+    }
+    .content {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        flex-wrap: nowrap;
+        width: 85%;
+        height: 40px;
+        .mix-flex-center();
+        .mix-1px(0, 0, 1, 0, #ccc);
+        .datestr {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            flex-wrap: nowrap;
+            width: 50%;
+            .place {
+                width: 80%;
+            }
+            .des {
+                width: 15%;
+                margin-right: 5px;
+            }
+        }
+        .dateend {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            flex-wrap: nowrap;
+            width: 50%;
+            .place {
+                width: 80%;
+            }
+            .des {
+                width: 15%;
+                margin-right: 5px;
+            }
+        }
+        .placep {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            flex-wrap: nowrap;
+            width: 100%;
+            .place {
+                width: 80%;
+            }
+            .desp {
+                width: 20%;
+                .mix-flex-center();
+            }
+            radio-group {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                flex-wrap: nowrap;
+            }
+        }
+    }
+}
+// 重写小程序开关组件样式
+.wx-switch-input{width:42px !important;height:20px !important;}
+.wx-switch-input::before{width:41px !important;height: 20px !important;}
+.wx-switch-input::after{width: 18px !important;height: 18px !important;}    // 中间小圆球
+.textarea {
+    background-color: #FFFFFF;
+    margin-top: 5px;
+    padding: 5px;
+}
+.view-text {
+    width: 100%;
+    padding: 5px;
+    word-break:break-all;
+}
+.title-column {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 5px 0px;
+    height: 40px;
+    .mix-flex-center();
+    .mix-1px(0, 0, 1, 0, #ccc);
+    .label {
+        width: 15%;
+        .mix-flex-center();
+    }
+    .content {
+        width: 85%;
+        color: #ffd100;
+    }
+}
+.yewu-column {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 40px;
+    background-color: #FFFFFF;
+    .mix-flex-center();
+    .label {
+        width: 75%;
+        margin: 0px 15px;
+        .mix-flex-y-center();
+    }
+    .des {
+        width: 20%;
+        color: #ffd100;
+        .mix-flex-x-center();
+    }
+}
+
+.radio {
+    display: block;
+    padding: 5px;
+}
+// 底部授权信息
+.footer {
+    margin: 25px 0px;
+    .weui-footer_link {
+        color: #ffd100;
+        border: none;
+        background-color: #F4F4F4;
+    }
+    .weui-footer_link::after {
+        border: none
+    }
+}
+// 底部导航
+.groupsources {
+    padding: 2px 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    .mix-flex-y-center();
+    font-size: 12px;
+    background-color: #FFFFFF;
+    .mix-1px(1, 0, 0, 0, #ccc);
+}
+.button-style-huodong {
+    background-color: #ffd100;
+    color: #FFFFFF;
+    width: 60%;
+}
+.button-style-huodong::after{
+    border: none;
+}
+</style>

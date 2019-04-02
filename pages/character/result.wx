@@ -1,0 +1,278 @@
+<template>
+    <view>
+        <!-- 自定义导航栏 -->
+        <ui-nav-bar slot="nav-bar" custom-style="{{ {backgroundColor:'#FFFFFF'} }}">
+            <ui-row height="{{DEFAULT_HEADER_HEIGHT}}" class="nav_bar">
+                <ui-col vertical-align="middle" class="nav-bar-col" align="left" width="100px" bindtap="navigateBack">
+                    <view class="containertitle">
+                        <view class='dingwei'>
+                            <ui-icon type="zuojiantou" color="#333333" size="20px;"></ui-icon>
+                        </view>
+                    </view>
+                </ui-col>
+                <ui-col vertical-align="middle" class="nav-bar-col">
+                    <view class="nav-bar-title">测试结果</view>
+                </ui-col>
+                <ui-col vertical-align="middle" class="nav-bar-col" align="right"  width="100px">
+                </ui-col>
+            </ui-row>
+        </ui-nav-bar>
+        <view style="height:{{NAV_HEIGHT}}"></view>
+        <!-- 测试详情 -->
+        <view class="polaroid">
+            <view class="tab-panel-item">
+                <view class='flex-title'>测试结果：{{info.title}}</view>
+                <view class='numtit'>
+                    <image class="image" src="{{userInfo.avatar}}" mode="cover"/>
+                </view>
+                <text class='text'>{{userInfo.username}}</text>
+                <scroll-view class="infodes" scroll-y="true">
+                    <rich-text nodes="{{info.content}}"></rich-text>
+                </scroll-view>
+                <view class='infobtn'>
+                    <button class="button-style-huodong" size="mini" open-type="share">
+                        <ui-icon type="fenxiang" color="#FFFFFF" style="margin:0px 0px 0px 2px;"></ui-icon> 分享给好友
+                    </button>
+                </view>
+            </view>
+        </view>
+        <view class='groupsources'>
+            <view class="tab-panel-item">
+                <view class='hottest'>九型人格测试柱状图</view>
+                <view class='columnCanvas'>
+                <canvas canvas-id="columnCanvas" class="canvas"></canvas>
+                </view>
+            </view>
+            <view class="tab-panel-item">
+                <view class='hottest'>九型人格测试雷达海图</view>
+                <view class='radarCanvas'>
+                <canvas canvas-id="radarCanvas" class="canvas"></canvas>
+                </view>
+            </view>
+        </view>
+        <!-- 公众号关注向导 -->
+        <official-account></official-account>
+        <!-- 底部授权信息 -->
+        <view class="footer">
+            <view class="page__bd page__bd_spacing">
+                <view class="weui-footer">
+                    <view class="weui-footer__links">
+                        <button open-type="contact" bindcontact="handleContact" class="weui-footer_link">方寸奶爸</button>
+                    </view>
+                    <view class="weui-footer__text">Copyright © 2008-2019 fcdaddy.com</view>
+                </view>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+export default {
+    config: {
+        navigationBarTitleText: '测试结果',
+        navigationBarTextStyle: 'black',
+        backgroundColor: "#F8F8F8",
+        backgroundTextStyle: "light",
+        enablePullDownRefresh: true
+    },
+    data: {
+        NAV_HEIGHT:wx.STATUS_BAR_HEIGHT+wx.DEFAULT_HEADER_HEIGHT+'px',
+        DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
+        info: {},       // 测试结果
+        userInfo: {}    // 用户信息
+    },
+    onLoad: function (options) {
+        this.returnResult(options.answerid)
+    },
+    // 获取答案页面
+    returnResult: function (answerid) {
+        var that = this;
+        wx.request({
+            url: 'https://wx.taoyuantoday.com/mini.character/returnResult.html',
+            data: {
+                answerid: answerid
+            },
+            header: {
+                'content-type': 'application/json' // 默认值
+            },
+            success(res) {
+                if (res.data != null) {
+                    that.setData({
+                        info: res.data.info,
+                        userInfo: res.data.user
+                    })
+                    // 获取测试题目
+                    that.startCanvas(res.data.result, res.data.sum)
+                }
+            }
+        })
+    },
+    startCanvas: function (data, sum) {
+        var wxCharts = require('../../static/utils/wxcharts-min.js');
+        new wxCharts({
+            canvasId: 'columnCanvas',
+            type: 'column',
+            categories: ['一', '二', '三', '四', '五', '六', '七', '八', '九'],
+            series: [{
+                name: '性格类型分布',
+                data: [data.A != undefined ? data.A : 0, data.B != undefined ? data.B : 0, data.C != undefined ? data.C : 0, data.D != undefined ? data.D : 0, data.E != undefined ? data.E : 0, data.F != undefined ? data.F : 0, data.G != undefined ? data.G : 0, data.H != undefined ? data.H : 0, data.I != undefined ? data.I : 0]
+            }],
+            yAxis: {
+                format: function (val) {
+                    return val + '题';
+                }
+            },
+            width: 292,
+            height: 250
+        })
+        new wxCharts({
+            canvasId: 'radarCanvas',
+            type: 'radar',
+            categories: ['第一型', '第二型', '第三型', '第四型', '第五型', '第六型', '第七型', '第八型', '第九型'],
+            series: [{
+                name: '性格类型分布',
+                data: [data.A != undefined ? data.A : 0, data.B != undefined ? data.B : 0, data.C != undefined ? data.C : 0, data.D != undefined ? data.D : 0, data.E != undefined ? data.E : 0, data.F != undefined ? data.F : 0, data.G != undefined ? data.G : 0, data.H != undefined ? data.H : 0, data.I != undefined ? data.I : 0]
+            }],
+            width: 292,
+            height: 250,
+            extra: {
+                radar: {
+                    max: sum
+                }
+            }
+        })
+    },
+    // 客服消息
+    handleContact(e) {
+        console.log(e.path)
+        console.log(e.query)
+    },
+    // 导航返回
+    navigateBack () {
+        wx.navigateBack()
+    },
+}
+</script>
+
+<style lang="less">
+@import '../../static/styles/weui.wxss';
+// 自定义导航栏
+.nav_bar {
+    .mix-flex-center();
+    .nav-bar-col {
+        text-align: center;
+        .containertitle {
+            padding: 6px 10px;
+            display: flex;
+            background-color: #FFFFFF;
+            .dingwei {
+                height: 25px;
+                display: flex;
+                .mix-flex-y-center();
+            }
+            .dingwei text {
+                size: 16px;
+                color: #FFFFFF;
+                margin: 0px 3px;
+            }
+        }
+        .nav-bar-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+    }
+}
+// 测试结果
+.polaroid {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    background: #FFFFFF;
+    border-radius: 5px 5px 5px 5px;
+    text-align: center;
+    margin: 10px 15px;
+}
+.tab-panel-item {
+    padding: 5px 10px;
+    position: relative;
+}
+.flex-title {
+    font-weight: bold;
+    font-size: 16px;
+    padding: 5px 30px;
+}
+.numtit {
+    margin: 5px 0px;
+    .mix-flex-center();
+}
+.infobtn {
+    .mix-flex-center();
+}
+.text {
+    color: #848484;
+    font-size: 12px;
+    margin-top: 2px;
+    text-align: center;
+}
+.image {
+    width: 50px;
+    height: 50px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 100%;
+}
+.hottest {
+    margin: 10px 5px;
+    color: #ffd100;
+    font-size: 13px;
+    text-align: center;
+    font-weight: 600;
+}
+.infodes {
+    border-top: 1px solid #E6E6E6;
+    text-align: left;
+    font-size: 13px;
+    color: #848484;
+    width: 96%;
+    padding: 5px;
+    height: 250px;
+}
+.button-style-huodong {
+    background-color: #ffd100;
+    color: #FFFFFF;
+    width: 50%;
+    margin: 5px 5px;
+}
+.groupsources {
+    margin: 15px 10px;
+    background-color: #FFFFFF;
+    border-radius: 2px;
+}
+.canvas {
+    width: 100%;
+    height: 250px;
+}
+.columnCanvas {
+    width: 100%;
+    height: 250px;
+}
+.radarCanvas {
+    width: 100%;
+    height: 250px;
+}
+/*隐藏滚动条*/
+::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    color: transparent;
+}
+// 底部授权信息
+.footer {
+    margin: 25px 0px;
+    .weui-footer_link {
+        color: #ffd100;
+        border: none;
+        background-color: #F4F4F4;
+    }
+    .weui-footer_link::after {
+        border: none
+    }
+}
+</style>

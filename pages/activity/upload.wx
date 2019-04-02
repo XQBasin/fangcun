@@ -1,0 +1,509 @@
+<template>
+    <view>
+        <!-- 自定义导航栏 -->
+        <ui-nav-bar slot="nav-bar" custom-style="{{ {backgroundColor:'#FFFFFF'} }}">
+            <ui-row height="{{DEFAULT_HEADER_HEIGHT}}" class="nav_bar">
+                <ui-col vertical-align="middle" class="nav-bar-col" align="left" width="100px" bindtap="navigateBack">
+                    <view class="containertitle">
+                        <view class='dingwei'>
+                            <ui-icon type="zuojiantou" color="#333333" size="20px;"></ui-icon>
+                        </view>
+                    </view>
+                </ui-col>
+                <ui-col vertical-align="middle" class="nav-bar-col">
+                    <view class="nav-bar-title">作品提交</view>
+                </ui-col>
+                <ui-col vertical-align="middle" class="nav-bar-col" align="right"  width="100px">
+                </ui-col>
+            </ui-row>
+        </ui-nav-bar>
+        <view style="height:{{NAV_HEIGHT}}"></view>
+        <!-- 上传比赛作品 -->
+        <view class="content">
+            <view class="textarea">
+                <textarea wx:if="{{!isShowText}}" placeholder="作品解读~" name="description" value="{{content}}" bindblur="onContentInput" bindconfirm="onShowText" auto-focus="{{onFocus}}" maxlength="500" style="width:100%;" bindinput="handleContentInput"></textarea>
+                <view wx:else class="view-text" bindtap="onShowTextare">{{content}}<ui-icon type="xiangxiajiantou" color="#888888" style="margin:0px 0px 0px 2px;" size="14px;"></ui-icon></view>
+                <view class="des">{{contentCount}}/500</view>
+            </view>
+            <view class="yewu-column">
+                <view class="weui-cell">
+                    <view class="weui-cell__bd">
+                        <view class="weui-uploader">
+                            <view class="weui-uploader__hd">
+                                <view class="weui-uploader__title">作品图片上传</view>
+                                <view class="weui-uploader__info" style="color:#ffd100;">{{profiles.length}}/{{count}}</view>
+                            </view>
+                            <view class="weui-uploader__bd">
+                                <view class="weui-uploader__files">
+                                    <block wx:for="{{profiles}}" wx:key="*this">
+                                        <view class="weui-uploader__file" bindtap="previewProImage" id="{{item}}">
+                                            <image class="weui-uploader__img" src="{{item}}" mode="aspectFill" />
+                                        </view>
+                                    </block>
+                                </view>
+                                <view class="weui-uploader__input-box">
+                                    <view class="weui-uploader__input" bindtap="chooseProImage"></view>
+                                </view>
+                            </view>
+                            <view bindtap="removeProImage">重新选择</view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+            <view class="yewu-column">
+                <view class="weui-cell">
+                    <view class="weui-cell__bd">
+                        <view class="weui-uploader">
+                            <view class="weui-uploader__hd">
+                                <view class="weui-uploader__title">素材图片上传（选填）</view>
+                                <view class="weui-uploader__info" style="color:#ffd100;">{{orifiles.length}}/{{count}}</view>
+                            </view>
+                            <view class="weui-uploader__bd">
+                                <view class="weui-uploader__files">
+                                    <block wx:for="{{orifiles}}" wx:key="*this">
+                                        <view class="weui-uploader__file" bindtap="previewOriImage" id="{{item}}">
+                                            <image class="weui-uploader__img" src="{{item}}" mode="aspectFill" />
+                                        </view>
+                                    </block>
+                                </view>
+                                <view class="weui-uploader__input-box">
+                                    <view class="weui-uploader__input" bindtap="chooseOriImage"></view>
+                                </view>
+                            </view>
+                            <view bindtap="removeOriImage">重新选择</view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+            <view class="share-switch">
+                <view class="label">加入方寸奶爸用户体验计划</view>
+                <view class="des"><switch checked bindchange="switchChange"/></view>
+            </view>
+        </view>
+        <!-- 公众号关注向导 -->
+        <official-account></official-account>
+        <!-- 底部授权信息 -->
+        <view class="footer">
+            <view class="page__bd page__bd_spacing">
+                <view class="weui-footer">
+                    <view class="weui-footer__links">
+                        <button open-type="contact" bindcontact="handleContact" class="weui-footer_link">方寸奶爸</button>
+                    </view>
+                    <view class="weui-footer__text">Copyright © 2008-2019 fcdaddy.com</view>
+                </view>
+            </view>
+        </view>
+        <!-- 底部导航 -->
+        <ui-fixed-view bottom="0" left="0" right="0">
+            <view class='groupsources'>
+                <view>存为草稿</view>
+                <button class="button-style-huodong" bindtap="submitForm">确认发布</button>
+            </view>
+        </ui-fixed-view>
+        <!-- 导航占位 -->
+        <view style="height:52px;"></view>
+    </view>
+</template>
+
+<script>
+import { $init, $digest } from '../../static/utils/common.util'
+import WxValidate from '../../static/utils/WxValidate.js'
+export default {
+    config: {
+        navigationBarTitleText: '活动作品上传',
+        navigationBarTextStyle: 'black',
+        backgroundColor: "#888888",
+        backgroundTextStyle: "light"
+    },
+    data: {
+        NAV_HEIGHT:wx.STATUS_BAR_HEIGHT+wx.DEFAULT_HEADER_HEIGHT+'px',
+        DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
+        titleCount: 0,      // 标题字数
+        contentCount: 0,    // 正文字数
+        id: '',             // 活动标识
+        content: '',        // 正文内容
+        onFocus: false,     // textarea焦点是否选中
+        isShowText: false,  // 控制显示 textarea 还是 text
+        uid: '',            // 用户标识
+        profiles: [],       // 作品文件列表
+        orifiles: [],       // 原文件列表
+        count: 9,           // 最多可以选择的图片张数
+        serverProSrc: [],   // 作品文件服务器路径
+        serverOriSrc: [],   // 原文件服务器路径
+        switch: 'true',     // 默认同时分享到社交圈
+    },
+    onLoad(options) {
+        var that = this
+        that.initValidate()
+        that.data.activityid = options.activityid
+        wx.login({
+            success(res) {
+                if (res.code) {
+                    //发起网络请求
+                    wx.request({
+                        url: 'https://wx.taoyuantoday.com/mini.Weactivity/wxQuickLogin.html',
+                        data: {
+                            code: res.code
+                        },
+                        header: {
+                            'content-type': 'application/json' // 默认值
+                        },
+                        success(res) {
+                            if (res.data != "") {
+                                that.data.uid = res.data
+                            }
+                        }
+                    })
+                } else {
+                    console.log('登录失败，请检查网络设置！' + res.errMsg)
+                }
+            }
+        })
+        $init(that)
+    },
+    // 初始化表单校验
+    initValidate(){
+        // 验证字段的规则
+        const rules = {
+            content: {
+                required: true,
+            },
+            serverProSrc: {
+                required: true,
+            },
+        }
+        // 验证字段的提示信息，若不传则调用默认的信息
+        const messages = {
+            content: {
+                required: '请对你的作品做一个简单的描述吧！',
+            },
+            serverProSrc: {
+                required: '请至少上传一张比赛作品！',
+            }
+        }
+        // 创建实例对象
+        this.validate = new WxValidate(rules, messages)
+    },
+    handleTitleInput(e) {
+        const value = e.detail.value
+        this.data.title = value
+        this.data.titleCount = value.length         //计算已输入的标题字数
+        $digest(this)
+    },
+    handleContentInput(e) {
+        const value = e.detail.value
+        this.data.content = value
+        this.data.contentCount = value.length       //计算已输入的正文字数
+        $digest(this)
+    },
+    chooseProImage: function (e) {
+        var that = this;
+        wx.chooseImage({
+            count: '{{count}}',
+            sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+            sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+            success: function (res) {
+                // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
+                if(that.data.profiles.concat(res.tempFilePaths).length <= that.data.count) {
+                    that.setData({
+                        profiles: that.data.profiles.concat(res.tempFilePaths)
+                    });
+                    const images = res.tempFilePaths
+                    images.forEach(image => {
+                        console.log(image);
+                        wx.uploadFile({
+                            url: 'https://wx.taoyuantoday.com/upload/alone', //仅为示例，非真实的接口地址
+                            filePath: image,
+                            name: 'file',
+                            success (res) {
+                                const result = JSON.parse(res.data)
+                                that.data.serverProSrc = that.data.serverProSrc.concat(result.data.url)
+                                $digest(that)
+                            }
+                        })
+                    });
+                } else {
+                    wx.showToast({
+                        title: '最多允许上传 '+ that.data.count +' 张图片',
+                        icon: 'none',
+                        duration: 2000
+                    })
+                }
+            }
+        })
+    },
+    chooseOriImage: function (e) {
+        var that = this;
+        wx.chooseImage({
+            count: '{{count}}',
+            sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+            sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+            success: function (res) {
+                // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
+                if(that.data.orifiles.concat(res.tempFilePaths).length <= that.data.count) {
+                    that.setData({
+                        orifiles: that.data.orifiles.concat(res.tempFilePaths)
+                    });
+                    const images = res.tempFilePaths
+                    images.forEach(image => {
+                        console.log(image);
+                        wx.uploadFile({
+                            url: 'https://wx.taoyuantoday.com/upload/alone', //仅为示例，非真实的接口地址
+                            filePath: image,
+                            name: 'file',
+                            success (res) {
+                                const result = JSON.parse(res.data)
+                                that.data.serverOriSrc = that.data.serverOriSrc.concat(result.data.url)
+                                $digest(that)
+                            }
+                        })
+                    });
+                } else {
+                    wx.showToast({
+                        title: '最多允许上传 '+ that.data.count +' 张图片',
+                        icon: 'none',
+                        duration: 2000
+                    })
+                }
+            }
+        })
+    },
+    previewProImage: function(e) {
+        wx.previewImage({
+            current: e.currentTarget.id,    // 当前显示图片的http链接
+            urls: this.data.profiles        // 需要预览的图片http链接列表
+        })
+    },
+    previewOriImage: function(e) {
+        wx.previewImage({
+            current: e.currentTarget.id,    // 当前显示图片的http链接
+            urls: this.data.orifiles        // 需要预览的图片http链接列表
+        })
+    },
+    removeProImage(e) {
+        this.data.profiles = [];
+        this.data.serverProSrc = [];
+        $digest(this)
+    },
+    removeOriImage(e) {
+        this.data.orifiles = [];
+        this.data.serverOriSrc = [];
+        $digest(this)
+    },
+    onShowTextare() {                       //显示textare
+        this.data.isShowText = false
+        this.data.onFacus = true
+        $digest(this)
+    },
+    onShowText() {                          // 显示text
+        this.data.isShowText = true
+        this.data.onFacus = false
+        $digest(this)
+    },
+    onContentInput(event) {                 // 保存输入框填写内容
+        var value = event.detail.value
+        this.data.content = value
+        this.data.isShowText = true
+        this.data.onFacus = false
+        $digest(this)
+    },
+    submitForm(e) {
+        var that = this
+        var param = {
+            content: that.data.content,
+            serverProSrc: that.data.serverProSrc,
+        }
+        // 校验表单
+        if (!that.validate.checkForm(param)) {
+            const error = that.validate.errorList[0];
+            wx.showToast({
+                title: error.msg,
+                icon: 'none'
+            })
+            return false
+        }
+        // 信息提交
+        wx.showLoading({
+            title: '请稍后...',
+            mask: true
+        })
+        wx.request({
+            url: 'https://wx.taoyuantoday.com/mini.Weactivity/upProduction.html',
+            data: {
+                activityid: that.data.activityid,
+                pro_file: that.data.serverProSrc,
+                ori_file: that.data.serverOriSrc,
+                content: that.data.content,
+                uid: that.data.uid,
+                switch: that.data.switch,
+            },
+            header: {
+                'Content-Type': 'application/x-www-form-urlencoded'     // 默认值
+            },
+            method: "POST",
+            success(res) {
+                if (res.data.state) {
+                    wx.hideLoading()
+                    wx.showToast({
+                        title: res.data.message,
+                        icon: 'success',
+                        duration: 2000
+                    })
+                    wx.navigateBack()
+                } else {
+                    wx.hideLoading()
+                    wx.showToast({
+                        title: res.data.message,
+                        icon: 'none',
+                        duration: 3000
+                    })
+                }
+            }
+        })
+    },
+    switchChange: function (e) {
+        var value = e.detail.value
+        this.data.switch = value
+        $digest(this)
+    },
+    // 客服消息
+    handleContact(e) {
+        console.log(e.path)
+        console.log(e.query)
+    },
+    // 导航返回
+    navigateBack () {
+        wx.navigateBack()
+    },
+}
+</script>
+
+<style lang="less">
+@import '../../static/styles/weui.wxss';
+// 自定义导航栏
+.nav_bar {
+    .mix-flex-center();
+    .nav-bar-col {
+        text-align: center;
+        .containertitle {
+            padding: 6px 10px;
+            display: flex;
+            background-color: #FFFFFF;
+            .dingwei {
+                height: 25px;
+                display: flex;
+                .mix-flex-y-center();
+            }
+            .dingwei text {
+                size: 16px;
+                color: #FFFFFF;
+                margin: 0px 3px;
+            }
+        }
+        .nav-bar-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+    }
+}
+// 活动内容
+.content {
+    display: flex;
+    flex-direction: column;
+}
+.row-column {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: #FFFFFF;
+    .mix-1px(1, 0, 0, 0, #ccc);
+    .mix-flex-center();
+}
+.row-column .label {
+    width: 15%;
+    .mix-flex-center();
+}
+.row-column .content {
+    width: 70%;
+    height: 40px;
+}
+.des {
+    text-align: right;
+    color: #ffd100;
+}
+.textarea {
+    background-color: #FFFFFF;
+    padding: 10px;
+    margin: 5px 0px;
+}
+.view-text {
+    width: 100%;
+    padding: 5px;
+    word-break:break-all;
+}
+.title-column {
+    margin: 5px 0px;
+    height: 40px;
+}
+.title-column .des {
+    color: #ffd100;
+}
+.yewu-column {
+    background-color: #FFFFFF;
+}
+// 底部导航
+.groupsources {
+    padding: 2px 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    .mix-flex-y-center();
+    font-size: 12px;
+    background-color: #FFFFFF;
+    .mix-1px(1, 0, 0, 0, #ccc);
+}
+.button-style-huodong {
+    background-color: #ffd100;
+    color: #FFFFFF;
+    width: 60%;
+}
+.button-style-huodong::after{
+    border: none;
+}
+.share-switch {
+    display: flex;
+    padding: 10px;
+    margin-top: 10px;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 40px;
+    background-color: #FFFFFF;
+    .mix-flex-center();
+}
+.share-switch .label {
+    width: 85%;
+    margin: 0px 5px;
+    .mix-flex-y-center();
+}
+.share-switch .des {
+    width: 15%;
+    color: #ffd100;
+    .mix-flex-x-center();
+}
+// 重写小程序开关组件样式
+.wx-switch-input{width:42px !important;height:20px !important;}
+.wx-switch-input::before{width:41px !important;height: 20px !important;}
+.wx-switch-input::after{width: 18px !important;height: 18px !important;}//中间小圆球
+// 底部授权信息
+.footer {
+    margin: 25px 0px;
+    .weui-footer_link {
+        color: #ffd100;
+        border: none;
+        background-color: #F4F4F4;
+    }
+    .weui-footer_link::after {
+        border: none
+    }
+}
+</style>

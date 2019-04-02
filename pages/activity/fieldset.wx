@@ -1,0 +1,175 @@
+<template>
+    <view>
+        <!-- 自定义导航栏 -->
+        <ui-nav-bar slot="nav-bar" custom-style="{{ {backgroundColor:'#FFFFFF'} }}">
+            <ui-row height="{{DEFAULT_HEADER_HEIGHT}}" class="nav_bar">
+                <ui-col vertical-align="middle" class="nav-bar-col" align="left" width="100px" bindtap="navigateBack">
+                    <view class="containertitle">
+                        <view class='dingwei'>
+                            <ui-icon type="zuojiantou" color="#333333" size="20px;"></ui-icon>
+                        </view>
+                    </view>
+                </ui-col>
+                <ui-col vertical-align="middle" class="nav-bar-col">
+                    <view class="nav-bar-title">设置报名字段</view>
+                </ui-col>
+                <ui-col vertical-align="middle" class="nav-bar-col" align="right"  width="100px">
+                </ui-col>
+            </ui-row>
+        </ui-nav-bar>
+        <view style="height:{{NAV_HEIGHT}}"></view>
+        <!-- 发布活动内容 -->
+        <view class="content">
+            <view class="left">
+                
+            </view>
+            <view class="right">
+                
+            </view>
+        </view>
+        <!-- 公众号关注向导 -->
+        <official-account></official-account>
+        <!-- 底部授权信息 -->
+        <view class="footer">
+            <view class="page__bd page__bd_spacing">
+                <view class="weui-footer">
+                    <view class="weui-footer__links">
+                        <button open-type="contact" bindcontact="handleContact" class="weui-footer_link">方寸奶爸</button>
+                    </view>
+                    <view class="weui-footer__text">Copyright © 2008-2019 fcdaddy.com</view>
+                </view>
+            </view>
+        </view>
+        <!-- 底部导航 -->
+        <ui-fixed-view bottom="0" left="0" right="0">
+            <view class='groupsources'>
+                <view>取消</view>
+                <button class="button-style-huodong" bindtap="submitForm">保存设置</button>
+            </view>
+        </ui-fixed-view>
+        <!-- 导航占位 -->
+        <view style="height:52px;"></view>
+    </view>
+</template>
+
+<script>
+import { $init, $digest } from '../../static/utils/common.util'
+import WxValidate from '../../static/utils/WxValidate.js'
+export default {
+    config: {
+        navigationBarTitleText: '设置报名字段',
+        navigationBarTextStyle: 'black',
+        backgroundColor: "#888888",
+        backgroundTextStyle: "light",
+    },
+    data: {
+        NAV_HEIGHT:wx.STATUS_BAR_HEIGHT+wx.DEFAULT_HEADER_HEIGHT+'px',
+        DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
+        uid: '',                                                        // 用户标识
+    },
+    onLoad(options) {
+        this.data.uid = options.uid
+        $init(this)
+    },
+    // 获取路由页面
+    navigateToFieldSet: function (e) {
+        let route = e.currentTarget.dataset.route
+        wx.navigateTo({
+            url: './' + route
+        })
+    },
+    // 客服消息
+    handleContact(e) {
+        console.log(e.path)
+        console.log(e.query)
+    },
+    // 导航返回
+    navigateBack () {
+        wx.navigateBack()
+    },
+}
+</script>
+
+<style lang="less">
+@import '../../static/styles/weui.wxss';
+// 自定义导航栏
+.nav_bar {
+    .mix-flex-center();
+    .nav-bar-col {
+        text-align: center;
+        .containertitle {
+            padding: 6px 10px;
+            display: flex;
+            background-color: #FFFFFF;
+            .dingwei {
+                height: 25px;
+                display: flex;
+                .mix-flex-y-center();
+            }
+            .dingwei text {
+                size: 16px;
+                color: #FFFFFF;
+                margin: 0px 3px;
+            }
+        }
+        .nav-bar-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+    }
+}
+// 内容样式设置
+.content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 40px;
+    background-color: #ffffff;
+    .left {
+        width: 50%;
+        border: 1px solid red;
+        
+
+    }
+    .right {
+        width: 50%;
+        border: 1px solid red;
+
+    }
+}
+// 重写小程序开关组件样式
+.wx-switch-input{width:42px !important;height:20px !important;}
+.wx-switch-input::before{width:41px !important;height: 20px !important;}
+.wx-switch-input::after{width: 18px !important;height: 18px !important;}    // 中间小圆球
+// 底部授权信息
+.footer {
+    margin: 25px 0px;
+    .weui-footer_link {
+        color: #ffd100;
+        border: none;
+        background-color: #F4F4F4;
+    }
+    .weui-footer_link::after {
+        border: none
+    }
+}
+// 底部导航
+.groupsources {
+    padding: 2px 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    .mix-flex-y-center();
+    font-size: 12px;
+    background-color: #FFFFFF;
+    .mix-1px(1, 0, 0, 0, #ccc);
+}
+.button-style-huodong {
+    background-color: #ffd100;
+    color: #FFFFFF;
+    width: 60%;
+}
+.button-style-huodong::after{
+    border: none;
+}
+</style>

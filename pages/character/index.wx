@@ -1,0 +1,225 @@
+<template>
+    <view>
+        <!-- 自定义导航栏 -->
+        <ui-nav-bar slot="nav-bar" custom-style="{{ {backgroundColor:'#FFFFFF'} }}">
+            <ui-row height="{{DEFAULT_HEADER_HEIGHT}}" class="nav_bar">
+                <ui-col vertical-align="middle" class="nav-bar-col" align="left" width="100px" bindtap="navigateBack">
+                    <view class="containertitle">
+                        <view class='dingwei'>
+                            <ui-icon type="zuojiantou" color="#333333" size="20px;"></ui-icon>
+                        </view>
+                    </view>
+                </ui-col>
+                <ui-col vertical-align="middle" class="nav-bar-col">
+                    <view class="nav-bar-title">性格测试</view>
+                </ui-col>
+                <ui-col vertical-align="middle" class="nav-bar-col" align="right"  width="100px">
+                </ui-col>
+            </ui-row>
+        </ui-nav-bar>
+        <view style="height:{{NAV_HEIGHT}}"></view>
+        <!-- 测试详情 -->
+        <view class="tab-panel-item">
+            <view class='content-title'>{{characterInfo.title}}</view>
+            <view class="love">
+                <ui-icon type="jushoucang" color="#ffd100" size="12px;"> {{characterInfo.testNum}}人已测</ui-icon>
+            </view>
+            <view class="content">
+                <scroll-view scroll-y style="height: 450px;">
+                    <view class="rich-text-wrp">
+                        <rich-text nodes="{{characterInfo.content}}" bindtap="tap"></rich-text>
+                    </view>
+                </scroll-view>
+            </view>
+        </view>
+        <!-- 公众号关注向导 -->
+        <official-account></official-account>
+        <!-- 底部授权信息 -->
+        <view class="footer">
+            <view class="page__bd page__bd_spacing">
+                <view class="weui-footer">
+                    <view class="weui-footer__links">
+                        <button open-type="contact" bindcontact="handleContact" class="weui-footer_link">方寸奶爸</button>
+                    </view>
+                    <view class="weui-footer__text">Copyright © 2008-2019 fcdaddy.com</view>
+                </view>
+            </view>
+        </view>
+        <!-- 底部导航 -->
+        <ui-fixed-view bottom="0" left="0" right="0">
+            <view class='groupsources'>
+                <button class="button-style-guanzhu" size="mini" open-type="share">
+                    <ui-icon type="fenxiang" color="#ffd100" style="margin:0px 0px 0px 2px;"></ui-icon> 分享给好友
+                </button>
+                <button id='{{characterInfo.id}}' class="button-style-huodong" size="mini" bindtap='getQuestions'>
+                    <ui-icon type="guanzhu" color="#FFFFFF" style="margin:0px 0px 0px 2px;"></ui-icon> 开始测试
+                </button>
+            </view>
+        </ui-fixed-view>
+        <!-- 导航占位 -->
+        <view style="height:52px;"></view>
+    </view>
+</template>
+
+<script>
+export default {
+    config: {
+        navigationBarTitleText: '九宫格人型测试',
+        navigationBarTextStyle: 'black',
+        backgroundColor: "#F8F8F8",
+        backgroundTextStyle: "light",
+        enablePullDownRefresh: true
+    },
+    data: {
+        NAV_HEIGHT:wx.STATUS_BAR_HEIGHT+wx.DEFAULT_HEADER_HEIGHT+'px',
+        DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
+        characterInfo: {},
+    },
+    onLoad: function (options) {
+        this.getCharacterInfo(1)
+    },
+    // 测试描述
+    getCharacterInfo: function (id) {
+        var that = this;
+        wx.request({
+            url: 'https://wx.taoyuantoday.com/mini.character/getCharacterInfo.html',
+            data: {
+                id: id,
+            },
+            header: {
+                'content-type': 'application/json' // 默认值
+            },
+            success(res) {
+                if (res.data != null) {
+                    that.setData({
+                        characterInfo: res.data
+                    })
+                }
+            }
+        })
+    },
+    // 打开测试页面
+    getQuestions: function (option) {
+        wx.navigateTo({
+            url: './questions?characterid=' + option.target.id
+        })
+    },
+    // 客服消息
+    handleContact(e) {
+        console.log(e.path)
+        console.log(e.query)
+    },
+    // 导航返回
+    navigateBack () {
+        wx.navigateBack()
+    },
+}
+</script>
+
+<style lang="less">
+@import '../../static/styles/weui.wxss';
+// 自定义导航栏
+.nav_bar {
+    .mix-flex-center();
+    .nav-bar-col {
+        text-align: center;
+        .containertitle {
+            padding: 6px 10px;
+            display: flex;
+            background-color: #FFFFFF;
+            .dingwei {
+                height: 25px;
+                display: flex;
+                .mix-flex-y-center();
+            }
+            .dingwei text {
+                size: 16px;
+                color: #FFFFFF;
+                margin: 0px 3px;
+            }
+        }
+        .nav-bar-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+    }
+}
+// 测试详情
+.tab-panel-item {
+    background: #FFFFFF;
+    border-radius: 2px;
+    padding: 5px 10px;
+    margin: 8px;
+    box-shadow: 0 2px 4px 0 rgb(213, 242, 255);
+    .content-title {
+        font-weight: bold;
+        font-size: 16px;
+        padding: 5px 30px;
+        text-align: center;
+    }
+    .love {
+        text-align: center;
+        margin: 5px;
+    }
+    .content {
+        .mix-1px(1, 0, 0, 0, #ccc);
+        padding: 5px;
+        color: #848484;
+    }
+}
+// 富文本内容
+.rich-text-wrp {
+    padding: 5px;
+}
+/*隐藏滚动条*/
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  color: transparent;
+}
+// 底部导航
+.groupsources {
+    padding: 8px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    .mix-flex-y-center();
+    font-size: 12px;
+    background-color: #FFFFFF;
+    .mix-1px(1, 0, 0, 0, #ccc);
+}
+.groupsources view {
+    width: 40%;
+    .mix-flex-x-center();
+}
+.button-style-huodong {
+    background-color: #ffd100;
+    color: #FFFFFF;
+    width: 50%;
+    margin: 5px 5px;
+}
+.button-style-guanzhu {
+    background-color: #FFFFFF;
+    color: #ffd100;
+    width: 50%;
+    margin: 5px 5px;
+}
+.button-style-huodong::after{
+    border: none;
+}
+.navigator-hover {
+    color: #ffd100;
+}
+// 底部授权信息
+.footer {
+    margin: 25px 0px;
+    .weui-footer_link {
+        color: #ffd100;
+        border: none;
+        background-color: #F4F4F4;
+    }
+    .weui-footer_link::after {
+        border: none
+    }
+}
+</style>
