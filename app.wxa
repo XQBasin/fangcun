@@ -10,7 +10,7 @@
       usingComponents: {
       },
       pages: [
-        'pages/activity/create',
+        
         // 首页
         'pages/home/index',
         // 社交
