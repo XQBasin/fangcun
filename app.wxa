@@ -11,7 +11,6 @@
       },
       pages: [
         
-        
         // 首页
         'pages/home/index',
         // 社交
