@@ -11,22 +11,64 @@
                     </view>
                 </ui-col>
                 <ui-col vertical-align="middle" class="nav-bar-col">
-                    <view class="nav-bar-title">设置报名字段</view>
+                    <view class="nav-bar-title">报名设置</view>
                 </ui-col>
                 <ui-col vertical-align="middle" class="nav-bar-col" align="right"  width="100px">
                 </ui-col>
             </ui-row>
         </ui-nav-bar>
         <view style="height:{{NAV_HEIGHT}}"></view>
-        <!-- 发布活动内容 -->
-        <view class="content">
-            <view class="left">
-                
+        <form bindsubmit="formSubmit">
+            <view class="content">
+                <view class="label">报名列表显示</view>
+                <view class="switch-column">
+                    <view class="label">在活动报名页面显示已报名人员清单</view>
+                    <view class="des"><switch checked name="showlist"/></view>
+                </view>
+                <view class="label">设置用户报名时需填写信息</view>
+                <view class="row-column-group">
+                    <view class="row-column" wx:key="fieldkey" wx:for="{{fields}}" wx:for-item="field" wx:for-index="index">
+                        <view class="label">
+                            <ui-icon type="yichu" style="margin:0px 0px 0px 2px;" size="16px;" data-index="{{index}}" bindtap="yichuNode">
+                                <input name="{{field.field}}id" value="{{field.id}}" hidden/>
+                            </ui-icon>
+                        </view>
+                        <view class="content">{{field.name}}</view>
+                        <view class="des">
+                            <checkbox-group name="{{field.field}}notnull">
+                                <label class="checkbox" wx:key="checkkey" wx:for="{{items}}">
+                                    <checkbox value="{{item.value}}" checked="{{item.checked}}" /> {{item.name}}
+                                </label>
+                            </checkbox-group>
+                        </view>
+                    </view>
+                    <view class="row-column" style="height: 40px; color: #FFD100;" data-show="{{true}}" bindtap="openPopup">
+                        <ui-icon type="jiahao" style="margin:0px 0px 0px 2px;" size="14px;"> 添加自定义填写项</ui-icon>
+                    </view>
+                </view>
             </view>
-            <view class="right">
-                
-            </view>
-        </view>
+            <!-- 报名POP -->
+            <ui-popup show="{{show}}" position="bottom" height="300" mask-style="{{ maskStyle1}}"  hide-on-tap="{{false}}">
+                <view class="popup">
+                    <view class="tags-label">常用报名项</view>
+                    <ui-tags data="{{tags}}" fixed-width fixed-space="18" bindchange="multipleTap"></ui-tags>
+                    <view class="tags-label">自定义填写项</view>
+                    <ui-tags data="{{custags}}" fixed-width col-number="2" bindchange="customField"></ui-tags>
+                    <view class="guanbi-btn">
+                        <button bindtap="handleShow" plain type="primary">取消</button>
+                    </view>
+                </view>
+            </ui-popup>
+            <!-- 底部导航 -->
+            <ui-fixed-view bottom="0" left="0" right="0">
+                <view class='groupsources'>
+                    <view>取消</view>
+                    <button class="button-style-huodong" form-type="submit">保存设置</button>
+                </view>
+            </ui-fixed-view>
+            <!-- 导航占位 -->
+            <view style="height:52px;"></view>
+        </form>
         <!-- 公众号关注向导 -->
         <official-account></official-account>
         <!-- 底部授权信息 -->
@@ -40,24 +82,41 @@
                 </view>
             </view>
         </view>
-        <!-- 底部导航 -->
-        <ui-fixed-view bottom="0" left="0" right="0">
-            <view class='groupsources'>
-                <view>取消</view>
-                <button class="button-style-huodong" bindtap="submitForm">保存设置</button>
-            </view>
-        </ui-fixed-view>
-        <!-- 导航占位 -->
-        <view style="height:52px;"></view>
     </view>
 </template>
 
 <script>
 import { $init, $digest } from '../../static/utils/common.util'
 import WxValidate from '../../static/utils/WxValidate.js'
+const tagStyle = `
+    border:1px solid #ccc;
+    border-radius: 5px;
+    background: #fff;
+    color: #666;
+    padding: 0 5px;
+    text-align: center;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 18px;
+    `
+const cusTagStyle = `
+    border:1px solid #ccc;
+    border-radius: 5px;
+    background: #fff;
+    color: #666;
+    padding: 0 5px;
+    text-align: center;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 18px;
+    `
 export default {
     config: {
-        navigationBarTitleText: '设置报名字段',
+        navigationBarTitleText: '报名设置',
         navigationBarTextStyle: 'black',
         backgroundColor: "#888888",
         backgroundTextStyle: "light",
@@ -65,18 +124,129 @@ export default {
     data: {
         NAV_HEIGHT:wx.STATUS_BAR_HEIGHT+wx.DEFAULT_HEADER_HEIGHT+'px',
         DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
-        uid: '',                                                        // 用户标识
+        uid: '',                    // 用户标识
+        fields: [],                 // 设置字段
+        items: [
+            {name: '必填', value: '1', checked: 'true'},
+        ],
+        show: false,
+        maskStyle1: {
+            'background-color':'transparent'
+        },
+        tags: [],                   // 标签列表
+        custags: [{
+            text: '单行文本',
+            tagStyle: cusTagStyle,
+            type: 'text',
+        }, {
+            text: '附件（图片）',
+            tagStyle: cusTagStyle,
+            type: 'image',
+        }, 
+        // {
+        //     text: '多选问题',
+        //     tagStyle: cusTagStyle,
+        //     type: checkbox,
+        // }
+        ],
+        fullWidth: false,
     },
     onLoad(options) {
         this.data.uid = options.uid
         $init(this)
+        this.getFields(1)   // 业务类型，1默认字段，2为公共字段，3为自定义字段
+        this.setTags(2)     // 业务类型，1默认字段，2为公共字段，3为自定义字段
     },
-    // 获取路由页面
-    navigateToFieldSet: function (e) {
-        let route = e.currentTarget.dataset.route
-        wx.navigateTo({
-            url: './' + route
+    yichuNode (e) {
+        var fieldsArr = this.data.fields
+        fieldsArr.splice(e.currentTarget.dataset.index, 1)
+        this.setData({
+            fields: fieldsArr
         })
+    },
+    openPopup(e) {
+        let show = e.currentTarget.dataset.show
+        this.setData({
+            show: show
+        })
+    },
+    handleShow() {
+        this.setData({
+            show:false
+        })
+    },
+    multipleTap (e) {
+        let opt = e.detail.index
+        var field = {
+            id : this.data.tags[opt].id,
+            field : this.data.tags[opt].field,
+            name: this.data.tags[opt].text
+        }
+        this.setData({
+            fields : this.data.fields.concat(field),
+            show:false
+        })
+    },
+    // 打开自定义字段页
+    customField (e) {
+        let opt = e.detail.index
+        let type = this.data.custags[opt].type
+        wx.showToast({
+            title: type,
+            icon:'none'
+        })
+    },
+    // 获取活动列表
+    getFields: function (businesstype) {
+        var that = this
+        wx.request({
+            url: 'https://wx.taoyuantoday.com/mini.Weactivity/getFields.html',
+            data: {
+                businesstype: businesstype,    // 业务类型，1默认字段，2为公共字段，3为自定义字段
+            },
+            header: {
+                'content-type': 'application/json' // 默认值
+            },
+            success(res) {
+                if (res.data != "") {
+                    that.setData({
+                        fields: res.data
+                    })
+                }
+            }
+        })
+    },
+    // 获取标签列表
+    setTags: function (businesstype) {
+        var that = this
+        wx.request({
+            url: 'https://wx.taoyuantoday.com/mini.Weactivity/getFields.html',
+            data: {
+                businesstype: businesstype,    // 业务类型，1默认字段，2为公共字段，3为自定义字段
+            },
+            header: {
+                'content-type': 'application/json' // 默认值
+            },
+            success(res) {
+                if (res.data != "") {
+                    var tags = []
+                    res.data.forEach((item, index) => {
+                        tags[index] = {
+                            text : item.name,
+                            tagStyle : tagStyle,
+                            id : item.id,
+                            field: item.field
+                        }
+                    });
+                    that.setData({
+                        tags: tags
+                    })
+                }
+            }
+        })
+    },
+    formSubmit(e) {
+        console.log('form发生了submit事件，携带数据为：', e.detail.value)
     },
     // 客服消息
     handleContact(e) {
@@ -121,26 +291,95 @@ export default {
 // 内容样式设置
 .content {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    height: 40px;
-    background-color: #ffffff;
-    .left {
-        width: 50%;
-        border: 1px solid red;
-        
-
+    flex-direction: column;
+    .label {
+        margin: 5px;
     }
-    .right {
-        width: 50%;
-        border: 1px solid red;
-
+    .switch-column {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        height: 40px;
+        background-color: #FFFFFF;
+        .mix-flex-center();
+        .label {
+            width: 75%;
+            margin: 0px 15px;
+            .mix-flex-y-center();
+        }
+        .des {
+            width: 20%;
+            color: #ffd100;
+            .mix-flex-x-center();
+        }
+    }
+    .row-column-group {
+        background-color: #FFFFFF;
+        .row-column {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            .mix-flex-center();
+            .mix-1px(0, 0, 1, 0, #ccc);
+            .label {
+                color:red;
+                width: 10%;
+                .mix-flex-center();
+            }
+            .content {
+                width: 70%;
+                .mix-flex-x-center();
+                height: 40px;
+            }
+            .des {
+                width: 20%;
+                .mix-flex-center();
+            }
+        }
     }
 }
 // 重写小程序开关组件样式
-.wx-switch-input{width:42px !important;height:20px !important;}
-.wx-switch-input::before{width:41px !important;height: 20px !important;}
+.wx-switch-input{width:40px !important;height:20px !important;}
+.wx-switch-input::before{width:40px !important;height: 20px !important;}
 .wx-switch-input::after{width: 18px !important;height: 18px !important;}    // 中间小圆球
+
+/*  重写 checkbox 样式  */
+/* 未选中的 背景样式 */
+checkbox .wx-checkbox-input{
+    width: 30rpx; /* 背景的宽 */
+    height: 30rpx; /* 背景的高 */
+}
+/* 选中后的 背景样式 （红色背景 无边框 可根据UI需求自己修改） */
+checkbox .wx-checkbox-input.wx-checkbox-input-checked{
+    background: #fff;
+}
+/* 选中后的 对勾样式 （白色对勾 可根据UI需求自己修改） */
+checkbox .wx-checkbox-input.wx-checkbox-input-checked::before{
+    /* border-radius: 50%;圆角 */
+    width: 30rpx;    /* 选中后对勾大小，不要超过背景的尺寸 */
+    height: 30rpx;   /* 选中后对勾大小，不要超过背景的尺寸 */
+    line-height: 30rpx;
+    text-align: center;
+    font-size:30rpx;     /* 对勾大小 30rpx */
+    color:#ffd100;      /* 对勾颜色 白色 */
+    background: transparent;
+    transform:translate(-50%, -50%) scale(1);
+    -webkit-transform:translate(-50%, -50%) scale(1);
+}
+// 弹窗样式
+.popup {
+    background-color:#fff;
+    height:200px;
+    box-shadow: 0 -12px 28px -12px #e8e8e8;
+    padding: 10px;
+    .tags-label {
+        margin: 5px 0px 10px 0px;
+    }
+    .guanbi-btn {
+        margin-top: 50px;
+    }
+}
+
 // 底部授权信息
 .footer {
     margin: 25px 0px;
@@ -163,13 +402,13 @@ export default {
     font-size: 12px;
     background-color: #FFFFFF;
     .mix-1px(1, 0, 0, 0, #ccc);
-}
-.button-style-huodong {
-    background-color: #ffd100;
-    color: #FFFFFF;
-    width: 60%;
-}
-.button-style-huodong::after{
-    border: none;
+    .button-style-huodong {
+        background-color: #ffd100;
+        color: #FFFFFF;
+        width: 60%;
+    }
+    .button-style-huodong::after{
+        border: none;
+    }
 }
 </style>

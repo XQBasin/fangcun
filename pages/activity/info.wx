@@ -247,7 +247,7 @@
                         <input class="content" type="text" name="massdes" value="{{massdes}}" placeholder="如：学生会" maxlength="100"/>
                     </view>
                     <view class="yewu-column">
-                        <view class="label">是否公开真实姓名</view>
+                        <view class="label">公开真实姓名</view>
                         <view class="des"><switch bindchange="openChange" name="open" value="{{open}}"/></view>
                     </view>
                     <view class='groupsources'>
@@ -479,7 +479,7 @@ export default {
             mass:value
         })
     },
-    // 活动列表
+    // 获取活动列表
     getActivity: function (activityid) {
         var that = this;
         wx.request({
