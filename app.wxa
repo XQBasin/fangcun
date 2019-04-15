@@ -10,7 +10,7 @@
       usingComponents: {
       },
       pages: [
-        'pages/activity/create',
+        
         // 首页
         'pages/home/index',
         // 社交
@@ -27,6 +27,7 @@
         'pages/activity/share',
         'pages/activity/show',
         'pages/activity/fieldset',
+        'pages/activity/fieldadd',
         // 性格测试
         'pages/character/index',
         'pages/character/questions',
