@@ -10,7 +10,11 @@
       usingComponents: {
       },
       pages: [
+<<<<<<< HEAD
         'pages/parttime/index',
+=======
+        
+>>>>>>> 08226ba3e1e9da2ac44709e7fa9c2803e4530440
         // 首页
         'pages/home/index',
         // 社交
