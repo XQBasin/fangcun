@@ -132,7 +132,7 @@ export default {
         maskStyle1: {
             'background-color':'transparent'
         },
-        tags: [],                   // 标签列表
+        tags: [],           // 标签列表
         custags: [{
             text: '单行文本',
             tagStyle: cusTagStyle,
@@ -145,11 +145,6 @@ export default {
         fullWidth: false,
     },
     onLoad(options) {
-        if (options.uid) {
-            this.setData({
-                uid : options.uid,
-            })
-        }
         this.setTags(2)     // 业务类型，1默认字段，2为公共字段，3为自定义字段
         if (options.fields) {
             this.setData({
@@ -250,7 +245,8 @@ export default {
         })
     },
     formSubmit(e) {
-        var formdata = e.detail.value
+        var that = this
+        var formparam = e.detail.value
         wx.showLoading({
             title: '请稍后...',
             mask: true
@@ -258,7 +254,7 @@ export default {
         wx.request({
             url: 'https://wx.taoyuantoday.com/mini.Weactivity/saveCusField.html',
             data: {
-                configs: JSON.stringify(formdata),
+                configs: JSON.stringify(formparam),
             },
             header: {
                 'Content-Type': 'application/x-www-form-urlencoded'     // 默认值
@@ -272,8 +268,10 @@ export default {
                         icon: 'success',
                         duration: 2000
                     })
+                    var formdata = JSON.parse(that.options.formdata)
+                    formdata.configsid = res.data
                     wx.navigateTo({
-                        url: './create?configsid=' + res.data
+                        url: './create?formdata=' + JSON.stringify(formdata)
                     })
                 } else {
                     wx.showToast({

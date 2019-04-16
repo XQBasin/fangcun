@@ -29,6 +29,7 @@
                         <image style="width:100%; height:100%" src="{{localSrc}}" mode="aspectFill"/>
                     </view>
                     <input name="image" value="{{serverSrc}}" hidden/>
+                    <input name="uid" value="{{uid}}" hidden/>
                 </view>
                 <view class="row-column">
                     <view class="label">主题：</view>
@@ -97,8 +98,8 @@
                         <view class="placep">
                             <radio-group class="radio-group" bindchange="typeChange" name="type" value="{{type}}">
                                 <label class="radio" wx:key="type" wx:for="{{typeitems}}">
-                                    <radio value="{{item.name}}" checked="{{item.checked}}" style="margin:0px 10px;"/>
-                                    {{item.value}}
+                                    <radio value="{{item.value}}" checked="{{item.checked}}" style="margin:0px 10px;"/>
+                                    {{item.name}}
                                 </label>
                             </radio-group>
                         </view>
@@ -124,9 +125,7 @@
                         <view class="label"></view>
                         <view class="content">
                             <view class="placep">
-                                <picker mode="region" value="{{addressdes}}">
-                                    <input name="addressdes" value="{{addressdes}}" placeholder="地址详情"/>
-                                </picker>
+                                <input name="addressdes" value="{{addressdes}}" bindchange="bindAddressDesChange" placeholder="地址详情"/>
                             </view>
                         </view>
                     </view>
@@ -136,7 +135,7 @@
                     <view class="content">
                         <view class="placep">
                             <view class="place">
-                                <input type="digit" name="cunjin" value="0" placeholder="报名费用"/>
+                                <input type="digit" name="cunjin" value="{{cunjin}}" bindchange="bindCunjinChange" placeholder="报名费用"/>
                             </view>
                             <view class="desp">
                                 寸金 <ui-icon type="wenhao" color="#FFD100" style="margin:0px 0px 0px 2px;" size="16px;"></ui-icon>
@@ -160,8 +159,11 @@
                         <view class="label">设置：</view>
                         <view class="content">
                             <view class="placep" data-route='fieldset' bindtap='navigateToFieldSet'>
-                                <view class="place">
-                                    <input type="digit" name="configsid" value="{{configsid}}" placeholder="报名设置，如姓名、联系电话等"/>
+                                <view class="place" style="color: #ffd100;" wx:if="{{configsid}}" data-route='fieldset' bindtap='navigateToFieldSet'>
+                                    点击重新设置<input type="number" name="configsid" value="{{configsid}}" hidden/>
+                                </view>
+                                <view class="place" wx:else>
+                                    <input placeholder="报名设置，如姓名、联系电话等" disabled/>
                                 </view>
                                 <view class="desp">
                                     <ui-icon type="gengduo" style="margin:0px 0px 0px 2px;" size="14px;"></ui-icon>
@@ -173,7 +175,7 @@
                         <view class="label">电话：</view>
                         <view class="content">
                             <view class="placep">
-                                <input name="phone" value="{{phone}}" placeholder="联系电话"/>
+                                <input name="phone" value="{{phone}}" bindchange="bindPhoneChange" placeholder="联系电话"/>
                             </view>
                         </view>
                     </view>
@@ -188,7 +190,7 @@
                 </view>
                 <view class="yewu-column" style="margin-top: 5px;">
                     <view class="label">加入方寸奶爸流量增长计划 <ui-icon type="wenhao" color="#FFD100" style="margin:0px 0px 0px 2px;" size="16px;"></ui-icon></view>
-                    <view class="des"><switch checked name="checked" bindchange="switchChange"/></view>
+                    <view class="des"><switch checked name="switch" bindchange="switchChange"/></view>
                 </view>
                 <checkbox-group name="agree" bindchange="checkboxChange" style="margin:8px; color:#576b95;">
                     <label class="checkbox" wx:key="agree" wx:for="{{items}}">
@@ -213,7 +215,6 @@
             <ui-fixed-view bottom="0" left="0" right="0">
                 <view class='groupsources'>
                     <view style="margin-left: 20px;">存为草稿</view>
-                    <view style="margin-left: 20px;">预览</view>
                     <button class="button-style-huodong" form-type="submit">发布活动</button>
                 </view>
             </ui-fixed-view>
@@ -238,11 +239,10 @@ export default {
         DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
         titleCount: 0,      // 标题字数
         contentCount: 0,    // 正文字数
-        localSrc: '',       // 本地路径
-        serverSrc: '',      // 服务器路径
+        localSrc: '',       // 活动图本地路径
+        serverSrc: '',      // 活动图服务器路径
         onFocus: false,     // textarea焦点是否选中
         isShowText: false,  // 控制显示 textarea 还是 text
-        switch: true,       // 默认同意加入流量增长计划
         items: [{
             name: '1',
             value: '我同意《方寸奶爸服务协议》',
@@ -251,24 +251,60 @@ export default {
         showtype: true,     // 默认为线上活动
         showmore: false,    // 显示更多状态关闭
         typeitems: [{
-            name: '1',
-            value: '线下',
+            name: '线下',
+            value: 1,
             checked: true
         },{
-            name: '0',
-            value: '线上'
+            name: '线上',
+            value: 0,
+            checked: false
         }],
-        uid: '',            // 用户标识
-        configsid: '',      // 报名字段自定义配置标识
-        phone: '',          // 举办方联系方式
+        uid: '',        // 用户标识
+        configsid: '',  // 报名字段自定义配置标识
+        phone: '',      // 举办方联系方式
+        title: '',      // 活动主题
+        startdate: '',  // 开始日期
+        starttime: '',  // 开始时间
+        enddate: '',    // 结束日期
+        endtime: '',    // 结束时间
+        type: 1,        // 活动属性，1线下活动，0线上活动
+        address: '',    // 活动区域
+        addressdes: '', // 活动地址
+        content: '',    // 活动详情
+        cunjin: 0,      // 报名费用
+        switch: true,   // 默认同意加入流量增长计划
     },
     onLoad(options) {
         this.initValidate()
-        this.data.uid = options.uid
         $init(this)
-        if (options.configsid) {
+        if (options.uid) {
             this.setData({
-                configsid: options.configsid
+                uid: options.uid
+            })
+        }
+        // 表单数据回填
+        if (options.formdata) {
+            let formdata = JSON.parse(options.formdata)
+            this.setData({
+                uid: formdata.uid,
+                title: formdata.title,
+                serverSrc: formdata.image,
+                localSrc: formdata.localSrc,
+                startdate: formdata.startdate,
+                starttime: formdata.starttime,
+                enddate: formdata.enddate,
+                endtime: formdata.endtime,
+                type: formdata.type,
+                address: formdata.address,
+                addressdes: formdata.addressdes,
+                content: formdata.content,
+                cunjin: formdata.cunjin,
+                switch: formdata.switch,
+                configsid: formdata.configsid,
+                phone: formdata.phone,
+                showmore: true,
+                titleCount: formdata.titleCount,        // 标题字数
+                contentCount: formdata.contentCount,    // 正文字数
             })
         }
     },
@@ -358,32 +394,47 @@ export default {
             }
         })
     },
-    bindStartDateChange: function(e) {
+    bindStartDateChange (e) {
         const value = e.detail.value
         this.data.startdate = value
         $digest(this)
     },
-    bindStartTimeChange: function(e) {
+    bindStartTimeChange (e) {
         const value = e.detail.value
         this.data.starttime = value
         $digest(this)
     },
-    bindEndDateChange: function(e) {
+    bindEndDateChange (e) {
         const value = e.detail.value
         this.data.enddate = value
         $digest(this)
     },
-    bindEndTimeChange: function(e) {
+    bindEndTimeChange (e) {
         const value = e.detail.value
         this.data.endtime = value
         $digest(this)
     },
-    bindAddressChange: function(e) {
+    bindAddressChange (e) {
         const value = e.detail.value
         this.data.address = value
         $digest(this)
     },
-    onShowTextare() {                   //显示textare
+    bindAddressDesChange (e) {
+        const value = e.detail.value
+        this.data.addressdes = value
+        $digest(this)
+    },
+    bindCunjinChange (e) {
+        const value = e.detail.value
+        this.data.cunjin = value
+        $digest(this)
+    },
+    bindPhoneChange (e) {
+        const value = e.detail.value
+        this.data.phone = value
+        $digest(this)
+    },
+    onShowTextare () {                  //显示textare
         this.data.isShowText = false
         this.data.onFacus = true
         $digest(this)
@@ -400,12 +451,12 @@ export default {
         this.data.onFacus = false
         $digest(this)
     },
-    switchChange: function (e) {
+    switchChange  (e) {
         var value = e.detail.value
         this.data.switch = value
         $digest(this)
     },
-    checkboxChange: function(e) {
+    checkboxChange (e) {
         var value = e.detail.value
         this.data.agree = value.length
         $digest(this)
@@ -436,19 +487,21 @@ export default {
         wx.request({
             url: 'https://wx.taoyuantoday.com/mini.Weactivity/create.html',
             data: {
+                uid: data.uid,
                 title: data.title,
-                image: data.serverSrc,
+                image: data.image,
                 startdate: data.startdate,
                 starttime: data.starttime,
                 enddate: data.enddate,
                 endtime: data.endtime,
+                type: data.type,
                 address: data.address,
                 addressdes: data.addressdes,
                 content: data.content,
+                cunjin: data.cunjin,
                 switch: data.switch,
-                configsid: that.data.configsid,
-                phone: that.data.phone,
-                uid: that.data.uid
+                configsid: data.configsid,
+                phone: data.phone,
             },
             header: {
                 'Content-Type': 'application/x-www-form-urlencoded'     // 默认值
@@ -462,7 +515,9 @@ export default {
                         icon: 'success',
                         duration: 2000
                     })
-                    wx.navigateBack()
+                    wx.navigateTo({
+                        url: './index'
+                    })
                 } else {
                     wx.showToast({
                         title: '发布失败',
@@ -474,21 +529,41 @@ export default {
         })
     },
     // 活动属性切换
-    typeChange: function (e) {
+    typeChange  (e) {
         var value = e.detail.value
-        this.setData({
-            showtype:value
-        })
+        this.data.showtype = value
+        this.data.type = value
+        $digest(this)
     },
     // 获取路由页面
-    navigateToFieldSet: function (e) {
+    navigateToFieldSet  (e) {
         let route = e.currentTarget.dataset.route
+        let formdata = {
+            uid: this.data.uid,
+            title: this.data.title,
+            image: this.data.serverSrc,
+            localSrc: this.data.localSrc,
+            startdate: this.data.startdate,
+            starttime: this.data.starttime,
+            enddate: this.data.enddate,
+            endtime: this.data.endtime,
+            type: this.data.type,
+            address: this.data.address,
+            addressdes: this.data.addressdes,
+            content: this.data.content,
+            cunjin: this.data.cunjin,
+            switch: this.data.switch,
+            configsid: this.data.configsid,
+            phone: this.data.phone,
+            titleCount: this.data.titleCount,
+            contentCount: this.data.contentCount
+        }
         wx.navigateTo({
-            url: './' + route + '?uid=' + this.data.uid
+            url: './' + route + '?formdata=' + JSON.stringify(formdata)
         })
     },
     // 更多显示属性切换
-    showTypeChange: function (e) {
+    showTypeChange  (e) {
         var value = e.target.dataset.value
         this.setData({
             showmore:value
