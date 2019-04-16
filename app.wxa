@@ -10,7 +10,7 @@
       usingComponents: {
       },
       pages: [
-        
+        'pages/parttime/index',
         // 首页
         'pages/home/index',
         // 社交
