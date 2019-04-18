@@ -1,90 +1,91 @@
 <template>
-  <view>
-    <page></page>
-  </view>
+  <page></page>
 </template>
+
 <script>
-  import system from './static/utils/system'
-  export default {
-    config: {
-      usingComponents: {
-      },
-      pages: [
-        'pages/parttime/index',
-        // 首页
-        'pages/home/index',
-        // 社交
-        'pages/social/index',
-        'pages/social/create',
-        'pages/social/comments',
-        // 兼职
-        'pages/parttime/index',
-        // 活动
-        'pages/activity/index',
-        'pages/activity/info',
-        'pages/activity/upload',
-        'pages/activity/create',
-        'pages/activity/share',
-        'pages/activity/show',
-        'pages/activity/fieldset',
-        'pages/activity/fieldadd',
-        // 性格测试
-        'pages/character/index',
-        'pages/character/questions',
-        'pages/character/result',
-        // 我的
-        'pages/main/index',
+import system from './static/utils/system'
+export default {
+  config: {
+    usingComponents: {},
+    pages: [
+      'pages/parttime/sendJob',
+      // 'pages/parttime/index',
+      // 首页
+      'pages/home/index',
+      // 社交
+      'pages/social/index',
+      'pages/social/create',
+      'pages/social/comments',
+      // 兼职
+      'pages/parttime/index',
+      'pages/parttime/sendJob',
+      // 活动
+      'pages/activity/index',
+      'pages/activity/info',
+      'pages/activity/upload',
+      'pages/activity/create',
+      'pages/activity/share',
+      'pages/activity/show',
+      'pages/activity/fieldset',
+      'pages/activity/fieldadd',
+      // 性格测试
+      'pages/character/index',
+      'pages/character/questions',
+      'pages/character/result',
+      // 我的
+      'pages/main/index',
+      
+    ],
+    window: {
+      backgroundTextStyle: 'dark',
+      backgroundColor: '#F4F4F4',
+      navigationBarBackgroundColor: '#FFD100',
+      navigationBarTitleText: '方寸驿站',
+      navigationStyle: 'custom'
+    },
+    tabBar: {
+      list: [{
+          pagePath: 'pages/home/index',
+          text: '首页',
+          iconPath: './static/image/home2.png',
+          selectedIconPath: './static/image/home1.png'
+        },
+        {
+          pagePath: 'pages/main/index',
+          text: '我的',
+          iconPath: './static/image/main2.png',
+          selectedIconPath: './static/image/main1.png'
+        }
       ],
-      window: {
-        backgroundTextStyle: 'dark',
-        backgroundColor: '#F4F4F4',
-        navigationBarBackgroundColor: '#FFD100',
-        navigationBarTitleText: '方寸驿站',
-        navigationStyle: "custom"
-      },
-      tabBar: {
-        list: [
-          {
-            pagePath: "pages/home/index",
-            text: "首页",
-            iconPath: "./static/image/home2.png",
-            selectedIconPath: "./static/image/home1.png"
-          },
-          {
-            pagePath: "pages/main/index",
-            text: "我的",
-            iconPath: "./static/image/main2.png",
-            selectedIconPath: "./static/image/main1.png"
-          }
-        ],
-        color: "#848484",
-        selectedColor: "#FFD100",
-        backgroundColor: "#FFFFFF",
-        borderStyle: "black",
-      },
-      networkTimeout: {
-        request: 60000,
-        downloadFile: 60000
-      },
-      "theme": {
-        "theme-color": "#FFD100"
-      }
+      color: '#848484',
+      selectedColor: '#FFD100',
+      backgroundColor: '#FFFFFF',
+      borderStyle: 'black'
     },
-    globalData: { },
-    onLaunch () { 
-      system.attachInfo()
+    networkTimeout: {
+      request: 60000,
+      downloadFile: 60000
     },
-    onShow () { },
-    onHide () { }
-  }
+    theme: {
+      'theme-color': '#FFD100'
+    }
+  },
+  globalData: {},
+  onLaunch() {
+    system.attachInfo()
+  },
+  onShow() {},
+  onHide() {}
+}
 </script>
 
 <style lang="less">
 @import './static/styles/index.less';
+
 page {
   font-size: 28rpx;
   line-height: 1.6;
-  color:#333333;
+  color: #333333;
   background-color: #F4F4F4;
 }
 </style>
