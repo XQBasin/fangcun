@@ -64,9 +64,14 @@ export default {
       request: 60000,
       downloadFile: 60000
     },
-    theme: {
-      'theme-color': '#FFD100'
-    }
+    "theme": {
+      "theme-color": "#FFD100"
+    },
+    "permission": {
+      "scope.userLocation": {
+        "desc": "你的位置信息将用于小程序位置相关功能的正常使用"
+      }
+    },
   },
   globalData: {},
   onLaunch() {

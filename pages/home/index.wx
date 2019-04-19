@@ -7,8 +7,8 @@
                     <view class="containertitle">
                         <view class='dingwei'>
                             <ui-icon type="dingwei" size="14px;" color="#333333"></ui-icon>
-                            <text> 广州 番禺 </text>
-                            <ui-icon type="xiangxiajiantou" size="14px;" color="#333333"></ui-icon>
+                            <text>{{city}}{{district}}</text>
+                            <!-- <ui-icon type="xiangxiajiantou" size="14px;" color="#333333"></ui-icon> -->
                         </view>
                     </view>
                 </ui-col>
@@ -258,6 +258,9 @@
 </template>
 
 <script>
+// 引入SDK核心类
+var QQMapWX = require('../../static/utils/qqmap-wx-jssdk.min.js');
+var qqmapsdk;
 export default {
     config: {
         navigationBarTitleText: '方寸驿站',
@@ -281,6 +284,8 @@ export default {
         socials:[],             // 社交消息列表
         activities: [],         // 最新活动列表
         uid: '',                // 桃园用户标识
+        city: '广州',           // 市级定位
+        district: '番禺',       // 区县定位
     },
     onLoad(options) {
         var that = this
@@ -312,6 +317,35 @@ export default {
                     console.log('登录失败，请检查网络设置！' + res.errMsg)
                 }
             }
+        })
+        // 实例化API核心类
+        qqmapsdk = new QQMapWX({
+            key: '645BZ-HZBCU-G4OVM-4VJWZ-OTWTQ-66F3T'
+        });
+        wx.getLocation({
+            type: 'gcj02',          // 返回可以用于wx.openLocation的经纬度
+            success(res) {
+                const latitude = res.latitude
+                const longitude = res.longitude
+                qqmapsdk.reverseGeocoder({
+                    location: {
+                        latitude: latitude,
+                        longitude: longitude
+                    },
+                    success: function(res) {//成功后的回调
+                        that.setData({
+                            city: res.result.address_component.city,
+                            district: res.result.address_component.district
+                        })
+                    },
+                    fail: function(error) {
+                        console.error(error);
+                    },
+                    complete: function(res) {
+                        console.log(res);
+                    }
+                });
+            },
         })
         wx.showShareMenu({
             withShareTicket: true

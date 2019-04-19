@@ -220,7 +220,7 @@
         <!-- 报名POP -->
         <ui-popup show="{{show}}" position="bottom">
             <view class="poput-form">
-                <form bindsubmit="formSubmit">
+                <form report-submit="true" bindsubmit="formSubmit">
                     <view class="row-column">
                         <view class="label">姓名：</view>
                         <input class="content" type="text" name="name" value="{{name}}" placeholder="请填写姓名" maxlength="20"/>
@@ -308,6 +308,7 @@ export default {
         plshow: false,              // 是否显示评论组件
         plfocus: false,             // 评论框是否自动获得焦点
         cpid: 0,                    // 评论消息标识
+        formId: '',                 // 用于发送模板消息
     },
     onLoad(options) {
         var that = this
@@ -342,7 +343,6 @@ export default {
                 isshare: options.isshare
             })
         }
-        that.initAddValidate()
         that.initPlValidate()
         that.getActivity(options.activityid)
         that.setData({
@@ -353,36 +353,6 @@ export default {
         wx.showShareMenu({
             withShareTicket: true
         })
-    },
-    // 初始化报名表单校验
-    initAddValidate(){
-        // 验证字段的规则
-        const rules = {
-            name: {
-                required: true,
-            },
-            phone: {
-                required: true,
-                tel: true
-            },
-            class: {
-                required: true,
-            },
-        }
-        // 验证字段的提示信息，若不传则调用默认的信息
-        const messages = {
-            name: {
-                required: '姓名为必填字段！',
-            },
-            phone: {
-                required: '手机号为必填字段！',
-            },
-            class: {
-                required: '班级为必填字段！',
-            },
-        }
-        // 创建实例对象
-        this.advalidate = new WxValidate(rules, messages)
     },
     // 初始化评论表单校验
     initPlValidate() {
@@ -405,14 +375,10 @@ export default {
     formSubmit: function(e) {
         var that = this
         var data = e.detail.value
-        // 校验表单
-        if (!that.advalidate.checkForm(data)) {
-            const error = that.advalidate.errorList[0];
-            wx.showToast({
-                title: error.msg,
-                icon: 'none'
+        if (e.detail.formId) {
+            that.setData({
+                formId: e.detail.formId
             })
-            return false
         }
         wx.showLoading({
             title: '请稍后...',
@@ -422,14 +388,8 @@ export default {
             wx.request({
                 url: 'https://wx.taoyuantoday.com/mini.Weactivity/user.html',
                 data: {
-                    uid: that.data.uid,
-                    activityid: that.data.activity.id,
-                    name: data.name,
-                    phone: data.phone,
-                    class: data.class,
-                    mass: data.mass,
-                    massdes: data.massdes,
-                    open: data.open
+                    formdata: JSON.stringify(data),
+                    formId: that.data.formId
                 },
                 header: {
                     'Content-Type': 'application/x-www-form-urlencoded'     // 默认值
@@ -445,7 +405,7 @@ export default {
                         })
                         that.getActivity(that.data.activity.id)
                         that.setData({
-                            show:false
+                            show: false
                         })
                     } else {
                         wx.showToast({
@@ -454,7 +414,7 @@ export default {
                             duration: 2000
                         })
                         that.setData({
-                            show:false
+                            show: true
                         })
                     }
                 }
