@@ -245,7 +245,7 @@ export default {
         isShowText: false,  // 控制显示 textarea 还是 text
         items: [{
             name: '1',
-            value: '我同意《方寸奶爸服务协议》',
+            value: '我已阅读并同意《方寸奶爸用户服务协议》',
             checked: false
         }],
         showtype: true,     // 默认为线上活动
@@ -697,8 +697,8 @@ export default {
 /* 未选中的 背景样式 */
 radio .wx-radio-input{
     border-radius: 50%; /* 圆角 */
-    width: 40rpx;
-    height: 40rpx;
+    width: 36rpx;
+    height: 36rpx;
 }
 /* 选中后的 背景样式 （红色背景 无边框 可根据UI需求自己修改） */
 radio .wx-radio-input.wx-radio-input-checked{
@@ -707,18 +707,18 @@ radio .wx-radio-input.wx-radio-input-checked{
 /* 选中后的 对勾样式 （白色对勾 可根据UI需求自己修改） */
 radio .wx-radio-input.wx-radio-input-checked::before{
     border-radius: 50%;/* 圆角 */
-    width: 40rpx; /* 选中后对勾大小，不要超过背景的尺寸 */
-    height: 40rpx; /* 选中后对勾大小，不要超过背景的尺寸 */
-    line-height: 40rpx;
+    width: 36rpx; /* 选中后对勾大小，不要超过背景的尺寸 */
+    height: 36rpx; /* 选中后对勾大小，不要超过背景的尺寸 */
+    line-height: 36rpx;
     text-align: center;
-    font-size:30rpx; /* 对勾大小 30rpx */
+    font-size:28rpx; /* 对勾大小 30rpx */
     color:#fff; /* 对勾颜色 白色 */
     background: transparent;
     transform:translate(-50%, -50%) scale(1);
     -webkit-transform:translate(-50%, -50%) scale(1);
 }
 // 重写小程序开关组件样式
-.wx-switch-input{width:40px !important;height:20px !important;}
+.wx-switch-input{width:36px !important;height:20px !important;}
 .wx-switch-input::before{width:40px !important;height: 20px !important;}
 .wx-switch-input::after{width: 18px !important;height: 18px !important;}    // 中间小圆球
 

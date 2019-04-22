@@ -130,7 +130,7 @@ export default {
         }],
         items: [{
             name: '1',
-            value: '我同意《方寸奶爸服务协议》',
+            value: '我已阅读并同意《方寸奶爸用户服务协议》',
             checked: false
         }],
     },
