@@ -508,10 +508,10 @@ export default {
             },
             method: "POST",
             success(res) {
-                if (res.data) {
+                if (res.data.state) {
                     wx.hideLoading()
                     wx.showToast({
-                        title: '发布成功',
+                        title: res.data.message,
                         icon: 'success',
                         duration: 2000
                     })
@@ -520,7 +520,7 @@ export default {
                     })
                 } else {
                     wx.showToast({
-                        title: '发布失败',
+                        title: res.data.message,
                         icon: 'none',
                         duration: 2000
                     })

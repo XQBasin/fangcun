@@ -199,7 +199,7 @@ export default {
                 if (res.code) {
                     //发起网络请求
                     wx.request({
-                        url: 'https://wx.taoyuantoday.com/mini.Weactivity/wxQuickLogin.html',
+                        url: 'https://wx.taoyuantoday.com/mini.Weparttime/wxQuickLogin.html',
                         data: {
                             code: res.code
                         },

@@ -8,7 +8,7 @@ export default {
   config: {
     usingComponents: {},
     pages: [
-      
+      'pages/parttime/apply',
       // 首页
       'pages/home/index',
       // 社交
@@ -18,6 +18,8 @@ export default {
       // 兼职
       'pages/parttime/index',
       'pages/parttime/lists',
+      'pages/parttime/authentic',
+      'pages/parttime/apply',
       // 活动
       'pages/activity/index',
       'pages/activity/info',

@@ -26,7 +26,7 @@
                     <image src="../../static/image/jianzhi/item1.png"/>
                 </view>
             </button>
-            <button class="image_btn" data-route="add" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
+            <button class="image_btn" data-route="add" data-authorise="1" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
                 <view class="image">
                     <image src="../../static/image/jianzhi/item2.png"/>
                 </view>
@@ -60,7 +60,8 @@ export default {
     data: {
         NAV_HEIGHT:wx.STATUS_BAR_HEIGHT+wx.DEFAULT_HEADER_HEIGHT+'px',
         DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
-        uid: ''                 // 桃园用户标识
+        uid: '',                // 用户标识
+        userInfo: {},           // 用户基本信息
     },
     onLoad(options) {
         var that = this
@@ -77,10 +78,12 @@ export default {
                             'content-type': 'application/json' // 默认值
                         },
                         success(res) {
-                            if (res.data != "") {
+                            if (res.data) {
                                 that.setData({
                                     uid: res.data
                                 })
+                                // 根据用户标识获取用户基本信息
+                                that.getUserInfoById(res.data)
                             }
                         }
                     })
@@ -97,6 +100,7 @@ export default {
     bindGetUserInfo(e) {
         var that = this;
         let route = e.currentTarget.dataset.route
+        let authorise = e.currentTarget.dataset.authorise
         // 判断是否同意授权
         if (e.detail.userInfo == undefined) {
             wx.showModal({
@@ -112,11 +116,38 @@ export default {
                 }
             })
         } else {
-            that.updateUser(e.detail.userInfo, that.data.uid, route)
+            var user = {
+                avatar: e.detail.userInfo.avatarUrl,
+                username: e.detail.userInfo.nickName,
+            }
+            that.setData({
+                userInfo: user
+            })
+            that.updateUser(e.detail.userInfo, that.data.uid, route, authorise)
         }
     },
+    // 获取用户基本信息
+    getUserInfoById: function (uid) {
+        var that = this
+        wx.request({
+            url: 'https://wx.taoyuantoday.com/mini.Weparttime/getUserInfoById.html',
+            data: {
+                uid: uid
+            },
+            header: {
+                'content-type': 'application/json' // 默认值
+            },
+            success(res) {
+                if (res.data) {
+                    that.setData({
+                        userInfo: res.data
+                    })
+                }
+            }
+        })
+    },
     // 更新用户信息
-    updateUser: function (userInfo, uid, route) {
+    updateUser: function (userInfo, uid, route, authorise) {
         var that = this;
         wx.request({
             url: 'https://wx.taoyuantoday.com/mini.Weparttime/updateUser.html',
@@ -128,15 +159,28 @@ export default {
                 'content-type': 'application/json' // 默认值
             },
             success(res) {
-                that.navigateTo(route)
+                that.navigateTo(route, authorise)
             }
         })
     },
     // 获取路由页面
-    navigateTo: function (route) {
-        wx.navigateTo({
-            url: './' + route
-        })
+    navigateTo: function (route, authorise) {
+        // 若实名认证则正常路由
+        if (authorise) {
+            if (this.data.userInfo.authorise) {
+                wx.navigateTo({
+                    url: './' + route
+                })
+            } else {
+                wx.navigateTo({
+                    url: './authorise?uid=' + this.data.uid
+                })
+            }
+        } else {
+            wx.navigateTo({
+                url: './' + route
+            })
+        }
     },
     // 客服消息
     handleContact(e) {

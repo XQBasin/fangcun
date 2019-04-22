@@ -105,8 +105,8 @@ export default {
         isHideLoadMore: false,
         socials:[],             // 社交消息列表
         activities: [],         // 最新活动列表
-        uid: '',                // 桃园用户标识
-        userInfo: {},
+        uid: '',                // 用户标识
+        userInfo: {},           // 用户基本信息
     },
     onLoad(options) {
         // 自动登录并返回登录信息
@@ -172,7 +172,6 @@ export default {
                 username: e.detail.userInfo.nickName,
             }
             that.setData({
-                hasUserInfo: true,
                 userInfo: user
             })
             that.updateUser(e.detail.userInfo, that.data.uid)
@@ -194,7 +193,7 @@ export default {
             }
         })
     },
-    // 用户开发信息记录
+    // 获取用户基本信息
     getUserInfoById: function (uid) {
         var that = this
         wx.request({

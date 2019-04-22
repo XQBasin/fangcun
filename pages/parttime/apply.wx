@@ -1,0 +1,398 @@
+<template>
+    <view>
+        <!-- 自定义导航栏 -->
+        <ui-nav-bar slot="nav-bar" custom-style="{{ {backgroundColor:'#FFFFFF'} }}">
+            <ui-row height="{{DEFAULT_HEADER_HEIGHT}}" class="nav_bar">
+                <ui-col vertical-align="middle" class="nav-bar-col" align="left" width="100px" bindtap="navigateBack">
+                    <view class="containertitle">
+                        <view class='dingwei'>
+                            <ui-icon type="zuojiantou" color="#333333" size="20px;"></ui-icon>
+                        </view>
+                    </view>
+                </ui-col>
+                <ui-col vertical-align="middle" class="nav-bar-col">
+                    <view class="nav-bar-title">兼职申请</view>
+                </ui-col>
+                <ui-col vertical-align="middle" class="nav-bar-col" align="right"  width="100px">
+                </ui-col>
+            </ui-row>
+        </ui-nav-bar>
+        <view style="height:{{NAV_HEIGHT}}"></view>
+        <view class='content'>
+            <form bindsubmit="formSubmit">
+                <view class="row-column-group">
+                    <view class="row-column">
+                        <view class="label">姓名：</view>
+                        <view class="content">
+                            <view class="placep">
+                                <input name="uid" value="{{uid}}" hidden/>
+                                <input name="name" value="{{name}}" placeholder="请输入真实姓名"/>
+                            </view>
+                        </view>
+                    </view>
+                    <view class="row-column">
+                        <view class="label">性别：</view>
+                        <view class="content">
+                            <view class="placep">
+                                <view class="placep">
+                                    <radio-group class="radio-group" bindchange="typeChange" name="sex" value="{{sex}}">
+                                        <label class="radio" wx:key="sex" wx:for="{{sexitems}}">
+                                            <radio value="{{item.value}}" checked="{{item.checked}}" style="margin:0px 10px;"/>
+                                            {{item.name}}
+                                        </label>
+                                    </radio-group>
+                                </view>
+                            </view>
+                        </view>
+                    </view>
+                    <view class="row-column">
+                        <view class="label">年龄：</view>
+                        <view class="content">
+                            <view class="placep">
+                                <input type="number" name="age" value="{{age}}" placeholder="填写你的真实年龄"/>
+                            </view>
+                        </view>
+                    </view>
+                    <view class="row-group">
+                        <view class="row-column">
+                            <view class="label">手机号：</view>
+                            <view class="content">
+                                <view class="placep">
+                                    <view class="placep-left">
+                                        <input type="number" name="phone" value="{{phone}}" placeholder="请输入你的手机号码"/>
+                                    </view>
+                                    <view class="placep-right">
+                                        <text wx:if="{{1}}">获取验证码</text>
+                                        <ui-count-down wx:else time="60" timetype="second" done-text="重新发送" format="剩余{%s}秒" bindtimeup="bindtimeup"></ui-count-down>
+                                    </view>
+                                </view>
+                            </view>
+                        </view>
+                        <view class="row-column">
+                            <view class="label">验证码：</view>
+                            <view class="content">
+                                <view class="placep">
+                                    <input style="width: 100%;" type="number" name="phone" value="{{phone}}" placeholder="请输入刚才收到的6位手机验证码"/>
+                                </view>
+                            </view>
+                        </view>
+                    </view>
+                    <view class="row-group">
+                        <checkbox-group name="agree" bindchange="checkboxChange" style="margin:8px; color:#576b95;">
+                            <label class="checkbox" wx:key="agree" wx:for="{{items}}">
+                                <checkbox value="{{item.name}}" checked="{{item.checked}}"/>{{item.value}}
+                            </label>
+                        </checkbox-group>
+                        <button form-type="submit" class="button-style-huodong"><text>立即提交</text></button>
+                    </view>
+                </view>
+            </form>
+        </view>
+        <!-- 公众号关注引导 -->
+        <official-account></official-account>
+        <!-- 底部授权信息 -->
+        <view class="footer">
+            <view class="page__bd page__bd_spacing">
+                <view class="weui-footer">
+                    <view class="weui-footer__links">
+                        <button open-type="contact" bindcontact="handleContact" class="weui-footer__link">方寸奶爸</button>
+                    </view>
+                    <view class="weui-footer__text">Copyright © 2008-2019 fcdaddy.com</view>
+                </view>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+import { $init, $digest } from '../../static/utils/common.util'
+import WxValidate from '../../static/utils/WxValidate.js'
+export default {
+    config: {
+        navigationBarTitleText: '兼职申请',
+        navigationBarTextStyle: 'black',
+        backgroundColor: "#F8F8F8",
+        backgroundTextStyle: "light",
+        enablePullDownRefresh: true
+    },
+    data: {
+        NAV_HEIGHT:wx.STATUS_BAR_HEIGHT+wx.DEFAULT_HEADER_HEIGHT+'px',
+        DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
+        uid: '',                // 用户标识
+        sexitems: [{
+            name: '男',
+            value: 1,
+            checked: true
+        },{
+            name: '女',
+            value: 2,
+            checked: false
+        }],
+        items: [{
+            name: '1',
+            value: '我同意《方寸奶爸服务协议》',
+            checked: false
+        }],
+    },
+    onLoad(options) {
+        $init(this)
+        if (options.uid) {
+            this.setData({
+                uid: options.uid
+            })
+        }
+        this.initValidate()
+        wx.showShareMenu({
+            withShareTicket: true
+        })
+    },
+    // 初始化表单校验
+    initValidate(){
+        // 验证字段的规则
+        const rules = {
+            name: {
+                required: true,
+            },
+            idcard: {
+                required: true,
+            },
+            positive: {
+                required: true,
+            },
+            reverse: {
+                required: true,
+            },
+        }
+        // 验证字段的提示信息，若不传则调用默认的信息
+        const messages = {
+            name: {
+                required: '真实姓名不予许为空！',
+            },
+            idcard: {
+                required: '身份证号不予许为空！',
+            },
+            positive: {
+                required: '正面证照不予许为空！',
+            },
+            reverse: {
+                required: '反面证照不允许为空！',
+            },
+        }
+        // 创建实例对象
+        this.validate = new WxValidate(rules, messages)
+    },
+    formSubmit(e) {
+        var that = this
+        var data = e.detail.value
+        // 校验表单
+        if (!this.validate.checkForm(data)) {
+            const error = this.validate.errorList[0];
+            wx.showToast({
+                title: error.msg,
+                icon: 'none'
+            })
+            return false
+        }
+        wx.showLoading({
+            title: '请稍后...',
+            mask: true
+        })
+        wx.request({
+            url: 'https://wx.taoyuantoday.com/mini.Weparttime/authenticApply.html',
+            data: {
+                uid: data.uid,
+                name: data.name,
+                idcard: data.idcard,
+                positive: data.positive,
+                reverse: data.reverse,
+            },
+            header: {
+                'Content-Type': 'application/x-www-form-urlencoded'     // 默认值
+            },
+            method: "POST",
+            success(res) {
+                if (res.data.state) {
+                    wx.hideLoading()
+                    wx.showToast({
+                        title: res.data.message,
+                        icon: 'success',
+                        duration: 2000
+                    })
+                    wx.navigateTo({
+                        url: './status'
+                    })
+                } else {
+                    wx.showToast({
+                        title: res.data.message,
+                        icon: 'none',
+                        duration: 2000
+                    })
+                }
+            }
+        })
+    },
+    // 客服消息
+    handleContact(e) {
+        console.log(e.path)
+        console.log(e.query)
+    },
+    // 导航返回
+    navigateBack () {
+        wx.navigateBack()
+    },
+}
+</script>
+
+<style lang="less">
+@import '../../static/styles/weui.wxss';
+// 自定义导航栏
+.nav_bar {
+    .mix-flex-center();
+    .nav-bar-col {
+        text-align: center;
+        .containertitle {
+            padding: 6px 10px;
+            display: flex;
+            .dingwei {
+                height: 25px;
+                display: flex;
+                .mix-flex-y-center();
+            }
+            .dingwei text {
+                size: 16px;
+                color: #848484;
+                margin: 0px 3px;
+            }
+        }
+        .nav-bar-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+    }
+}
+// 主题内容
+.row-column-group {
+    display: flex;
+    flex-direction: column;
+    .row-column {
+        padding: 3px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        background-color: #FFFFFF;
+        .mix-1px(1, 0, 0, 0, #ccc);
+        .mix-flex-center();
+        width: 100%;
+        .label {
+            width: 20%;
+            .mix-flex-center();
+        }
+        .content {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            flex-wrap: nowrap;
+            width: 80%;
+            height: 40px;
+            .mix-flex-center();
+            .placep {
+                padding: 3px;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                flex-wrap: nowrap;
+                width: 100%;
+                .placep-left {
+                    width: 70%;
+                }
+                .placep-right {
+                    .mix-flex-center();
+                    .mix-1px(0, 0, 0, 1, #ccc);
+                    width: 30%;
+                    color: #ffd100;
+                    font-weight: 550;
+                }
+            }
+        }
+    }
+    .row-group {
+        margin-top: 5px;
+        background-color: #FFFFFF;
+        display: flex;
+        flex-direction: column;
+        .button-style-huodong {
+            margin: 10px;
+            padding: 5px;
+            background-color: #ffd100;
+            color: #FFFFFF;
+        }
+        .button-style-huodong::after{
+            border: none;
+        }
+    }
+}
+/*  重写 radio 样式  */
+/* 未选中的 背景样式 */
+radio .wx-radio-input{
+    border-radius: 50%; /* 圆角 */
+    width: 36rpx;
+    height: 36rpx;
+}
+/* 选中后的 背景样式 （红色背景 无边框 可根据UI需求自己修改） */
+radio .wx-radio-input.wx-radio-input-checked{
+    background: #ffd100;
+}
+/* 选中后的 对勾样式 （白色对勾 可根据UI需求自己修改） */
+radio .wx-radio-input.wx-radio-input-checked::before{
+    border-radius: 50%;/* 圆角 */
+    width: 36rpx; /* 选中后对勾大小，不要超过背景的尺寸 */
+    height: 36rpx; /* 选中后对勾大小，不要超过背景的尺寸 */
+    line-height: 36rpx;
+    text-align: center;
+    font-size:28rpx; /* 对勾大小 30rpx */
+    color:#fff; /* 对勾颜色 白色 */
+    background: transparent;
+    transform:translate(-50%, -50%) scale(1);
+    -webkit-transform:translate(-50%, -50%) scale(1);
+}
+// 重写小程序开关组件样式
+.wx-switch-input{width:40px !important;height:20px !important;}
+.wx-switch-input::before{width:40px !important;height: 20px !important;}
+.wx-switch-input::after{width: 18px !important;height: 18px !important;}    // 中间小圆球
+
+/*  重写 checkbox 样式  */
+/* 未选中的 背景样式 */
+checkbox .wx-checkbox-input{
+    width: 30rpx; /* 背景的宽 */
+    height: 30rpx; /* 背景的高 */
+}
+/* 选中后的 背景样式 （红色背景 无边框 可根据UI需求自己修改） */
+checkbox .wx-checkbox-input.wx-checkbox-input-checked{
+    background: #fff;
+}
+/* 选中后的 对勾样式 （白色对勾 可根据UI需求自己修改） */
+checkbox .wx-checkbox-input.wx-checkbox-input-checked::before{
+    /* border-radius: 50%;圆角 */
+    width: 30rpx;    /* 选中后对勾大小，不要超过背景的尺寸 */
+    height: 30rpx;   /* 选中后对勾大小，不要超过背景的尺寸 */
+    line-height: 30rpx;
+    text-align: center;
+    font-size:30rpx;     /* 对勾大小 30rpx */
+    color:#ffd100;      /* 对勾颜色 白色 */
+    background: transparent;
+    transform:translate(-50%, -50%) scale(1);
+    -webkit-transform:translate(-50%, -50%) scale(1);
+}
+// 底部授权信息
+.footer {
+    margin: 25px 0px;
+    .weui-footer__link{
+        color: #FFD100;
+        border: none;
+        background-color: #F4F4F4;
+    }
+    .weui-footer__link::after{
+        border: none
+    }
+}
+</style>
