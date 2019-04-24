@@ -11,7 +11,7 @@
                     </view>
                 </ui-col>
                 <ui-col vertical-align="middle" class="nav-bar-col">
-                    <view class="nav-bar-title">兼职圈</view>
+                    <view class="nav-bar-title">兼职详情</view>
                 </ui-col>
                 <ui-col vertical-align="middle" class="nav-bar-col" align="right"  width="100px">
                 </ui-col>
@@ -19,18 +19,101 @@
         </ui-nav-bar>
         <view style="height:{{NAV_HEIGHT}}"></view>
         <view class='content'>
-            <view class="title">你好，亲爱的小主</view>
-            <view class="des">快乐每一天，请选择你感兴趣的角色</view>
-            <button class="image_btn" data-route="lists" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
-                <view class="image">
-                    <image src="../../static/image/jianzhi/item1.png"/>
+            <view class="header">
+                <view class="title1">
+                    <ui-row>
+                        <ui-col span="2" space-right="5">
+                            <ui-row>
+                                <view class="column-content"></view>
+                            </ui-row>
+                        </ui-col>
+                        <ui-col span="10">
+                            <ui-row>
+                                <ui-col>
+                                    <view class="column-content"></view>
+                                </ui-col>
+                            </ui-row>
+                            <ui-row space-top="5">
+                                <ui-col space-right="5">
+                                    <view class="column-content"></view>
+                                </ui-col>
+                                <ui-col space-right="5">
+                                    <view class="column-content"></view>
+                                </ui-col>
+                                <ui-col space-right="5">
+                                    <view class="column-content"></view>
+                                </ui-col>
+                                <ui-col>
+                                    <view class="column-content"></view>
+                                </ui-col>
+                            </ui-row>
+                            <ui-row space-top="5">
+                                <ui-col>
+                                    <view class="column-content"></view>
+                                </ui-col>
+                            </ui-row>
+                        </ui-col>
+                    </ui-row>
                 </view>
-            </button>
-            <button class="image_btn" style="margin-bottom: 50px;" data-route="add" data-authorise="1" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
-                <view class="image">
-                    <image src="../../static/image/jianzhi/item2.png"/>
+                <view class="title2">
+                    <map
+                    id="map"
+                    longitude="113.324520"
+                    latitude="23.099994"
+                    scale="14"
+                    controls="{{controls}}"
+                    bindcontroltap="controltap"
+                    markers="{{markers}}"
+                    bindmarkertap="markertap"
+                    polyline="{{polyline}}"
+                    bindregionchange="regionchange"
+                    show-location
+                    style="width: 100%; height: 120px;"
+                    ></map>
                 </view>
-            </button>
+                <view class="title3">
+                    <ui-row height="60">
+                        <ui-col span="2" space-right="5" vertical-align="middle" align="center">
+                            <view class="column-content"></view>
+                        </ui-col>
+                        <ui-col span="10">
+                            <ui-row>
+                                <ui-col>
+                                    <view class="column-content"></view>
+                                </ui-col>
+                            </ui-row>
+                            <ui-row space-top="5">
+                                <ui-col>
+                                    <view class="column-content"></view>
+                                </ui-col>
+                            </ui-row>
+                        </ui-col>
+                    </ui-row>
+                </view>
+                <view class="title4">
+                    <ui-row>
+                        <ui-col span="4" space-right="5">
+                            <view class="column-content"></view>
+                        </ui-col>
+                        <ui-col span="8">
+                            <ui-row>
+                                <ui-col space-right="5">
+                                    <view class="column-content"></view>
+                                </ui-col>
+                                <ui-col>
+                                    <view class="column-content"></view>
+                                </ui-col>
+                            </ui-row>
+                        </ui-col>
+                    </ui-row>
+                    <ui-row space-top="5">
+                        <view class="column-content"></view>
+                    </ui-row>
+                </view>
+            </view>
+            <view class="des">
+                
+            </view>
         </view>
         <!-- 公众号关注引导 -->
         <official-account></official-account>
@@ -51,16 +134,48 @@
 <script>
 export default {
     config: {
-        navigationBarTitleText: '兼职圈',
+        navigationBarTitleText: '兼职详情',
         navigationBarTextStyle: 'black',
         backgroundColor: "#F8F8F8",
         backgroundTextStyle: "light",
+        enablePullDownRefresh: true,
     },
     data: {
         NAV_HEIGHT:wx.STATUS_BAR_HEIGHT+wx.DEFAULT_HEADER_HEIGHT+'px',
         DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
         uid: '',                // 用户标识
         userInfo: {},           // 用户基本信息
+        markers: [{
+            iconPath: '../../static/image/home1.png',
+            id: 0,
+            latitude: 23.099994,
+            longitude: 113.324520,
+            width: 50,
+            height: 50
+        }],
+        polyline: [{
+            points: [{
+                longitude: 113.3245211,
+                latitude: 23.10229
+            }, {
+                longitude: 113.324520,
+                latitude: 23.21229
+            }],
+            color: '#FF0000DD',
+            width: 2,
+            dottedLine: true
+        }],
+        controls: [{
+            id: 1,
+            iconPath: '../../static/image/home2.png',
+            position: {
+                left: 0,
+                top: 300 - 50,
+                width: 50,
+                height: 50
+            },
+            clickable: true
+        }]
     },
     onLoad(options) {
         var that = this
@@ -192,6 +307,15 @@ export default {
             })
         }
     },
+    regionchange(e) {
+        console.log(e.type)
+    },
+    markertap(e) {
+        console.log(e.markerId)
+    },
+    controltap(e) {
+        console.log(e.controlId)
+    },
     // 客服消息
     handleContact(e) {
         console.log(e.path)
@@ -238,30 +362,43 @@ export default {
     flex-direction: column;
     .mix-flex-center();
     background-color: #FFFFFF;
-    .title {
-        font-size: 30px;
-        font-weight: 600;
-        margin-top: 30px;
+    .header {
+        width: 100%;
+        padding: 0px 10px;
+        .title1 {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 6px 3px rgb(236, 236, 236);
+        }
+        .title2 {
+            margin-top: 20px;
+            padding: 5px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 6px 3px rgb(236, 236, 236);
+        }
+        .title3 {
+            margin-top: 20px;
+            padding: 10px;
+            border-top: 1px dashed #888;
+            border-bottom: 1px dashed #888;
+        }
+        .title4 {
+            margin-top: 20px;
+        }
     }
     .des {
         font-size: 18px;
         margin: 5px 0px 30px 0px;
     }
-    .image_btn {
-        background: none;
-        margin-top: 5px;
-    }
-    .image_btn::after {
-        border: none;
-    }
-    .image {
-        width: 538rpx;
-        height: 272rpx;
-        image {
-            width: 538rpx;
-            height: 272rpx;
-        }
-    }
+}
+// 栅格布局
+.column-content {
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    width: 100%;
+    background-color: #eee;
 }
 // 底部授权信息
 .footer {

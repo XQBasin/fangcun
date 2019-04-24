@@ -42,7 +42,7 @@
                         <view class="imagedes">上传身份证照片</view>
                         <button class="image_btn" bindtap="choosePositive">
                             <view class="image" wx:if="{{localPositive == ''}}">
-                                <image src="../../static/image/jianzhi/item1.png" mode="aspectFill"/>
+                                <image src="../../static/image/jianzhi/shenfenzhengz.png" mode="aspectFill"/>
                             </view>
                             <view class="image" wx:else>
                                 <image src="{{localPositive}}" mode="aspectFill"/>
@@ -51,7 +51,7 @@
                         </button>
                         <button class="image_btn" bindtap="chooseReverse">
                             <view class="image" wx:if="{{localReverse == ''}}">
-                                <image src="../../static/image/jianzhi/item1.png" mode="aspectFill"/>
+                                <image src="../../static/image/jianzhi/shenfenzhengb.png" mode="aspectFill"/>
                             </view>
                             <view class="image" wx:else>
                                 <image src="{{localReverse}}" mode="aspectFill"/>
@@ -88,7 +88,6 @@ export default {
         navigationBarTextStyle: 'black',
         backgroundColor: "#F8F8F8",
         backgroundTextStyle: "light",
-        enablePullDownRefresh: true
     },
     data: {
         NAV_HEIGHT:wx.STATUS_BAR_HEIGHT+wx.DEFAULT_HEADER_HEIGHT+'px',
@@ -120,6 +119,7 @@ export default {
             },
             idcard: {
                 required: true,
+                idcard: true,
             },
             positive: {
                 required: true,
@@ -134,7 +134,8 @@ export default {
                 required: '真实姓名不予许为空！',
             },
             idcard: {
-                required: '身份证号不予许为空！',
+                required: '请输入15或18位身份证号码！',
+                idcard: '身份证号格式不正确！',
             },
             positive: {
                 required: '正面证照不予许为空！',
@@ -255,6 +256,7 @@ export default {
 // 自定义导航栏
 .nav_bar {
     .mix-flex-center();
+    .mix-1px(0, 0, 1, 0, #ccc);
     .nav-bar-col {
         text-align: center;
         .containertitle {
@@ -321,17 +323,17 @@ export default {
         .image_btn {
             .mix-flex-center();
             background: none;
-            margin-top: 10px;
+            margin-top: 5px;
         }
         .image_btn::after {
             border: none;
         }
         .image {
-            width: 538rpx;
-            height: 272rpx;
+            width: 525rpx;
+            height: 334rpx;
             image {
-                width: 538rpx;
-                height: 272rpx;
+                width: 525rpx;
+                height: 334rpx;
             }
         }
         .button-style-huodong {
