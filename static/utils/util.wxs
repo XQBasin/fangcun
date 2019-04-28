@@ -1,7 +1,7 @@
 var numberUtil = {
-     numberFormat: function (value) {
+     numberFormat: function (value, length) {
           var v = parseInt(value)//强转Int，毕竟有可能返回是String类型的数字
-          return v.toFixed(2)
+          return v.toFixed(length)
      }
 }
 //数据转化

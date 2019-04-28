@@ -919,7 +919,7 @@ export default {
     text-align: center;
     margin-top: 5px;
 }
-// 底部导航
+// 用户信息展示样式
 .groupsources {
     padding: 8px;
     display: flex;
