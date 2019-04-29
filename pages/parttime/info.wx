@@ -176,7 +176,9 @@
             </view>
         </view>
         <!-- 页面公共广告 -->
-        <view style="margin:10px;"><ad unit-id="adunit-32c386620de8cc6b" bindload="adLoad" binderror="adError" bindclose="adClose"></ad></view>
+        <view style="margin:10px;">
+            <ad unit-id="adunit-32c386620de8cc6b" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
+        </view>
         <!-- 公众号关注引导 -->
         <official-account></official-account>
         <!-- 底部授权信息 -->
@@ -207,7 +209,7 @@
 </template>
 
 <script>
-// 引入SDK核心类
+// 引入腾讯地图SDK核心类
 var QQMapWX = require('../../static/utils/qqmap-wx-jssdk.min.js');
 var qqmapsdk;
 let interstitialAd = null
@@ -253,7 +255,6 @@ export default {
         text: '一对好基友孟云（韩庚 饰）和余飞（郑恺 饰）跟女友都因为一点小事宣告分手，并且“拒绝挽回，死不认错”。两人在夜店、派对与交友软件上放飞人生第二春，大肆庆祝“黄金单身期”，从而引发了一系列好笑的故事。孟云与女友同甘共苦却难逃“五年之痒”，余飞与女友则棋逢敌手相爱相杀无绝期。然而现实的“打脸”却来得猝不及防：一对推拉纠结零往来，一对纠缠互怼全交代。两对恋人都将面对最终的选择：是再次相见？还是再也不见？'
     },
     onLoad(options) {
-        var that = this
         // 自动登录并返回登录信息
         this.autoLogin(this)
         // 加载广告
@@ -334,7 +335,7 @@ export default {
             success(res) {
                 if (thisobj.compareVersion(res.SDKVersion, '2.6.0')) {
                     interstitialAd = wx.createInterstitialAd({
-                        adUnitId: 'xxxx'
+                        adUnitId: 'adunit-32c386620de8cc6b'
                     })
                     interstitialAd.onLoad(() => {
                         console.log('onLoad event emit')

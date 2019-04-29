@@ -27,6 +27,7 @@
                     <view  class="content">
                         <view class="placep">
                             <view class="place">
+                                <input name="uid" value="{{uid}}" hidden/>
                                 <input name="title" value="{{title}}" placeholder="兼职标题" maxlength="40" placeholder-style="color:#888888;" bindinput="handleTitleInput"/>
                             </view>
                             <view class="desp">{{titleCount}}/40</view>
@@ -103,7 +104,7 @@
                             <view class="place">
                                 <input type="digit" name="money" value="{{money}}" placeholder="请输入基本工资"/>
                             </view>
-                            <view class="desp">元/小时</view>
+                            <view class="desp">元/人</view>
                         </view>
                     </view>
                 </view>
@@ -132,14 +133,6 @@
                             </view>
                         </view>
                     </ui-popup>
-                </view>
-                <view class="row-column">
-                    <view class="label">工作福利：</view>
-                    <view class="content">
-                        <view class="placep">
-                            <input style="width:100%;" name="welfare" value="{{welfare}}" placeholder="多项福利用斜杠（/）隔开"/>
-                        </view>
-                    </view>
                 </view>
                 <view class="row-column">
                     <view class="label">开始时间：</view>
@@ -191,33 +184,32 @@
                         </view>
                     </view>
                 </view>
-                <view wx:if="{{showtype == true}}">
-                    <view class="row-column">
-                        <view class="label">工作地址：</view>
-                        <view  class="content">
-                            <view class="placep">
-                                <view class="place">
-                                    <picker mode="region" bindchange="bindAddressChange">
-                                        <input name="address" value="{{address}}" placeholder="请选择工作地址" disabled/>
-                                    </picker>
-                                </view>
-                                <view class="desp">
-                                    <ui-icon type="gengduo" style="margin:0px 0px 0px 2px;" size="14px;"></ui-icon>
-                                </view>
+                <view class="row-column">
+                    <view class="label">工作地址：</view>
+                    <view  class="content">
+                        <view class="placep">
+                            <view class="place">
+                                <picker mode="region" bindchange="bindAddressChange">
+                                    <input name="address" value="{{address}}" placeholder="请选择工作地址" disabled/>
+                                </picker>
                             </view>
-                        </view>
-                    </view>
-                    <view class="row-column">
-                        <view class="label"></view>
-                        <view class="content">
-                            <view class="placep">
-                                <input style="width:100%;" name="addressdes" value="{{addressdes}}" bindchange="bindAddressDesChange" placeholder="请输入地址详情"/>
+                            <view class="desp">
+                                <ui-icon type="gengduo" style="margin:0px 0px 0px 2px;" size="14px;"></ui-icon>
                             </view>
                         </view>
                     </view>
                 </view>
+                <view class="row-column">
+                    <view class="label"></view>
+                    <view class="content">
+                        <view class="placep">
+                            <input style="width:100%;" name="addressdes" value="{{addressdes}}" bindchange="bindAddressDesChange" placeholder="请输入地址详情"/>
+                            <input name="poi" value="{{longitude}},{{latitude}}" hidden/>
+                        </view>
+                    </view>
+                </view>
                 <view class="textarea">
-                    <map id="map" style="border-radius: 10rpx;" longitude="113.324520" latitude="23.099994" scale="18"></map>
+                    <map id="map" longitude="{{longitude}}" latitude="{{latitude}}" markers="{{markers}}"></map>
                 </view>
                 <view class="textarea">
                     <view class="title-column">
@@ -227,6 +219,7 @@
                     <view wx:else class="view-text" bindtap="onShowTextare">
                         {{content}} <ui-icon type="gengduo" style="margin:0px 0px 0px 2px;" size="14px;"></ui-icon>
                         <input name="content" value="{{content}}" hidden/>
+                        <image src="../../static/image/jianzhi/dingwei.png" hidden/>
                     </view>
                 </view>
                 <view class="row-column-group" wx:if="{{showmore == true}}">
@@ -254,6 +247,14 @@
                             </view>
                         </view>
                     </view>
+                    <view class="row-column">
+                        <view class="label">工作福利：</view>
+                        <view class="content">
+                            <view class="placep">
+                                <input style="width:100%;" name="welfare" value="{{welfare}}" placeholder="多项福利用斜杠（/）隔开"/>
+                            </view>
+                        </view>
+                    </view>
                     <view class="row-column" style="height: 40px;" bindtap="showTypeChange" data-value="0">
                         收起 <ui-icon type="shangjiantou-copy" style="margin:0px 0px 0px 2px;" size="16px;" data-value="0"></ui-icon>
                     </view>
@@ -265,10 +266,17 @@
                 </view>
                 <checkbox-group name="agree" bindchange="checkboxChange" style="margin:8px; color:#576b95;">
                     <label class="checkbox" wx:key="agree" wx:for="{{items}}">
-                        <checkbox value="{{item.name}}" checked="{{item.checked}}"/>{{item.value}}
+                        <checkbox value="{{item.name}}" checked="{{item.checked}}"/>我已阅读并同意<text style="color: #ffd100;" bindtap="handleShowMask">《方寸奶爸用户服务协议》</text>
                     </label>
                 </checkbox-group>
             </view>
+            <ui-mask show="{{showMask}}" custom-style="{{customStyle}}" effect="scale-in" top="{{NAV_HEIGHT}}" blur="light" bindhide="maskHide">
+                <view class="nav_content">
+                    <scroll-view scroll-y style="height: 200px;" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
+                        <rich-text nodes="方寸奶爸用户服务协议" bindtap="tap"></rich-text>
+                    </scroll-view>
+                </view>
+            </ui-mask>
             <!-- 公众号关注向导 -->
             <official-account></official-account>
             <!-- 底部授权信息 -->
@@ -296,28 +304,31 @@
 
 <script>
 const tagStyle = `background: #eee;
-color: #888;
-border-radius: 3px;
-text-align: center;
-height: 30px;
-display: flex;
-justify-content: center;
-align-items: center;
-margin-top: 10px;
-`
+    color: #888;
+    border-radius: 3px;
+    text-align: center;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    `
 const selectStyle = `background: #fff;
-color: #ffd100;
-border: 1px solid #ffd100;
-border-radius: 3px;
-text-align: center;
-height: 30px;
-display: flex;
-justify-content: center;
-align-items: center;
-margin-top: 10px;
-`
+    color: #ffd100;
+    border: 1px solid #ffd100;
+    border-radius: 3px;
+    text-align: center;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    `
 import { $init, $digest } from '../../static/utils/common.util'
 import WxValidate from '../../static/utils/WxValidate.js'
+// 引入腾讯地图SDK核心类
+var QQMapWX = require('../../static/utils/qqmap-wx-jssdk.min.js');
+var qqmapsdk;
 export default {
     config: {
         navigationBarTitleText: '兼职发布',
@@ -328,12 +339,11 @@ export default {
     data: {
         NAV_HEIGHT:wx.STATUS_BAR_HEIGHT+wx.DEFAULT_HEADER_HEIGHT+'px',
         DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
-        titleCount: 0,      // 标题字数
-        contentCount: 0,    // 正文字数
-        localSrc: '',       // 活动图本地路径
-        serverSrc: '',      // 活动图服务器路径
-        onFocus: false,     // textarea焦点是否选中
-        isShowText: false,  // 控制显示 textarea 还是 text
+        uid: '',                        // 用户标识
+        titleCount: 0,                  // 标题字数
+        contentCount: 0,                // 正文字数
+        onFocus: false,                 // textarea焦点是否选中
+        isShowText: false,              // 控制显示 textarea 还是 text
         typepopshow: false,             // 兼职pop是否显示
         parttimetypes: [{
             text: '派单',
@@ -402,34 +412,26 @@ export default {
         }],
         items: [{
             name: '1',
-            value: '我已阅读并同意《方寸奶爸用户服务协议》',
             checked: false
         }],
-        showtype: true,     // 默认为线上活动
+        address: '',            // 初始化地址
+        longitude: 113.324520,  // 经度
+        latitude: 23.099994,    // 纬度
+        markers: [{
+            id: 0,
+            iconPath: '../../static/image/jianzhi/dingwei.png',
+            latitude: 23.099994,
+            longitude: 113.324520,
+            width: 32,
+            height: 32,
+            callout: { //可根据需求是否展示经纬度
+                content: 23.099994 + ',' + 113.32452,
+                color: '#ffd100',
+                display: 'ALWAYS'
+            }
+        }],      // 地图选点
         showmore: false,    // 显示更多状态关闭
-        typeitems: [{
-            name: '线下',
-            value: 1,
-            checked: true
-        },{
-            name: '线上',
-            value: 0,
-            checked: false
-        }],
-        uid: '',        // 用户标识
-        configsid: '',  // 报名字段自定义配置标识
-        phone: '',      // 举办方联系方式
-        title: '',      // 活动主题
-        startdate: '',  // 开始日期
-        starttime: '',  // 开始时间
-        enddate: '',    // 结束日期
-        endtime: '',    // 结束时间
-        type: 1,        // 活动属性，1线下活动，0线上活动
-        address: '',    // 活动区域
-        addressdes: '', // 活动地址
-        content: '',    // 活动详情
-        cunjin: 0,      // 报名费用
-        switch: true,   // 默认同意加入流量增长计划
+        showMask: false,    // 服务协议查看
     },
     onLoad(options) {
         this.initValidate()
@@ -439,81 +441,44 @@ export default {
                 uid: options.uid
             })
         }
-        // 表单数据回填
-        if (options.formdata) {
-            let formdata = JSON.parse(options.formdata)
-            this.setData({
-                uid: formdata.uid,
-                title: formdata.title,
-                serverSrc: formdata.image,
-                localSrc: formdata.localSrc,
-                startdate: formdata.startdate,
-                starttime: formdata.starttime,
-                enddate: formdata.enddate,
-                endtime: formdata.endtime,
-                type: formdata.type,
-                address: formdata.address,
-                addressdes: formdata.addressdes,
-                content: formdata.content,
-                cunjin: formdata.cunjin,
-                switch: formdata.switch,
-                configsid: formdata.configsid,
-                phone: formdata.phone,
-                showmore: true,
-                titleCount: formdata.titleCount,        // 标题字数
-                contentCount: formdata.contentCount,    // 正文字数
-            })
-        }
     },
     // 初始化表单校验
     initValidate() {
         // 验证字段的规则
         const rules = {
-            image: {
-                required: true,
-            },
-            title: {
-                required: true,
-            },
-            startdate: {
-                required: true,
-            },
-            starttime: {
-                required: true,
-            },
-            enddate: {
-                required: true,
-            },
-            endtime: {
-                required: true,
-            },
-            content: {
-                required: true,
-            },
+            title: { required: true, },
+            parttype: { required: true, },
+            number: { required: true, },
+            cycle: { required: true, },
+            money: { required: true, },
+            sex: { required: true, },
+            startdate: { required: true, },
+            starttime: { required: true, },
+            enddate: { required: true, },
+            endtime: { required: true, },
+            address: { required: true, },
+            addressdes: { required: true, },
+            content: { required: true, },
+            phone: { tel: true, },
+            email: { email: true, },
         }
         // 验证字段的提示信息，若不传则调用默认的信息
         const messages = {
-            image: {
-                required: '请先选择活动海报！',
-            },
-            title: {
-                required: '请输入活动主题！',
-            },
-            startdate: {
-                required: '请选择开始日期！',
-            },
-            starttime: {
-                required: '请选择开始时间！',
-            },
-            enddate: {
-                required: '请选择结束日期！',
-            },
-            endtime: {
-                required: '请选择结束时间！',
-            },
-            content: {
-                required: '请描述活动详情！',
-            },
+            title: { required: '请输入兼职标题！', },
+            parttype: { required: '请选择兼职类型！', },
+            number: { required: '请输入招聘人数！', },
+            cycle: { required: '请输入结算周期！', },
+            money: { required: '请输入基本工资！', },
+            sex: { required: '选择性别要求！', },
+            startdate: { required: '请选择开始日期！', },
+            starttime: { required: '请选择开始时间！', },
+            enddate: { required: '请选择结束日期！', },
+            endtime: { required: '请选择结束时间！', },
+            address: { required: '请选择工作地点！', },
+            addressdes: { required: '请输入详细地址！', },
+            content: { required: '请输入职位描述！', },
+            phone: { tel: '手机号格式错误！', },
+            email: { email: '邮箱格式错误！', },
         }
         // 创建实例对象
         this.validate = new WxValidate(rules, messages)
@@ -521,7 +486,7 @@ export default {
     handleTitleInput(e) {
         const value = e.detail.value
         this.data.title = value
-        this.data.titleCount = value.length     //计算已输入的标题字数
+        this.data.titleCount = value.length         //计算已输入的标题字数
         $digest(this)
     },
     handleContentInput(e) {
@@ -556,19 +521,53 @@ export default {
         $digest(this)
     },
     bindAddressDesChange (e) {
-        const value = e.detail.value
-        this.data.addressdes = value
-        $digest(this)
-    },
-    bindCunjinChange (e) {
-        const value = e.detail.value
-        this.data.cunjin = value
-        $digest(this)
-    },
-    bindPhoneChange (e) {
-        const value = e.detail.value
-        this.data.phone = value
-        $digest(this)
+        var that = this
+        if (!that.data.address) {
+            wx.showToast({
+                title: '请先选择区域地址',
+                icon: 'none'
+            })
+        } else {
+            let geocoder = that.data.address.join('') + e.detail.value
+            qqmapsdk = new QQMapWX({
+                key: '645BZ-HZBCU-G4OVM-4VJWZ-OTWTQ-66F3T'
+            });
+            //调用地址解析接口
+            qqmapsdk.geocoder({
+                //获取表单传入地址
+                address: geocoder, //地址参数，例：固定地址，address: '北京市海淀区彩和坊路海淀西大街74号'
+                success: function(res) {//成功后的回调
+                    var res = res.result;
+                    var latitude = res.location.lat;
+                    var longitude = res.location.lng;
+                    //根据地址解析在地图上标记解析地址位置
+                    that.setData({ // 获取返回结果，放到markers及poi中，并在地图展示
+                        markers: [{
+                            id: 0,
+                            title: res.title,
+                            latitude: latitude,
+                            longitude: longitude,
+                            iconPath: '../../static/image/jianzhi/dingwei.png',//图标路径
+                            width: 32,
+                            height: 32,
+                            callout: { //可根据需求是否展示经纬度
+                                content: latitude + ',' + longitude,
+                                color: '#ffd100',
+                                display: 'ALWAYS'
+                            }
+                        }],
+                        latitude: latitude,
+                        longitude: longitude
+                    });
+                },
+                fail: function(error) {
+                    console.error(error);
+                },
+                complete: function(res) {
+                    console.log(res);
+                }
+            })
+        }
     },
     onShowTextare () {                  //显示textare
         this.data.isShowText = false
@@ -587,17 +586,12 @@ export default {
         this.data.onFacus = false
         $digest(this)
     },
-    switchChange  (e) {
-        var value = e.detail.value
-        this.data.switch = value
-        $digest(this)
-    },
     checkboxChange (e) {
         var value = e.detail.value
         this.data.agree = value.length
         $digest(this)
     },
-    // 兼职类型选择
+    // POP类型选择弹框
     openPopup(e) {
         let poptype = e.currentTarget.dataset.poptype
         switch(poptype) {
@@ -614,6 +608,7 @@ export default {
                 this.setData({show: true})
         }
     },
+    // 兼职类型弹框数据回填
     singleTapType (e) {
         let opt = e.detail.index
         this.data.parttimetypes.forEach((item, index) => {
@@ -625,6 +620,7 @@ export default {
             typepopshow: false
         })
     },
+    // 结算周期弹框数据回填
     singleTapCycle (e) {
         let opt = e.detail.index
         this.data.cycles.forEach((item, index) => {
@@ -636,6 +632,7 @@ export default {
             cyclepopshow: false
         })
     },
+    // 性别要求弹框数据回填
     singleTapSex (e) {
         let opt = e.detail.index
         this.data.sexes.forEach((item, index) => {
@@ -647,10 +644,14 @@ export default {
             sexpopshow: false
         })
     },
+    // 服务协议展示
+    handleShowMask () {
+        this.setData({
+            showMask:true
+        })
+    },
     formSubmit(e) {
-        var that = this
-        var data = e.detail.value
-        debugger
+        let data = e.detail.value
         // 校验表单
         if (!this.validate.checkForm(data)) {
             const error = this.validate.errorList[0];
@@ -672,24 +673,8 @@ export default {
             mask: true
         })
         wx.request({
-            url: 'https://wx.taoyuantoday.com/mini.Weactivity/create.html',
-            data: {
-                uid: data.uid,
-                title: data.title,
-                image: data.image,
-                startdate: data.startdate,
-                starttime: data.starttime,
-                enddate: data.enddate,
-                endtime: data.endtime,
-                type: data.type,
-                address: data.address,
-                addressdes: data.addressdes,
-                content: data.content,
-                cunjin: data.cunjin,
-                switch: data.switch,
-                configsid: data.configsid,
-                phone: data.phone,
-            },
+            url: 'https://wx.taoyuantoday.com/mini.Weparttime/create.html',
+            data: data,
             header: {
                 'Content-Type': 'application/x-www-form-urlencoded'     // 默认值
             },
@@ -700,53 +685,19 @@ export default {
                     wx.showToast({
                         title: res.data.message,
                         icon: 'success',
-                        duration: 2000
+                        duration: 3000
                     })
                     wx.navigateTo({
-                        url: './index'
+                        url: './lists'
                     })
                 } else {
                     wx.showToast({
                         title: res.data.message,
                         icon: 'none',
-                        duration: 2000
+                        duration: 3000
                     })
                 }
             }
-        })
-    },
-    // 活动属性切换
-    typeChange  (e) {
-        var value = e.detail.value
-        this.data.showtype = value
-        this.data.type = value
-        $digest(this)
-    },
-    // 获取路由页面
-    navigateToFieldSet  (e) {
-        let route = e.currentTarget.dataset.route
-        let formdata = {
-            uid: this.data.uid,
-            title: this.data.title,
-            image: this.data.serverSrc,
-            localSrc: this.data.localSrc,
-            startdate: this.data.startdate,
-            starttime: this.data.starttime,
-            enddate: this.data.enddate,
-            endtime: this.data.endtime,
-            type: this.data.type,
-            address: this.data.address,
-            addressdes: this.data.addressdes,
-            content: this.data.content,
-            cunjin: this.data.cunjin,
-            switch: this.data.switch,
-            configsid: this.data.configsid,
-            phone: this.data.phone,
-            titleCount: this.data.titleCount,
-            contentCount: this.data.contentCount
-        }
-        wx.navigateTo({
-            url: './' + route + '?formdata=' + JSON.stringify(formdata)
         })
     },
     // 更多显示属性切换

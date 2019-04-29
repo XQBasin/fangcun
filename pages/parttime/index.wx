@@ -60,7 +60,6 @@ export default {
         NAV_HEIGHT:wx.STATUS_BAR_HEIGHT+wx.DEFAULT_HEADER_HEIGHT+'px',
         DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
         uid: '',                // 用户标识
-        userInfo: {},           // 用户基本信息
     },
     onLoad(options) {
         var that = this
@@ -81,8 +80,6 @@ export default {
                                 that.setData({
                                     uid: res.data
                                 })
-                                // 根据用户标识获取用户基本信息
-                                that.getUserInfoById(res.data)
                             }
                         }
                     })
@@ -117,26 +114,6 @@ export default {
         } else {
             that.updateUser(e.detail.userInfo, that.data.uid, route, authorise)
         }
-    },
-    // 获取用户基本信息
-    getUserInfoById: function (uid) {
-        var that = this
-        wx.request({
-            url: 'https://wx.taoyuantoday.com/mini.Weparttime/getUserInfoById.html',
-            data: {
-                uid: uid
-            },
-            header: {
-                'content-type': 'application/json' // 默认值
-            },
-            success(res) {
-                if (res.data) {
-                    that.setData({
-                        userInfo: res.data
-                    })
-                }
-            }
-        })
     },
     // 更新用户信息
     updateUser: function (userInfo, uid, route, authorise) {
@@ -188,7 +165,7 @@ export default {
             }
         } else {
             wx.navigateTo({
-                url: './' + route
+                url: './' + route + "?uid=" + that.data.uid
             })
         }
     },
