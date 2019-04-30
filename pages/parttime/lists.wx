@@ -7,6 +7,9 @@
                     <view class="containertitle">
                         <view class='dingwei'>
                             <ui-icon type="zuojiantou" color="#333333" size="20px;"></ui-icon>
+                            <ui-icon type="mdingwei" size="16px;" color="#ccc"></ui-icon>
+                            <text wx:if="{{ district }}">{{ district }}</text>
+                            <text wx:else>{{ defaultaddress }}</text>
                         </view>
                     </view>
                 </ui-col>
@@ -45,50 +48,50 @@
                 <view class="selectmenu">
                     <ui-row>
                         <ui-col>
-                            <view class="column-content" data-poptype="type" bindtap="openPopup">兼职类型 <ui-icon type="xiangxiajiantou" size="16px;"></ui-icon></view>
-                            <ui-popup show="{{ typepopshow }}" position="top" top="{{NAV_HEIGHT+180+60}}" mask-style="background-color:transparent" height="180">
-                                <view class="popup">
-                                    <ui-row>
-                                        <ui-col vertical-align="middle" space-left="20">请选择兼职类型</ui-col>
-                                    </ui-row>
-                                    <view style="margin:10px;">
-                                        <ui-tags data="{{parttimetypes}}" fixed-width col-number="3" bindchange="singleTapType"></ui-tags>
-                                    </view>
-                                </view>
-                            </ui-popup>
+                            <view class="column-content" data-poptype="type" data-show="{{typepopshow}}" bindtap="openPopup">
+                                <text style="margin-right: 5px;">兼职类型</text>
+                                <ui-icon wx:if="{{ !typepopshow }}" type="xiangxiajiantou" size="16px;"></ui-icon>
+                                <ui-icon wx:else type="shangjiantou-copy" size="16px;" style="color: #ffd100;"></ui-icon>
+                            </view>
                         </ui-col>
                         <view class="column-line"><view class="line"></view></view>
                         <ui-col>
-                            <view class="column-content" data-poptype="cycle" bindtap="openPopup">结算周期 <ui-icon type="xiangxiajiantou" size="16px;"></ui-icon></view>
-                            <ui-popup show="{{ cyclepopshow }}" position="top" top="{{NAV_HEIGHT+180+60}}" mask-style="background-color:transparent" height="180">
-                                <view class="popup">
-                                    <ui-row>
-                                        <ui-col vertical-align="middle" space-left="20">请选择兼职类型</ui-col>
-                                    </ui-row>
-                                    <view style="margin:10px;">
-                                        <ui-tags data="{{parttimetypes}}" fixed-width col-number="3" bindchange="singleTapType"></ui-tags>
-                                    </view>
-                                </view>
-                            </ui-popup>
+                            <view class="column-content" data-poptype="cycle" data-show="{{cyclepopshow}}" bindtap="openPopup">
+                                <text style="margin-right: 5px;">结算周期</text>
+                                <ui-icon wx:if="{{ !cyclepopshow }}" type="xiangxiajiantou" size="16px;"></ui-icon>
+                                <ui-icon wx:else type="shangjiantou-copy" size="16px;" style="color: #ffd100;"></ui-icon>
+                            </view>
                         </ui-col>
                         <view class="column-line"><view class="line"></view></view>
                         <ui-col>
-                            <view class="column-content" data-poptype="custom" bindtap="openPopup">综合筛选 <ui-icon type="xiangxiajiantou" size="16px;"></ui-icon></view>
-                            <ui-popup show="{{ custompopshow }}" position="top" top="{{NAV_HEIGHT+180+60}}" mask-style="background-color:transparent" height="180">
-                                <view class="popup">
-                                    <ui-row>
-                                        <ui-col vertical-align="middle" space-left="20">请选择兼职类型</ui-col>
-                                        <ui-col width="40" vertical-align="middle" align="center">
-                                            <ui-icon type="x" size="18" color="#FC8950"></ui-icon>
-                                        </ui-col>
-                                    </ui-row>
-                                    <view style="margin:10px;">
-                                        <ui-tags data="{{parttimetypes}}" fixed-width col-number="3" bindchange="singleTapType"></ui-tags>
-                                    </view>
-                                </view>
-                            </ui-popup>
+                            <view class="column-content" data-poptype="area" data-show="{{areapopshow}}" bindtap="openPopup">
+                                <text style="margin-right: 5px;">区域选择</text>
+                                <ui-icon wx:if="{{ !areapopshow }}" type="xiangxiajiantou" size="16px;"></ui-icon>
+                                <ui-icon wx:else type="shangjiantou-copy" size="16px;" style="color: #ffd100;"></ui-icon>
+                            </view>
                         </ui-col>
                     </ui-row>
+                </view>
+                <view class="menupopup" wx:if="{{ typepopshow }}">
+                    <view class="tagsview">
+                        <ui-tags data="{{parttimetypes}}" fixed-width col-number="3" bindchange="singleTapType"></ui-tags>
+                    </view>
+                </view>
+                <view class="menupopup" wx:if="{{ cyclepopshow }}">
+                    <view class="tagsview">
+                        <ui-tags data="{{cycles}}" fixed-width col-number="3" bindchange="singleTapCycle"></ui-tags>
+                    </view>
+                </view>
+                <view class="menupopup" wx:if="{{ areapopshow }}">
+                    <view class="tagsview">
+                        <ui-tags data="{{areas}}" fixed-width col-number="3" bindchange="singleTapArea"></ui-tags>
+                    </view>
+                </view>
+                <view class="searchpopup" wx:if="{{ searchTags.length > 0 }}">
+                    <view class="tagsview">
+                        <ui-tags data="{{ searchTags }}" bindchange="deleteSearch"></ui-tags>
+                        <image src="../../static/image/jianzhi/yichu.png" hidden/>
+                    </view>
                 </view>
                 <view class='jz-group'>
                     <view class='jz-group-item'>
@@ -308,10 +311,47 @@
 </template>
 
 <script>
+const tagStyle = `background: #fff;
+    border: 1px solid #ccc;
+    color: #888;
+    border-radius: 5px;
+    text-align: center;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    `
+const selectStyle = `background: #ffd100;
+    color: #fff;
+    border-radius: 5px;
+    text-align: center;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    `
+const searchTagsStyle = `
+    background: url('../../static/image/jianzhi/yichu.png') no-repeat 60px center ;
+    border: 1px solid #ff5800;
+    color: #ff5800;
+    border-radius: 10px;
+    text-align: left;
+    height: 25px;
+    width: 76px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-size:12px;
+    `
 let interstitialAd = null
+// 引入腾讯地图SDK核心类
+var QQMapWX = require('../../static/utils/qqmap-wx-jssdk.min.js');
+var qqmapsdk;
 export default {
     config: {
-        navigationBarTitleText: '兼职圈',
+        navigationBarTitleText: '兼职列表',
         navigationBarTextStyle: 'black',
         backgroundColor: "#F8F8F8",
         backgroundTextStyle: "light",
@@ -322,27 +362,76 @@ export default {
         DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
         banner: [
             {src: 'http://file.taoyuantoday.com/213/20190114/29224e27cb98ee82ac2486bbc303bd53.jpg'},
-            {src: 'http://file.taoyuantoday.com/213/20190112/1e5804573279dc9c29ddea43e95b63df.jpg'},
         ],
         style: 1,
         swiperCurrent: 0,
         current: 0,
         showBadge: true,
         isHideLoadMore: false,
-        socials:[],             // 社交消息列表
-        activities: [],         // 最新活动列表
         swipperHeights: 1000,
         uid: '',                // 当前用户标识
         typepopshow: false,     // 兼职类型POP显示
         cyclepopshow: false,    // 结算周期POP显示
-        custompopshow: false,   // 综合筛选POP显示
+        areapopshow: false,     // 综合筛选POP显示
+        parttimetypes: [{
+            text: '派单',
+            tagStyle: tagStyle,
+            tagSelectedStyle: selectStyle,
+            checked: false
+        }, {
+            text: '餐饮',
+            tagStyle: tagStyle,
+            tagSelectedStyle: selectStyle,
+            checked: false
+        }, {
+            text: '快递',
+            tagStyle: tagStyle,
+            tagSelectedStyle: selectStyle,
+            checked: false
+        }, {
+            text: '家教',
+            tagStyle: tagStyle,
+            tagSelectedStyle: selectStyle,
+            checked: false
+        }, {
+            text: '外卖',
+            tagStyle: tagStyle,
+            tagSelectedStyle: selectStyle,
+            checked: false
+        }, {
+            text: '其他',
+            tagStyle: tagStyle,
+            tagSelectedStyle: selectStyle,
+            checked: false
+        }],
+        cycles: [{
+            text: '日结',
+            tagStyle: tagStyle,
+            tagSelectedStyle: selectStyle,
+            checked: false
+        }, {
+            text: '周结',
+            tagStyle: tagStyle,
+            tagSelectedStyle: selectStyle,
+            checked: false
+        }, {
+            text: '月结',
+            tagStyle: tagStyle,
+            tagSelectedStyle: selectStyle,
+            checked: false
+        }],
+        areas: [],                  // 当前定位市下的所有区
+        searchTags: [],             // 条件标签组
+        city: '',                   // 市级定位
+        district: '',               // 区县定位
+        defaultaddress: '定位中...',// 默认地址显示
     },
     onLoad(options) {
         var that = this
         // 自动登录并返回登录信息
         this.autoLogin(this)
-        // 加载广告
-        this.createInterstitialAd(this)
+        // 获取定位信息
+        this.getLocation(this)
         wx.showShareMenu({
             withShareTicket: true
         })
@@ -399,22 +488,231 @@ export default {
             }
         })
     },
+    // 获取定位
+    getLocation (thisobj) {
+        // 实例化API核心类
+        qqmapsdk = new QQMapWX({
+            key: '645BZ-HZBCU-G4OVM-4VJWZ-OTWTQ-66F3T'
+        });
+        wx.getLocation({
+            type: 'gcj02',          // 返回可以用于wx.openLocation的经纬度
+            success(res) {
+                const latitude = res.latitude
+                const longitude = res.longitude
+                qqmapsdk.reverseGeocoder({
+                    location: {
+                        latitude: latitude,
+                        longitude: longitude
+                    },
+                    success: function(res) {//成功后的回调
+                        var city = res.result.address_component.city
+                        let district = res.result.address_component.district
+                        thisobj.setData({
+                            city: city,
+                            district: district
+                        })
+                        //调用获取城市列表接口
+                        qqmapsdk.getCityList({
+                            success: function(res) {//成功后的回调
+                                var cityArr = res.result[1];
+                                cityArr.forEach((item, index) => {
+                                    if (item.fullname === city) {
+                                        //根据对应接口getCityList返回数据的Id获取区县数据（以北京为例）
+                                        qqmapsdk.getDistrictByCityId({
+                                            // 传入对应省份ID获得城市数据，传入城市ID获得区县数据,依次类推
+                                            id: item.id,        //对应接口getCityList返回数据的Id，如：北京是'110000'
+                                            success: function(res) {        //成功后的回调
+                                                let areasArr = res.result[0]
+                                                areasArr.forEach((item, index) => {
+                                                    var area = {
+                                                        text: item.fullname,
+                                                        tagStyle: tagStyle,
+                                                        tagSelectedStyle: selectStyle,
+                                                        checked: false
+                                                    }
+                                                    let areas = thisobj.data.areas.concat(area)
+                                                    thisobj.setData({
+                                                        areas: areas,
+                                                    })
+                                                })
+                                            },
+                                            fail: function(error) {
+                                                console.error(error);
+                                            },
+                                            complete: function(res) {
+                                                console.log(res);
+                                            }
+                                        });
+                                    }
+                                })
+                            },
+                            fail: function(error) {
+                                console.error(error);
+                            },
+                            complete: function(res) {
+                                console.log(res);
+                            }
+                        });
+                    },
+                    fail: function(error) {
+                        // 地址解析异常
+                    },
+                    complete: function(res) {
+                        // console.log(res);
+                    }
+                });
+            },
+            fail: function(error) {
+                // 可以通过 wx.getSetting 先查询一下用户是否授权了 "scope.userLocation" 这个 scope
+                wx.getSetting({
+                    success(res) {
+                        if (!res.authSetting['scope.userLocation']) {
+                            wx.showModal({
+                                title: '温馨提示',
+                                content: '小程序未得到位置获取授权，请确认授权后继续！',
+                                showCancel: false,
+                                confirmColor: '#ffd100',
+                                confirmText: '确认',
+                                success(res) {
+                                    if (res.confirm) {
+                                        wx.openSetting({
+                                            success(res) {
+                                                res.authSetting = {
+                                                    "scope.userLocation": true
+                                                }
+                                                thisobj.getLocation(thisobj)
+                                            }
+                                        })
+                                    }
+                                }
+                            })
+                        } else {
+                            wx.showModal({
+                                title: '温馨提示',
+                                content: '位置获取失败，请打开定位后继续！',
+                                showCancel: false,
+                                confirmColor: '#ffd100',
+                                confirmText: '确认',
+                                success(res) {
+                                    if (res.confirm) {
+                                        thisobj.getLocation(thisobj)
+                                    }
+                                }
+                            })
+                        }
+                    }
+                })
+            },
+            complete: function(res) {
+                // console.log(res);
+            }
+        })
+    },
     // POP类型选择弹框
     openPopup(e) {
         let poptype = e.currentTarget.dataset.poptype
+        let show = e.currentTarget.dataset.show
         switch(poptype) {
             case 'type':
-                this.setData({typepopshow: true})
+                this.setData({
+                    typepopshow: !show,
+                })
+                if (this.data.cyclepopshow) {
+                    this.setData({
+                        cyclepopshow: false,
+                    })
+                }
+                if (this.data.areapopshow) {
+                    this.setData({
+                        areapopshow: false,
+                    })
+                }
                 break;
             case 'cycle':
-                this.setData({cyclepopshow: true})
+                this.setData({
+                    cyclepopshow: !show,
+                })
+                if (this.data.typepopshow) {
+                    this.setData({
+                        typepopshow: false,
+                    })
+                }
+                if (this.data.areapopshow) {
+                    this.setData({
+                        areapopshow: false,
+                    })
+                }
                 break;
-            case 'custom':
-                this.setData({custompopshow: true})
+            case 'area':
+                this.setData({
+                    areapopshow: !show,
+                })
+                if (this.data.typepopshow) {
+                    this.setData({
+                        typepopshow: false,
+                    })
+                }
+                if (this.data.cyclepopshow) {
+                    this.setData({
+                        cyclepopshow: false,
+                    })
+                }
                 break;
             default:
-                this.setData({show: true})
+                this.setData({show: !show})
         }
+    },
+    // 兼职类型弹框数据回填
+    singleTapType (e) {
+        let index = e.detail.index
+        this.data.parttimetypes[index].checked = !this.data.parttimetypes[index].checked
+        let searchTag = {
+            text: this.data.parttimetypes[index].text,
+            tagStyle: searchTagsStyle
+        }
+        let searchTags = this.data.searchTags.concat(searchTag)
+        this.setData({
+            searchTags: searchTags,
+            parttimetypes: this.data.parttimetypes,
+        })
+    },
+    // 结算周期弹框数据回填
+    singleTapCycle (e) {
+        let index = e.detail.index
+        this.data.cycles[index].checked = !this.data.cycles[index].checked
+        let searchTag = {
+            text: this.data.cycles[index].text,
+            tagStyle: searchTagsStyle
+        }
+        let searchTags = this.data.searchTags.concat(searchTag)
+        this.setData({
+            searchTags: searchTags,
+            cycles: this.data.cycles,
+        })
+    },
+    // 选择区域弹框数据回填
+    singleTapArea (e) {
+        let index = e.detail.index
+        this.data.areas[index].checked = !this.data.areas[index].checked
+        let searchTag = {
+            text: this.data.areas[index].text,
+            tagStyle: searchTagsStyle
+        }
+        let searchTags = this.data.searchTags.concat(searchTag)
+        this.setData({
+            searchTags: searchTags,
+            areas: this.data.areas,
+        })
+    },
+    // 移除已选条件
+    deleteSearch (e) {
+        let opt = e.detail.index
+        this.data.searchTags = this.data.searchTags.filter((item, index) => {
+            return index != opt
+        })
+        this.setData({
+            searchTags: this.data.searchTags
+        })
     },
     //下拉刷新
     onPullDownRefresh:function() {
@@ -578,7 +876,7 @@ export default {
     }
     .selectmenu {
         width: 100;
-        border-bottom: 1px solid #ccc;
+        .mix-1px(0, 0, 1, 0, #ccc);
         .column-content {
             text-align: center;
             height: 60px;
@@ -591,8 +889,24 @@ export default {
             .mix-flex-center();
             .line {
                 height: 16px;
-                .mix-1px(0, 1, 0, 0, #848484);
+                .mix-1px(0, 1, 0, 0, #ccc);
             }
+        }
+    }
+    .menupopup {
+        background-color: #FFFFFF;
+        z-index: 2;
+        .tagsview {
+            padding: 10px 0 10px 20px;
+            border-bottom: 1px solid #eee;
+        }
+    }
+    .searchpopup {
+        background-color: #FFFFFF;
+        z-index: 2;
+        .tagsview {
+            padding: 10px 0 10px 20px;
+            border-bottom: 1px solid #eee;
         }
     }
 }
