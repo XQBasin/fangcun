@@ -371,6 +371,11 @@ export default {
             tagStyle: tagStyle,
             tagSelectedStyle: selectStyle,
             checked: false
+        }, {
+            text: '实习',
+            tagStyle: tagStyle,
+            tagSelectedStyle: selectStyle,
+            checked: false
         }],
         cyclepopshow: false,            // 结算周期pop是否显示
         cycles: [{

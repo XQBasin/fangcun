@@ -267,6 +267,11 @@ export default {
             tagStyle: tagStyle,
             tagSelectedStyle: selectStyle,
             checked: false
+        }, {
+            text: '实习',
+            tagStyle: tagStyle,
+            tagSelectedStyle: selectStyle,
+            checked: false
         }],
         cycles: [{
             text: '日结',
