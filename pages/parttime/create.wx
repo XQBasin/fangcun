@@ -204,7 +204,8 @@
                     <view class="content">
                         <view class="placep">
                             <input style="width:100%;" name="addressdes" value="{{addressdes}}" bindchange="bindAddressDesChange" placeholder="请输入地址详情"/>
-                            <input name="poi" value="{{longitude}},{{latitude}}" hidden/>
+                            <input name="longitude" value="{{longitude}}" hidden/>
+                            <input name="latitude" value="{{latitude}}" hidden/>
                         </view>
                     </view>
                 </view>
@@ -327,8 +328,8 @@ const selectStyle = `background: #fff;
 import { $init, $digest } from '../../static/utils/common.util'
 import WxValidate from '../../static/utils/WxValidate.js'
 // 引入腾讯地图SDK核心类
-var QQMapWX = require('../../static/utils/qqmap-wx-jssdk.min.js');
-var qqmapsdk;
+var QQMapWX = require('../../static/utils/qqmap-wx-jssdk.min.js')
+var qqmapsdk
 export default {
     config: {
         navigationBarTitleText: '兼职发布',
@@ -367,11 +368,6 @@ export default {
             checked: false
         }, {
             text: '外卖',
-            tagStyle: tagStyle,
-            tagSelectedStyle: selectStyle,
-            checked: false
-        }, {
-            text: '其他',
             tagStyle: tagStyle,
             tagSelectedStyle: selectStyle,
             checked: false

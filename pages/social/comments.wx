@@ -46,7 +46,7 @@
                         <view class="weui-uploader__files" id="uploaderFiles">
                             <block wx:for="{{social.production}}" wx:key="*this">
                                 <view class="weui-uploader__file" data-urls="{{social.production}}" bindtap="previewImage" id="{{item}}">
-                                    <image class="weui-uploader__img" src="{{item}}" mode="aspectFill" />
+                                    <image class="weui-uploader__img" style="border-radius:5px; width: 200px;" src="{{item}}" mode="widthFix" />
                                 </view>
                             </block>
                         </view>
@@ -80,7 +80,7 @@
                             <view class="weui-uploader__files" id="uploaderFiles">
                                 <block wx:for="{{social.spsocial.production}}" wx:key="*this">
                                     <view class="weui-uploader__file" data-urls="{{social.spsocial.production}}" bindtap="previewImage" id="{{item}}">
-                                        <image class="weui-uploader__img" style="border-radius:5px; width: 80px; height:80px;" src="{{item}}" mode="aspectFill" />
+                                        <image class="weui-uploader__img" style="border-radius:5px; width: 200px;" src="{{item}}" mode="widthFix" />
                                     </view>
                                 </block>
                             </view>

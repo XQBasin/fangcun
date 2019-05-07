@@ -293,14 +293,14 @@ export default {
         procurrentpage: 1,          // 当前页码
         activityid: '',             // 活动标识
         products: [],               // 作品列表
-        prototalNum: 0,             // 总报名人数
+        prototalNum: 0,             // 总记录数
         prototalPage: 0,            // 总页码
         tabindex: 0,                // tab初始索引
         fixedNav: '',               // 绝对定位关闭
         fixedHid: true,             // 导航占位影藏
         comcurrentpage: 1,          // 当前页码
         comfilm: [],                // 初始显示论坛数据
-        comtotalNum: 0,             // 总报名人数
+        comtotalNum: 0,             // 总记录数
         comtotalPage: 0,            // 总页码
         place: '',                  // 默认回复提示
         level: 1,                   // 默认评论等级
@@ -499,7 +499,7 @@ export default {
                     isHideComLoadMore: true,
                 })
             } else {
-                this.getProListForPage(this.data.activityid, this.data.comcurrentpage)
+                this.getActCommentsForPage(this.data.activityid, this.data.comcurrentpage)
             }
         } else if (this.data.tabindex === 2) {
             if (this.data.procurrentpage > this.data.prototalPage) {
