@@ -294,7 +294,7 @@
             <!-- 底部导航 -->
             <ui-fixed-view bottom="0" left="0" right="0">
                 <view class='groupsources'>
-                    <button class="button-style-huodong" form-type="submit"><text>发布</text></button>
+                    <button class="button-style-huodong" form-type="submit"><text>确认发布</text></button>
                 </view>
             </ui-fixed-view>
             <!-- 导航占位 -->

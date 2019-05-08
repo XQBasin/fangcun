@@ -66,7 +66,7 @@
                         <button class="authorise_btn" data-route="character/index" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
                             <view class='buttonitem'>
                                 <image src="../../static/image/menu/ceshi.png"/>
-                                <text>爱测试</text>
+                                <text>毕业季</text>
                             </view>
                         </button>
                     </view>
@@ -149,92 +149,27 @@
                     </view>
                 </view>
                 <view class='jz-group'>
-                    <view class='jz-group-item'>
+                    <wxs module="dateUtil" src="../../static/utils/util.wxs"></wxs>
+                    <view class='jz-group-item' wx:key="recommkey" wx:for="{{recommpart}}" wx:for-item="recomm" wx:for-index="index">
                         <view class="jz-title">
-                            <image src="../../static/image/jianzhi/icon1.png"/>
+                            <image wx:if="{{recomm.parttype == '快递'}}" src="../../static/image/jianzhi/icon1.png"/>
+                            <image wx:elif="{{recomm.parttype == '家教'}}" src="../../static/image/jianzhi/icon2.png"/>
+                            <image wx:elif="{{recomm.parttype == '外卖'}}" src="../../static/image/jianzhi/icon3.png"/>
+                            <image wx:elif="{{recomm.parttype == '餐饮'}}" src="../../static/image/jianzhi/icon4.png"/>
+                            <image wx:else src="../../static/image/jianzhi/icon5.png"/>
                         </view>
-                        <view class='jz-buttonitem'>
+                        <view class='jz-buttonitem' data-id="{{recomm.id}}" bindtap="getPartInfo">
                             <view class="jztitle">
-                                <text class="left">唯品会祈福新村高薪兼职导购员</text>
-                                <text class="right">17元<text class="tags"> /小时</text>
+                                <text class="left">{{recomm.title}}</text>
+                                <text class="right">{{dateUtil.numberFormat(recomm.money, 1)}}元<text class="tags"> /人</text>
                             </view>
                             <view class="jzdes">
                                 <view class="left">
-                                    <ui-icon type="dingwei" color="#848484" size="10px;">  广州市 番禺区/21.5km</ui-icon>
+                                    <ui-icon type="dingwei" color="#848484" size="10px;">  {{dateUtil.stringToArray(recomm.address)}}/{{dateUtil.flatternDistance(location.latitude, location.longitude, recomm.latitude, recomm.longitude)}}</ui-icon>
                                 </view>
-                                <view class="center1"><text>日结</text></view>
-                                <text class="right">刚刚</text>
-                            </view>
-                        </view>
-                    </view>
-                    <view class='jz-group-item'>
-                        <view class="jz-title">
-                            <image src="../../static/image/jianzhi/icon2.png"/>
-                        </view>
-                        <view class='jz-buttonitem'>
-                            <view class="jztitle">
-                                <text class="left">初中化学老师</text>
-                                <text class="right">230元<text class="tags"> /天</text>
-                            </view>
-                            <view class="jzdes">
-                                <view class="left">
-                                    <ui-icon type="dingwei" color="#848484" size="10px;"> 广州市 荔湾区/21.5km</ui-icon>
-                                </view>
-                                <view class="center2"><text>周结</text></view>
-                                <text class="right">刚刚</text>
-                            </view>
-                        </view>
-                    </view>
-                    <view class='jz-group-item'>
-                        <view class="jz-title">
-                            <image src="../../static/image/jianzhi/icon3.png"/>
-                        </view>
-                        <view class='jz-buttonitem'>
-                            <view class="jztitle">
-                                <text class="left">广州丽丰中心现场协作</text>
-                                <text class="right">5000元<text class="tags"> /月</text></text>
-                            </view>
-                            <view class="jzdes">
-                                <view class="left">
-                                    <ui-icon type="dingwei" color="#848484" size="10px;"> 广州市 越秀区/21.5km</ui-icon>
-                                </view>
-                                <view class="center3"><text>月结</text></view>
-                                <text class="right">刚刚</text>
-                            </view>
-                        </view>
-                    </view>
-                    <view class='jz-group-item'>
-                        <view class="jz-title">
-                            <image src="../../static/image/jianzhi/icon4.png"/>
-                        </view>
-                        <view class='jz-buttonitem'>
-                            <view class="jztitle">
-                                <text class="left">英语兼职教师</text>
-                                <text class="right">60元<text class="tags"> /小时</text></text>
-                            </view>
-                            <view class="jzdes">
-                                <view class="left">
-                                    <ui-icon type="dingwei" color="#848484" size="10px;"> 广州市 番禺区/21.5km</ui-icon>
-                                </view>
-                                <view class="center1"><text>日结</text></view>
-                                <text class="right">刚刚</text>
-                            </view>
-                        </view>
-                    </view>
-                    <view class='jz-group-item'>
-                        <view class="jz-title">
-                            <image src="../../static/image/jianzhi/icon5.png"/>
-                        </view>
-                        <view class='jz-buttonitem'>
-                            <view class="jztitle">
-                                <text class="left">最轻松的西餐厅服务员</text>
-                                <text class="right">26元<text class="tags"> /小时</text></text>
-                            </view>
-                            <view class="jzdes">
-                                <view class="left">
-                                    <ui-icon type="dingwei" color="#848484" size="10px;"> 广州市 海珠区/21.5km</ui-icon>
-                                </view>
-                                <view class="center1"><text>日结</text></view>
+                                <view wx:if="{{recomm.cycle == '日结'}}" class="center1"><text>{{recomm.cycle}}</text></view>
+                                <view wx:elif="{{recomm.cycle == '周结'}}" class="center2"><text>{{recomm.cycle}}</text></view>
+                                <view wx:else class="center3"><text>{{recomm.cycle}}</text></view>
                                 <text class="right">刚刚</text>
                             </view>
                         </view>
@@ -284,10 +219,12 @@ export default {
         isHideLoadMore: false,
         socials:[],                 // 社交消息列表
         activities: [],             // 最新活动列表
+        recommpart: [],             // 热推兼职列表
         uid: '',                    // 桃园用户标识
         city: '',                   // 市级定位
         district: '',               // 区县定位
         defaultaddress: '定位中...',// 默认地址显示
+        location:{},                // 当前定位极坐标
     },
     onLoad(options) {
         // 自动登录并返回登录信息
@@ -298,6 +235,8 @@ export default {
         this.getSocials(1)
         // 获取活动数据
         this.getActivities(1)
+        // 获取热推兼职列表
+        this.getRecommpart(1)
         wx.showShareMenu({
             withShareTicket: true
         })
@@ -349,7 +288,11 @@ export default {
                     success: function(res) {//成功后的回调
                         thisobj.setData({
                             city: res.result.address_component.city,
-                            district: res.result.address_component.district
+                            district: res.result.address_component.district,
+                            location: {
+                                latitude: latitude,
+                                longitude: longitude
+                            },
                         })
                     },
                     fail: function(error) {
@@ -502,6 +445,13 @@ export default {
             url: '../activity/info?activityid='+activityid
         })
     },
+    // 查看兼职信息详情
+    getPartInfo: function (option) {
+        let id = option.currentTarget.dataset.id
+        wx.navigateTo({
+            url: '../parttime/info?id='+id
+        })
+    },
     // 获取路由页面
     navigateToShow: function (e) {
         let route = e.currentTarget.dataset.route
@@ -558,6 +508,26 @@ export default {
                 if (res.data != "") {
                     that.setData({
                         socials: res.data
+                    })
+                }
+            }
+        })
+    },
+    // 获取推荐兼职列表
+    getRecommpart: function (state) {
+        var that = this;
+        wx.request({
+            url: 'https://wx.taoyuantoday.com/mini.Weparttime/getRecommpart.html',
+            data: {
+                recomm: state,  // 获取热推兼职
+            },
+            header: {
+                'content-type': 'application/json' // 默认值
+            },
+            success(res) {
+                if (res.data.state) {
+                    that.setData({
+                        recommpart: res.data.recommpart,
                     })
                 }
             }

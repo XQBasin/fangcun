@@ -186,6 +186,12 @@
             <view class="weui-loading"></view>
             <view class="weui-loadmore__tips" style="font-size:13px; color:#848484;">加载中...</view>
         </view>
+        <!-- 页面公共广告 -->
+        <view style="margin:10px;">
+            <ad unit-id="adunit-32c386620de8cc6b"></ad>
+        </view>
+        <!-- 公众号关注引导 -->
+        <official-account></official-account>
         <!-- 底部授权信息 -->
         <view class="footer">
             <view class="page__bd page__bd_spacing">
@@ -197,24 +203,28 @@
                 </view>
             </view>
         </view>
+        <!-- 导航占位 -->
+        <view style="height:52px;"></view>
         <!-- 评论组件 -->
-        <view class='pl_bar'>
-            <view>
-                <button class="pl-btn" data-plshow="{{true}}" data-parentid="0" data-level="0" data-touser="随便说点什么吧~" data-bindtap="openPLPopup" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
-                    <ui-icon type="wodefankui" color="#888888" size="14px;"> 评论</ui-icon>
-                </button>
+        <ui-fixed-view bottom="0" left="0" right="0">
+            <view class='pl_bar'>
+                <view>
+                    <button class="pl-btn" data-plshow="{{true}}" data-parentid="0" data-level="0" data-touser="随便说点什么吧~" data-bindtap="openPLPopup" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
+                        <ui-icon type="wodefankui" color="#888888" size="14px;"> 评论</ui-icon>
+                    </button>
+                </view>
+                <view>
+                    <button class="pl-btn" data-zfshow="{{true}}" data-touser="说说你的转发感言~" data-bindtap="openZFPopup" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
+                        <ui-icon type="fenxiang" color="#888888" size="14px;"> 转发</ui-icon>
+                    </button>
+                </view>
+                <view>
+                    <button class="pl-btn" data-bindtap="giveLike" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
+                        <ui-icon type="jushoucang" color="#888888" size="14px;"> 点赞</ui-icon>
+                    </button>
+                </view>
             </view>
-            <view>
-                <button class="pl-btn" data-zfshow="{{true}}" data-touser="说说你的转发感言~" data-bindtap="openZFPopup" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
-                    <ui-icon type="fenxiang" color="#888888" size="14px;"> 转发</ui-icon>
-                </button>
-            </view>
-            <view>
-                <button class="pl-btn" data-bindtap="giveLike" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
-                    <ui-icon type="jushoucang" color="#888888" size="14px;"> 点赞</ui-icon>
-                </button>
-            </view>
-        </view>
+        </ui-fixed-view>
         <!-- 评论POP -->
         <ui-popup show="{{plshow}}" position="bottom">
             <form bindsubmit="plFormSubmit">
@@ -239,8 +249,6 @@
                 </view>
             </form>
         </ui-popup>
-        <!-- 导航占位 -->
-        <view style='bottom:52px;'></view>
     </view>
 </template>
 
@@ -292,7 +300,7 @@ export default {
                             'content-type': 'application/json' // 默认值
                         },
                         success(res) {
-                            if (res.data != "") {
+                            if (res.data) {
                                 that.setData({
                                     uid: res.data
                                 })
@@ -403,7 +411,7 @@ export default {
                 'content-type': 'application/json' // 默认值
             },
             success(res) {
-                if (res.data != "") {
+                if (res.data) {
                     that.setData({
                         social: res.data
                     })
@@ -862,17 +870,13 @@ ui-tabs {
 // 评论插件
 .pl_bar {
     display: flex;
-    margin-top: 5px;
+    padding: 8px;
     flex-direction: row;
     justify-content: space-between;
     color: #848484;
+    .mix-flex-y-center();
     font-size: 12px;
     background-color: #FFFFFF;
-    position: fixed;  /* 初始化为相对定位 滑动时改为绝对定位fixed*/
-    bottom: 0;
-    left: 0;
-    right: 0;         /* 决定了搜索框置顶 */
-    z-index: 2;
     .pl-btn {
         border: none;
         background-color: #FFFFFF;
