@@ -154,7 +154,7 @@
             <view class="{{fixedNav}}">
                 <ui-tabs index="{{tabindex}}" catchchange="handleChange">
                     <ui-tab>兼职描述</ui-tab>
-                    <ui-tab>已申请（{{applies.length}}人）</ui-tab>
+                    <ui-tab>已申请（{{totalNum}}人）</ui-tab>
                 </ui-tabs>
             </view>
             <view id="tabitems">
@@ -266,6 +266,7 @@ export default {
         userInfo: {},           // 用户基本信息
         currentpage: 1,         // 当前页码
         applies: [],            // 条件字段标识
+        totalNum: 0,            // 总数据条数
         totalPage: 0,           // 总页码
         isHideLoadMore: false,  // 初始显示加载更多
     },
@@ -572,6 +573,7 @@ export default {
                         that.setData({
                             currentpage: res.data.currentpage,
                             applies: that.data.applies.concat(res.data.applies),
+                            totalNum: res.data.totalNum,
                             totalPage: res.data.totalPage,
                         })
                     } else {
@@ -581,6 +583,7 @@ export default {
                         that.setData({
                             currentpage: res.data.currentpage,
                             applies: res.data.applies,
+                            totalNum: res.data.totalNum,
                             totalPage: res.data.totalPage,
                         })
                     }
@@ -591,8 +594,9 @@ export default {
                     that.setData({
                         currentpage: res.data.currentpage,
                         applies: res.data.applies,
-                        isHideLoadMore: true,
+                        totalNum: res.data.totalNum,
                         totalPage: res.data.totalPage,
+                        isHideLoadMore: true,
                     })
                 }
             }
@@ -605,7 +609,7 @@ export default {
                 isHideLoadMore: true,
             })
         } else {
-            this.getAppliesForPage(this.data.parttime.id, this.data.currentpage + 1, true)
+            this.getAppliesForPage(this.data.parttime.id, parseInt(this.data.currentpage) + 1, true)
         }
     },
     // 客服消息

@@ -31,9 +31,11 @@ export default {
       'pages/activity/fieldset',
       'pages/activity/fieldadd',
       // 性格测试
-      'pages/character/index',
-      'pages/character/questions',
-      'pages/character/result',
+      'pages/mall/index',
+      // 性格测试
+      // 'pages/character/index',
+      // 'pages/character/questions',
+      // 'pages/character/result',
       // 我的
       'pages/main/index',
     ],

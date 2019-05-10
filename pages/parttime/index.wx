@@ -640,7 +640,7 @@ export default {
                 isHideLoadMore: true,
             })
         } else {
-            this.getParttimesForPage(this.data.field, this.data.currentpage + 1, true)
+            this.getParttimesForPage(this.data.field, parseInt(this.data.currentpage) + 1, true)
         }
     },
     swiperChange: function(option) {

@@ -30,8 +30,7 @@
             <swiper circular autoplay interval="5000" duration="500" bindchange="swiperChange" class="swiper">
                 <block wx:for="{{banner}}" wx:key="unique">
                     <swiper-item>
-                        <image wx:if="{{index == 0}}" src="{{item.src}}" class="img" mode="aspectFill" data-route='activity/show' data-param='activityid=3' bindtap='navigateToShow'/>
-                        <image wx:else src="{{item.src}}" class="img" mode="aspectFill"/>
+                        <image src="{{item.src}}" class="img" mode="aspectFill"/>
                     </swiper-item>
                 </block>
             </swiper>
@@ -63,7 +62,7 @@
                                 <text>活动圈</text>
                             </view>
                         </button>
-                        <button class="authorise_btn" data-route="character/index" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
+                        <button class="authorise_btn" data-route="mall/index" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
                             <view class='buttonitem'>
                                 <image src="../../static/image/menu/ceshi.png"/>
                                 <text>毕业季</text>
