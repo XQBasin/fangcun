@@ -19,7 +19,7 @@
         </ui-nav-bar>
         <view style="height:{{NAV_HEIGHT}}"></view>
         <view class='content'>
-            <form bindsubmit="formSubmit">
+            <form bindsubmit="formSubmit" report-submit="true">
                 <view class="row-column-group">
                     <view class="message">温馨提示：良好的任职描述会让雇主更加青睐哦！</view>
                     <view class="row-column">
@@ -162,7 +162,8 @@ export default {
         showMask: false,
         customStyle:{
             'background-color':'rgba(255, 255, 255, 0.8)'
-        }
+        },
+        formId: '',                 // 用于发送模板消息
     },
     onLoad(options) {
         $init(this)
@@ -247,10 +248,16 @@ export default {
         this.validatePhone = new WxValidate(rules, messages)
     },
     formSubmit(e) {
+        var that = this
+        if (e.detail.formId) {
+            that.setData({
+                formId: e.detail.formId
+            })
+        }
         var data = e.detail.value
         // 校验表单
-        if (!this.validate.checkForm(data)) {
-            const error = this.validate.errorList[0];
+        if (!that.validate.checkForm(data)) {
+            const error = that.validate.errorList[0];
             wx.showToast({
                 title: error.msg,
                 icon: 'none'
@@ -268,9 +275,9 @@ export default {
         wx.request({
             url: 'https://wx.taoyuantoday.com/mini.Weparttime/validateSms.html',
             data: {
-                phone: data.phone,      // 接收手机号
-                code: data.code,        // 手机验证码
-                tag: 'parttime_apply',  // 业务类型
+                phone: data.phone,          // 接收手机号
+                code: data.code,            // 手机验证码
+                tag: 'parttime_apply',      // 业务类型
             },
             header: {
                 'content-type': 'application/json' // 默认值
@@ -296,7 +303,8 @@ export default {
                             sex: data.sex,
                             age: data.age,
                             phone: data.phone,
-                            desc: data.desc
+                            desc: data.desc,
+                            formId: that.data.formId,   // 用于发送模板消息
                         },
                         header: {
                             'Content-Type': 'application/x-www-form-urlencoded'     // 默认值
