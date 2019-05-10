@@ -242,7 +242,7 @@ export default {
                 isHideProLoadMore: true,
             })
         } else {
-            this.getProListForPage(this.data.activityid, this.data.procurrentpage)
+            this.getProListForPage(3, this.data.procurrentpage + 1)
         }
     },
     // 客服消息
