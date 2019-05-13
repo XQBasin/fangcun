@@ -112,7 +112,6 @@ export default {
         ],
         swiperCurrent: 0,
         uid: '',                // 当前用户标识
-        products: [],           // 作品列表
         procurrentpage: 1,      // 当前页码
         activityid: '',         // 活动标识
         products: [],           // 作品列表
