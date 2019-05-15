@@ -65,7 +65,7 @@
                         <button class="authorise_btn" data-route="mall/index" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
                             <view class='buttonitem'>
                                 <image src="../../static/image/menu/ceshi.png"/>
-                                <text>预定到家</text>
+                                <text>思必达</text>
                             </view>
                         </button>
                     </view>

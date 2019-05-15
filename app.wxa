@@ -8,7 +8,7 @@ export default {
   config: {
     usingComponents: {},
     pages: [
-      // 'pages/mall/index',
+      'pages/mall/index',
       // 首页
       'pages/home/index',
       // 社交

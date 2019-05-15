@@ -20,7 +20,7 @@
     <view style="height:{{NAV_HEIGHT}}"></view>
     <!-- 自动播放广告 -->
     <view class="swiper-container">
-        <swiper circular autoplay interval="5000" duration="500" bindchange="swiperChange" class="swiper">
+        <swiper circular interval="5000" duration="500" bindchange="swiperChange" class="swiper">
             <block wx:for="{{banner}}" wx:key="unique">
                 <swiper-item>
                     <image src="{{item.src}}" class="img" mode="aspectFill"/>
@@ -36,7 +36,7 @@
     </view>
     <!-- 商品信息 -->
     <view class="show-area">
-      <view class="price">¥{{goods.show_price}}<text class="del">¥{{goods.show_price * 0.1}}</text></view>
+      <view class="price"><text style="font-size: 12px;">¥</text>{{goods.show_price}}<text class="des">预订价¥{{goods.show_price * 0.1}}元</text></view>
       <view class="shop-title">{{goods.title}}</view>
       <text class="shop-type">送货上门</text>
       <text class="shop-type">分享免费预定</text>
@@ -58,7 +58,7 @@
           <ui-col class="text" >
               服务
           </ui-col>
-          <text class="tip">极速退货·正品保证·极速退款</text>
+          <text class="tip">极速退货·正品保证·极速退款...</text>
           <ui-col width="20" style="line-height:90rpx;">
               <ui-icon type="gengduo"></ui-icon>
           </ui-col>
@@ -172,9 +172,9 @@
     <!-- 店铺信息 -->
     <view class="tab-panel-item store">
       <view class="top">
-        <image src="../../static/image/details/icon_star_a.png" class="store-image" />
+        <image src="{{goods.shop.logo}}" class="store-image" />
         <view  class="store-info">
-          <view>LKSJDF服装店</view>
+          <view>{{goods.shop.name}}</view>
           <view class="score">店铺评分：<text>4.99</text>分</view>
         </view>
         <view class="more">
@@ -209,8 +209,14 @@
 
     <!-- 底部导航 -->
     <view class="tab">
-      <view class="tab-store"><image src="../../static/image/details/icon_bottom.png" /><text>店铺</text></view>
-      <view class="tab-shopCart"><image src="../../static/image/details/icon_bottom_shop.png" /><text>购物车</text></view>
+      <view class="tab-store">
+        <view class="tab-store-top"><ui-icon type="customer" color="#333333" size="22px;"></ui-icon></view>
+        <view class="tab-store-btn"><text>联系客服</text></view>
+      </view>
+      <view class="tab-shopCart">
+        <view class="tab-store-top"><ui-icon type="gouwuche" color="#333333" size="22px;"></ui-icon></view>
+        <view class="tab-store-btn"><text>购物车</text></view>
+      </view>
       <view class="tab-add-shopCart">加入购物车</view>
       <view class="tab-buy" bindtap="buy" data-show="{{true}}">立即购买</view>
     </view>
@@ -439,12 +445,7 @@ export default {
     NAV_HEIGHT:wx.STATUS_BAR_HEIGHT+wx.DEFAULT_HEADER_HEIGHT+'px',
     DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
     uid: '',  // 用户标识
-    banner: [
-        {src: 'http://file.taoyuantoday.com/213/20190118/696af11d6687092383174fddfb463137.jpg_0x0.jpg'},
-        {src: 'http://file.taoyuantoday.com/213/20190109/cd0bd4b383fb190dbafddc93edcc562d.jpg'},
-        {src: 'http://file.taoyuantoday.com/213/20190111/f7e9684f2a50926daa2361c19173e582.png'},
-        {src: 'http://file.taoyuantoday.com/213/20190114/29224e27cb98ee82ac2486bbc303bd53.jpg'},
-    ],
+    banner: [],
     imgNum:1,       //当前张数
     totalNum:3,      //总张数
     disFlag:false,  //优惠选项状态
@@ -481,6 +482,20 @@ export default {
           },
           success(res) {
               if (res.data) {
+                // 产品轮播图
+                let banner = []
+                res.data.photoArr.forEach(element => {
+                  let item = {
+                    src: element
+                  }
+                  banner.push(item)
+                });
+                // 规格列表
+
+                let data = {
+                  banner: banner,
+                  goods: res.data
+                }
                   // let tagitem = [{
                   //     text: parttime.parttype,
                   //     tagStyle: tagStyle
@@ -491,9 +506,7 @@ export default {
                   //     text: parttime.number+'人',
                   //     tagStyle: tagStyle
                   // }]
-                  that.setData({
-                      goods: res.data,
-                  })
+                  that.setData(data)
                   // 根据用户标识获取用户基本信息
                   // that.getUserInfoById(parttime.uid)
                   // 路径规划
@@ -686,22 +699,21 @@ export default {
   border-radius:20rpx 20rpx 0 0;
   overflow:hidden;
 }
-
 // 商品展示区
 .show-area {
   background-color: #fff;
-  padding: 10px;
+  padding: 5px 10px;
   position: relative;
+  .mix-1px(1, 0, 0, 0, #ccc);
   .price{
     font-size: 36rpx;
     color: rgb(248, 112, 5);
     font-weight: bold;
     margin: 20rpx 0 10rpx 0;
   }
-  .del{
+  .des{
     font-size: 24rpx;
     color: rgb(153, 153, 153);
-    text-decoration: line-through;
     font-weight: normal;
     margin-left: 30rpx;
   }
@@ -1206,35 +1218,43 @@ export default {
   bottom:0;
   height: 110rpx;
   width: 100%;
-  text-align: center;
+  .mix-flex-center();
   background: #fff;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  box-shadow: 0 -1px 2px 1px rgb(228, 228, 228);
   .tab-store,.tab-shopCart{
     width:15%;
     height: 100%;
-    float: left;
-    color: #999999;
-    padding-top: 10rpx;
-    image{
-      width: 54rpx;
-      height: 54rpx;
-      margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    color: #333;
+    font-size: 10px;
+    .tab-store-top {
+      text-align: center;
+    }
+    .tab-store-btn {
+      margin-top: -5px;
+      text-align: center;
     }
   }
   .tab-add-shopCart,.tab-buy {
-    line-height: 110rpx;
     width:35%;
     height: 100%;
-    float: left;
+    .mix-flex-center();
     font-size: 36rpx;
   }
   .tab-add-shopCart {
-    color: #f87005;
+    color: #fff;
     box-sizing: border-box;
-    border: 1px solid #f87005;
+    background: #ffd100;
+    .mix-flex-center();
   }
   .tab-buy{
     background: #f87005;
     color: #fff;
+    .mix-flex-center();
   }
 }
 // 立即购买

@@ -19,7 +19,7 @@
                     </view>
                 </ui-col>
                 <ui-col vertical-align="middle" class="nav-bar-col">
-                    <view class="nav-bar-title">预定到家</view>
+                    <view class="nav-bar-title">思必达</view>
                 </ui-col>
                 <ui-col vertical-align="middle" class="nav-bar-col" align="right"  width="100px">
                 </ui-col>
@@ -41,31 +41,60 @@
             </view>
             <view id="tabitems">
                 <!-- 鲜花Tab -->
-                <view wx:if="{{ flowers && tabindex === 0 }}">
-                    <view class="top_tip">
-                        <view class='show-groupsources'>
-                            <view class='show-group-item'>
-                                <view class='show-buttonitem' wx:key="flowerkey" wx:for="{{flowers}}" wx:for-item="flower" wx:for-index="index">
-                                    <view class="ranking-image" data-route='details' data-param='goodsid={{flower.id}}' bindtap='navigateToShow'>
-                                        <image src="{{flower.original_img}}" mode="aspectFill"/>
-                                        <view wx:if="{{index == 0}}" class="ranking-label">
-                                            <image class="label-image" src="../../static/image/ranking/icon-dierming1.png" mode="aspectFill"/>
+                <view wx:if="{{tabindex === 0 }}">
+                    <view class='show-groupsources'>
+                        <view class='show-group-item'>
+                            <view class='show-buttonitem' wx:key="flowerkey" wx:for="{{flowers1}}" wx:for-item="flower" wx:for-index="index">
+                                <view class="ranking-image" data-route='details' data-param='goodsid={{flower.id}}' bindtap='navigateToShow'>
+                                    <image src="{{flower.original_img}}" mode="aspectFill"/>
+                                </view>
+                                <view class="show-content" data-route='details' data-param='goodsid={{flower.id}}' bindtap='navigateToShow'>
+                                    <view class="show-content-title">{{flower.title}}法国特仑苏专业奶制品新配方新包装盒装进口优质酸奶</view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <text style="font-size:12px; color:red;">￥</text>
+                                            <text style="font-size:16px; color:red;">{{flower.show_price}}</text>
                                         </view>
-                                        <view wx:if="{{index == 1}}" class="ranking-label">
-                                            <image class="label-image" src="../../static/image/ranking/icon-dierming2.png" mode="aspectFill"/>
-                                        </view>
-                                        <view wx:if="{{index == 2}}" class="ranking-label">
-                                            <image class="label-image" src="../../static/image/ranking/icon-dierming3.png" mode="aspectFill"/>
+                                        <view class="show-content-des-price">
+                                            <text style="font-size:12px; color:#888;">预定￥{{flower.show_price * 0.1}}元</text>
                                         </view>
                                     </view>
-                                    <view class="show-content" data-route='details' data-param='goodsid={{flower.id}}' bindtap='navigateToShow'>
-                                        <view class="show-content-title">{{flower.title}}</view>
-                                        <view class="show-content-des">
-                                            <view class="show-content-des-left"><text style="font-size:16px; color:red;">￥{{flower.show_price * 0.1}}</text> 预定</view>
-                                            <view class="show-content-des-right">
-                                                <view class="btn">
-                                                    <ui-icon type="guanzhu" color="#FFFFFF" size="12px;" style="margin:0px 0px 0px 2px;"> 预定</ui-icon>
-                                                </view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <!-- <text style="font-size:12px; color:#888;">2019-05-15</text> -->
+                                        </view>
+                                        <view class="show-content-des-right">
+                                            <view class="btn">
+                                                <ui-icon type="guanzhu" color="#FFFFFF" size="12px;" style="margin:0px 0px 0px 2px;">详情</ui-icon>
+                                            </view>
+                                        </view>
+                                    </view>
+                                </view>
+                            </view>
+                        </view>
+                        <view class='show-group-item'>
+                            <view class='show-buttonitem' wx:key="flowerkey" wx:for="{{flowers2}}" wx:for-item="flower" wx:for-index="index">
+                                <view class="ranking-image" data-route='details' data-param='goodsid={{flower.id}}' bindtap='navigateToShow'>
+                                    <image src="{{flower.original_img}}" mode="aspectFill"/>
+                                </view>
+                                <view class="show-content" data-route='details' data-param='goodsid={{flower.id}}' bindtap='navigateToShow'>
+                                    <view class="show-content-title">{{flower.title}}</view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <text style="font-size:12px; color:red;">￥</text>
+                                            <text style="font-size:16px; color:red;">{{flower.show_price}}</text>
+                                        </view>
+                                        <view class="show-content-des-price">
+                                            <text style="font-size:12px; color:#888;">预定￥{{flower.show_price * 0.1}}元</text>
+                                        </view>
+                                    </view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <!-- <text style="font-size:12px; color:#888;">2019-05-15</text> -->
+                                        </view>
+                                        <view class="show-content-des-right">
+                                            <view class="btn">
+                                                <ui-icon type="guanzhu" color="#FFFFFF" size="12px;" style="margin:0px 0px 0px 2px;">详情</ui-icon>
                                             </view>
                                         </view>
                                     </view>
@@ -81,31 +110,60 @@
                     <ui-divider wx:if="{{isHideFlowerLoadMore}}" padding="20">我是有底线的</ui-divider>
                 </view>
                 <!-- 礼品Tab -->
-                <view wx:if="{{ gifts && tabindex === 1 }}">
-                    <view class="top_tip">
-                        <view class='show-groupsources'>
-                            <view class='show-group-item'>
-                                <view class='show-buttonitem' wx:key="giftkey" wx:for="{{gifts}}" wx:for-item="gift" wx:for-index="index">
-                                    <view class="ranking-image" data-route='details' data-param='goodsid={{gift.id}}' bindtap='navigateToShow'>
-                                        <image src="{{gift.original_img}}" mode="aspectFill"/>
-                                        <view wx:if="{{index == 0}}" class="ranking-label">
-                                            <image class="label-image" src="../../static/image/ranking/icon-dierming1.png" mode="aspectFill"/>
+                <view wx:if="{{ tabindex === 1 }}">
+                    <view class='show-groupsources'>
+                        <view class='show-group-item'>
+                            <view class='show-buttonitem' wx:key="giftkey" wx:for="{{gifts1}}" wx:for-item="gift" wx:for-index="index">
+                                <view class="ranking-image" data-route='details' data-param='goodsid={{gift.id}}' bindtap='navigateToShow'>
+                                    <image src="{{gift.original_img}}" mode="aspectFill"/>
+                                </view>
+                                <view class="show-content" data-route='details' data-param='goodsid={{gift.id}}' bindtap='navigateToShow'>
+                                    <view class="show-content-title">{{gift.title}}</view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <text style="font-size:12px; color:red;">￥</text>
+                                            <text style="font-size:16px; color:red;">{{gift.show_price}}</text>
                                         </view>
-                                        <view wx:if="{{index == 1}}" class="ranking-label">
-                                            <image class="label-image" src="../../static/image/ranking/icon-dierming2.png" mode="aspectFill"/>
-                                        </view>
-                                        <view wx:if="{{index == 2}}" class="ranking-label">
-                                            <image class="label-image" src="../../static/image/ranking/icon-dierming3.png" mode="aspectFill"/>
+                                        <view class="show-content-des-price">
+                                            <text style="font-size:12px; color:#888;">预定￥{{gift.show_price * 0.1}}元</text>
                                         </view>
                                     </view>
-                                    <view class="show-content" data-route='details' data-param='goodsid={{gift.id}}' bindtap='navigateToShow'>
-                                        <view class="show-content-title">{{gift.title}}</view>
-                                        <view class="show-content-des">
-                                            <view class="show-content-des-left"><text style="font-size:16px; color:red;">￥{{gift.show_price * 0.1}}</text> 预定</view>
-                                            <view class="show-content-des-right">
-                                                <view class="btn">
-                                                    <ui-icon type="guanzhu" color="#FFFFFF" size="12px;" style="margin:0px 0px 0px 2px;"> 预定</ui-icon>
-                                                </view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <!-- <text style="font-size:12px; color:#888;">2019-05-15</text> -->
+                                        </view>
+                                        <view class="show-content-des-right">
+                                            <view class="btn">
+                                                <ui-icon type="guanzhu" color="#FFFFFF" size="12px;" style="margin:0px 0px 0px 2px;">详情</ui-icon>
+                                            </view>
+                                        </view>
+                                    </view>
+                                </view>
+                            </view>
+                        </view>
+                        <view class='show-group-item'>
+                            <view class='show-buttonitem' wx:key="giftkey" wx:for="{{gifts2}}" wx:for-item="gift" wx:for-index="index">
+                                <view class="ranking-image" data-route='details' data-param='goodsid={{gift.id}}' bindtap='navigateToShow'>
+                                    <image src="{{gift.original_img}}" mode="aspectFill"/>
+                                </view>
+                                <view class="show-content" data-route='details' data-param='goodsid={{gift.id}}' bindtap='navigateToShow'>
+                                    <view class="show-content-title">{{gift.title}}</view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <text style="font-size:12px; color:red;">￥</text>
+                                            <text style="font-size:16px; color:red;">{{gift.show_price}}</text>
+                                        </view>
+                                        <view class="show-content-des-price">
+                                            <text style="font-size:12px; color:#888;">预定￥{{gift.show_price * 0.1}}元</text>
+                                        </view>
+                                    </view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <!-- <text style="font-size:12px; color:#888;">2019-05-15</text> -->
+                                        </view>
+                                        <view class="show-content-des-right">
+                                            <view class="btn">
+                                                <ui-icon type="guanzhu" color="#FFFFFF" size="12px;" style="margin:0px 0px 0px 2px;">详情</ui-icon>
                                             </view>
                                         </view>
                                     </view>
@@ -121,31 +179,60 @@
                     <ui-divider wx:if="{{isHideGiftLoadMore}}" padding="20">我是有底线的</ui-divider>
                 </view>
                 <!-- 零食Tab -->
-                <view wx:if="{{ snacks && tabindex === 2 }}">
-                    <view class="top_tip">
-                        <view class='show-groupsources'>
-                            <view class='show-group-item'>
-                                <view class='show-buttonitem' wx:key="snackkey" wx:for="{{snacks}}" wx:for-item="snack" wx:for-index="index">
-                                    <view class="ranking-image" data-route='details' data-param='goodsid={{snack.id}}' bindtap='navigateToShow'>
-                                        <image src="{{snack.original_img}}" mode="aspectFill"/>
-                                        <view wx:if="{{index == 0}}" class="ranking-label">
-                                            <image class="label-image" src="../../static/image/ranking/icon-dierming1.png" mode="aspectFill"/>
+                <view wx:if="{{ tabindex === 2 }}">
+                    <view class='show-groupsources'>
+                        <view class='show-group-item'>
+                            <view class='show-buttonitem' wx:key="snackkey" wx:for="{{snacks1}}" wx:for-item="snack" wx:for-index="index">
+                                <view class="ranking-image" data-route='details' data-param='goodsid={{snack.id}}' bindtap='navigateToShow'>
+                                    <image src="{{snack.original_img}}" mode="aspectFill"/>
+                                </view>
+                                <view class="show-content" data-route='details' data-param='goodsid={{snack.id}}' bindtap='navigateToShow'>
+                                    <view class="show-content-title">{{snack.title}}</view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <text style="font-size:12px; color:red;">￥</text>
+                                            <text style="font-size:16px; color:red;">{{snack.show_price}}</text>
                                         </view>
-                                        <view wx:if="{{index == 1}}" class="ranking-label">
-                                            <image class="label-image" src="../../static/image/ranking/icon-dierming2.png" mode="aspectFill"/>
-                                        </view>
-                                        <view wx:if="{{index == 2}}" class="ranking-label">
-                                            <image class="label-image" src="../../static/image/ranking/icon-dierming3.png" mode="aspectFill"/>
+                                        <view class="show-content-des-price">
+                                            <text style="font-size:12px; color:#888;">预定￥{{snack.show_price * 0.1}}元</text>
                                         </view>
                                     </view>
-                                    <view class="show-content" data-route='details' data-param='goodsid={{snack.id}}' bindtap='navigateToShow'>
-                                        <view class="show-content-title">{{snack.title}}</view>
-                                        <view class="show-content-des">
-                                            <view class="show-content-des-left"><text style="font-size:16px; color:red;">￥{{snack.show_price * 0.1}}</text> 预定</view>
-                                            <view class="show-content-des-right">
-                                                <view class="btn">
-                                                    <ui-icon type="guanzhu" color="#FFFFFF" size="12px;" style="margin:0px 0px 0px 2px;"> 预定</ui-icon>
-                                                </view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <!-- <text style="font-size:12px; color:#888;">2019-05-15</text> -->
+                                        </view>
+                                        <view class="show-content-des-right">
+                                            <view class="btn">
+                                                <ui-icon type="guanzhu" color="#FFFFFF" size="12px;" style="margin:0px 0px 0px 2px;">详情</ui-icon>
+                                            </view>
+                                        </view>
+                                    </view>
+                                </view>
+                            </view>
+                        </view>
+                        <view class='show-group-item'>
+                            <view class='show-buttonitem' wx:key="snackkey" wx:for="{{snacks2}}" wx:for-item="snack" wx:for-index="index">
+                                <view class="ranking-image" data-route='details' data-param='goodsid={{snack.id}}' bindtap='navigateToShow'>
+                                    <image src="{{snack.original_img}}" mode="aspectFill"/>
+                                </view>
+                                <view class="show-content" data-route='details' data-param='goodsid={{snack.id}}' bindtap='navigateToShow'>
+                                    <view class="show-content-title">{{snack.title}}</view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <text style="font-size:12px; color:red;">￥</text>
+                                            <text style="font-size:16px; color:red;">{{snack.show_price}}</text>
+                                        </view>
+                                        <view class="show-content-des-price">
+                                            <text style="font-size:12px; color:#888;">预定￥{{snack.show_price * 0.1}}元</text>
+                                        </view>
+                                    </view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <!-- <text style="font-size:12px; color:#888;">2019-05-15</text> -->
+                                        </view>
+                                        <view class="show-content-des-right">
+                                            <view class="btn">
+                                                <ui-icon type="guanzhu" color="#FFFFFF" size="12px;" style="margin:0px 0px 0px 2px;">详情</ui-icon>
                                             </view>
                                         </view>
                                     </view>
@@ -161,31 +248,60 @@
                     <ui-divider wx:if="{{isHideSnackLoadMore}}" padding="20">我是有底线的</ui-divider>
                 </view>
                 <!-- 蛋糕Tab -->
-                <view wx:if="{{ cakes && tabindex === 3 }}">
-                    <view class="top_tip">
-                        <view class='show-groupsources'>
-                            <view class='show-group-item'>
-                                <view class='show-buttonitem' wx:key="cakekey" wx:for="{{cakes}}" wx:for-item="cake" wx:for-index="index">
-                                    <view class="ranking-image" data-route='details' data-param='goodsid={{cake.id}}' bindtap='navigateToShow'>
-                                        <image src="{{cake.original_img}}" mode="aspectFill"/>
-                                        <view wx:if="{{index == 0}}" class="ranking-label">
-                                            <image class="label-image" src="../../static/image/ranking/icon-dierming1.png" mode="aspectFill"/>
+                <view wx:if="{{ tabindex === 3 }}">
+                    <view class='show-groupsources'>
+                        <view class='show-group-item'>
+                            <view class='show-buttonitem' wx:key="cakekey" wx:for="{{cakes1}}" wx:for-item="cake" wx:for-index="index">
+                                <view class="ranking-image" data-route='details' data-param='goodsid={{cake.id}}' bindtap='navigateToShow'>
+                                    <image src="{{cake.original_img}}" mode="aspectFill"/>
+                                </view>
+                                <view class="show-content" data-route='details' data-param='goodsid={{cake.id}}' bindtap='navigateToShow'>
+                                    <view class="show-content-title">{{cake.title}}</view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <text style="font-size:12px; color:red;">￥</text>
+                                            <text style="font-size:16px; color:red;">{{cake.show_price}}</text>
                                         </view>
-                                        <view wx:if="{{index == 1}}" class="ranking-label">
-                                            <image class="label-image" src="../../static/image/ranking/icon-dierming2.png" mode="aspectFill"/>
-                                        </view>
-                                        <view wx:if="{{index == 2}}" class="ranking-label">
-                                            <image class="label-image" src="../../static/image/ranking/icon-dierming3.png" mode="aspectFill"/>
+                                        <view class="show-content-des-price">
+                                            <text style="font-size:12px; color:#888;">预定￥{{cake.show_price * 0.1}}元</text>
                                         </view>
                                     </view>
-                                    <view class="show-content" data-route='details' data-param='goodsid={{cake.id}}' bindtap='navigateToShow'>
-                                        <view class="show-content-title">{{cake.title}}</view>
-                                        <view class="show-content-des">
-                                            <view class="show-content-des-left"><text style="font-size:16px; color:red;">￥{{cake.show_price * 0.1}}</text> 预定</view>
-                                            <view class="show-content-des-right">
-                                                <view class="btn">
-                                                    <ui-icon type="guanzhu" color="#FFFFFF" size="12px;" style="margin:0px 0px 0px 2px;"> 预定</ui-icon>
-                                                </view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <!-- <text style="font-size:12px; color:#888;">2019-05-15</text> -->
+                                        </view>
+                                        <view class="show-content-des-right">
+                                            <view class="btn">
+                                                <ui-icon type="guanzhu" color="#FFFFFF" size="12px;" style="margin:0px 0px 0px 2px;">详情</ui-icon>
+                                            </view>
+                                        </view>
+                                    </view>
+                                </view>
+                            </view>
+                        </view>
+                        <view class='show-group-item'>
+                            <view class='show-buttonitem' wx:key="cakekey" wx:for="{{cakes2}}" wx:for-item="cake" wx:for-index="index">
+                                <view class="ranking-image" data-route='details' data-param='goodsid={{cake.id}}' bindtap='navigateToShow'>
+                                    <image src="{{cake.original_img}}" mode="aspectFill"/>
+                                </view>
+                                <view class="show-content" data-route='details' data-param='goodsid={{cake.id}}' bindtap='navigateToShow'>
+                                    <view class="show-content-title">{{cake.title}}</view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <text style="font-size:12px; color:red;">￥</text>
+                                            <text style="font-size:16px; color:red;">{{cake.show_price}}</text>
+                                        </view>
+                                        <view class="show-content-des-price">
+                                            <text style="font-size:12px; color:#888;">预定￥{{cake.show_price * 0.1}}元</text>
+                                        </view>
+                                    </view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <!-- <text style="font-size:12px; color:#888;">2019-05-15</text> -->
+                                        </view>
+                                        <view class="show-content-des-right">
+                                            <view class="btn">
+                                                <ui-icon type="guanzhu" color="#FFFFFF" size="12px;" style="margin:0px 0px 0px 2px;">详情</ui-icon>
                                             </view>
                                         </view>
                                     </view>
@@ -201,31 +317,60 @@
                     <ui-divider wx:if="{{isHideCakeLoadMore}}" padding="20">我是有底线的</ui-divider>
                 </view>
                 <!-- 饮料Tab -->
-                <view wx:if="{{ drinks && tabindex === 4 }}">
-                    <view class="top_tip">
-                        <view class='show-groupsources'>
-                            <view class='show-group-item'>
-                                <view class='show-buttonitem' wx:key="drinkkey" wx:for="{{drinks}}" wx:for-item="drink" wx:for-index="index">
-                                    <view class="ranking-image" data-route='details' data-param='goodsid={{drink.id}}' bindtap='navigateToShow'>
-                                        <image src="{{drink.original_img}}" mode="aspectFill"/>
-                                        <view wx:if="{{index == 0}}" class="ranking-label">
-                                            <image class="label-image" src="../../static/image/ranking/icon-dierming1.png" mode="aspectFill"/>
+                <view wx:if="{{ tabindex === 4 }}">
+                    <view class='show-groupsources'>
+                        <view class='show-group-item'>
+                            <view class='show-buttonitem' wx:key="drinkkey" wx:for="{{drinks1}}" wx:for-item="drink" wx:for-index="index">
+                                <view class="ranking-image" data-route='details' data-param='goodsid={{drink.id}}' bindtap='navigateToShow'>
+                                    <image src="{{drink.original_img}}" mode="aspectFill"/>
+                                </view>
+                                <view class="show-content" data-route='details' data-param='goodsid={{drink.id}}' bindtap='navigateToShow'>
+                                    <view class="show-content-title">{{drink.title}}</view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <text style="font-size:12px; color:red;">￥</text>
+                                            <text style="font-size:16px; color:red;">{{drink.show_price}}</text>
                                         </view>
-                                        <view wx:if="{{index == 1}}" class="ranking-label">
-                                            <image class="label-image" src="../../static/image/ranking/icon-dierming2.png" mode="aspectFill"/>
-                                        </view>
-                                        <view wx:if="{{index == 2}}" class="ranking-label">
-                                            <image class="label-image" src="../../static/image/ranking/icon-dierming3.png" mode="aspectFill"/>
+                                        <view class="show-content-des-price">
+                                            <text style="font-size:12px; color:#888;">预定￥{{drink.show_price * 0.1}}元</text>
                                         </view>
                                     </view>
-                                    <view class="show-content" data-route='details' data-param='goodsid={{drink.id}}' bindtap='navigateToShow'>
-                                        <view class="show-content-title">{{drink.title}}</view>
-                                        <view class="show-content-des">
-                                            <view class="show-content-des-left"><text style="font-size:16px; color:red;">￥{{drink.show_price * 0.1}}</text> 预定</view>
-                                            <view class="show-content-des-right">
-                                                <view class="btn">
-                                                    <ui-icon type="guanzhu" color="#FFFFFF" size="12px;" style="margin:0px 0px 0px 2px;"> 预定</ui-icon>
-                                                </view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <!-- <text style="font-size:12px; color:#888;">2019-05-15</text> -->
+                                        </view>
+                                        <view class="show-content-des-right">
+                                            <view class="btn">
+                                                <ui-icon type="guanzhu" color="#FFFFFF" size="12px;" style="margin:0px 0px 0px 2px;">详情</ui-icon>
+                                            </view>
+                                        </view>
+                                    </view>
+                                </view>
+                            </view>
+                        </view>
+                        <view class='show-group-item'>
+                            <view class='show-buttonitem' wx:key="drinkkey" wx:for="{{drinks2}}" wx:for-item="drink" wx:for-index="index">
+                                <view class="ranking-image" data-route='details' data-param='goodsid={{drink.id}}' bindtap='navigateToShow'>
+                                    <image src="{{drink.original_img}}" mode="aspectFill"/>
+                                </view>
+                                <view class="show-content" data-route='details' data-param='goodsid={{drink.id}}' bindtap='navigateToShow'>
+                                    <view class="show-content-title">{{drink.title}}</view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <text style="font-size:12px; color:red;">￥</text>
+                                            <text style="font-size:16px; color:red;">{{drink.show_price}}</text>
+                                        </view>
+                                        <view class="show-content-des-price">
+                                            <text style="font-size:12px; color:#888;">预定￥{{drink.show_price * 0.1}}元</text>
+                                        </view>
+                                    </view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <!-- <text style="font-size:12px; color:#888;">2019-05-15</text> -->
+                                        </view>
+                                        <view class="show-content-des-right">
+                                            <view class="btn">
+                                                <ui-icon type="guanzhu" color="#FFFFFF" size="12px;" style="margin:0px 0px 0px 2px;">详情</ui-icon>
                                             </view>
                                         </view>
                                     </view>
@@ -241,31 +386,60 @@
                     <ui-divider wx:if="{{isHideDrinkLoadMore}}" padding="20">我是有底线的</ui-divider>
                 </view>
                 <!-- 水果Tab -->
-                <view wx:if="{{ fruits && tabindex === 5 }}">
-                    <view class="top_tip">
-                        <view class='show-groupsources'>
-                            <view class='show-group-item'>
-                                <view class='show-buttonitem' wx:key="fruitkey" wx:for="{{fruits}}" wx:for-item="fruit" wx:for-index="index">
-                                    <view class="ranking-image" data-route='details' data-param='goodsid={{fruit.id}}' bindtap='navigateToShow'>
-                                        <image src="{{fruit.original_img}}" mode="aspectFill"/>
-                                        <view wx:if="{{index == 0}}" class="ranking-label">
-                                            <image class="label-image" src="../../static/image/ranking/icon-dierming1.png" mode="aspectFill"/>
+                <view wx:if="{{ tabindex === 5 }}">
+                    <view class='show-groupsources'>
+                        <view class='show-group-item'>
+                            <view class='show-buttonitem' wx:key="fruitkey" wx:for="{{fruits1}}" wx:for-item="fruit" wx:for-index="index">
+                                <view class="ranking-image" data-route='details' data-param='goodsid={{fruit.id}}' bindtap='navigateToShow'>
+                                    <image src="{{fruit.original_img}}" mode="aspectFill"/>
+                                </view>
+                                <view class="show-content" data-route='details' data-param='goodsid={{fruit.id}}' bindtap='navigateToShow'>
+                                    <view class="show-content-title">{{fruit.title}}</view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <text style="font-size:12px; color:red;">￥</text>
+                                            <text style="font-size:16px; color:red;">{{fruit.show_price}}</text>
                                         </view>
-                                        <view wx:if="{{index == 1}}" class="ranking-label">
-                                            <image class="label-image" src="../../static/image/ranking/icon-dierming2.png" mode="aspectFill"/>
-                                        </view>
-                                        <view wx:if="{{index == 2}}" class="ranking-label">
-                                            <image class="label-image" src="../../static/image/ranking/icon-dierming3.png" mode="aspectFill"/>
+                                        <view class="show-content-des-price">
+                                            <text style="font-size:12px; color:#888;">预定￥{{fruit.show_price * 0.1}}元</text>
                                         </view>
                                     </view>
-                                    <view class="show-content" data-route='details' data-param='goodsid={{fruit.id}}' bindtap='navigateToShow'>
-                                        <view class="show-content-title">{{fruit.title}}</view>
-                                        <view class="show-content-des">
-                                            <view class="show-content-des-left"><text style="font-size:16px; color:red;">￥{{fruit.show_price * 0.1}}</text> 预定</view>
-                                            <view class="show-content-des-right">
-                                                <view class="btn">
-                                                    <ui-icon type="guanzhu" color="#FFFFFF" size="12px;" style="margin:0px 0px 0px 2px;"> 预定</ui-icon>
-                                                </view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <!-- <text style="font-size:12px; color:#888;">2019-05-15</text> -->
+                                        </view>
+                                        <view class="show-content-des-right">
+                                            <view class="btn">
+                                                <ui-icon type="guanzhu" color="#FFFFFF" size="12px;" style="margin:0px 0px 0px 2px;">详情</ui-icon>
+                                            </view>
+                                        </view>
+                                    </view>
+                                </view>
+                            </view>
+                        </view>
+                        <view class='show-group-item'>
+                            <view class='show-buttonitem' wx:key="fruitkey" wx:for="{{fruits2}}" wx:for-item="fruit" wx:for-index="index">
+                                <view class="ranking-image" data-route='details' data-param='goodsid={{fruit.id}}' bindtap='navigateToShow'>
+                                    <image src="{{fruit.original_img}}" mode="aspectFill"/>
+                                </view>
+                                <view class="show-content" data-route='details' data-param='goodsid={{fruit.id}}' bindtap='navigateToShow'>
+                                    <view class="show-content-title">{{fruit.title}}</view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <text style="font-size:12px; color:red;">￥</text>
+                                            <text style="font-size:16px; color:red;">{{fruit.show_price}}</text>
+                                        </view>
+                                        <view class="show-content-des-price">
+                                            <text style="font-size:12px; color:#888;">预定￥{{fruit.show_price * 0.1}}元</text>
+                                        </view>
+                                    </view>
+                                    <view class="show-content-des">
+                                        <view class="show-content-des-left">
+                                            <!-- <text style="font-size:12px; color:#888;">2019-05-15</text> -->
+                                        </view>
+                                        <view class="show-content-des-right">
+                                            <view class="btn">
+                                                <ui-icon type="guanzhu" color="#FFFFFF" size="12px;" style="margin:0px 0px 0px 2px;">详情</ui-icon>
                                             </view>
                                         </view>
                                     </view>
@@ -302,7 +476,7 @@
 import WxValidate from '../../static/utils/WxValidate.js'
 export default {
     config: {
-        navigationBarTitleText: '预定到家',
+        navigationBarTitleText: '思必达',
         navigationBarTextStyle: 'black',
         backgroundColor: "#888888",
         backgroundTextStyle: "light"
@@ -313,27 +487,33 @@ export default {
         uid: '',                    // 当前用户标识
         tabindex: 0,                // tab初始索引
         shopid: '',                 // 商家标识
-        flowers: [],                // 鲜花列表
+        flowers1: [],               // 鲜花列表
+        flowers2: [],               // 鲜花列表
         flowerCurrentPage: 1,       // 当前页码
         flowerTotalPage: 0,         // 总页码
         isHideFlowerLoadMore: false,// 默认显示加载更多
-        gifts: [],                  // 礼品列表
+        gifts1: [],                 // 礼品列表
+        gifts2: [],                 // 礼品列表
         giftCurrentPage: 1,         // 当前页码
         giftTotalPage: 0,           // 总页码
         isHideGiftLoadMore: false,  // 默认显示加载更多
-        snacks: [],                 // 零食列表
+        snacks1: [],                // 零食列表
+        snacks2: [],                // 零食列表
         snackCurrentPage: 1,        // 当前页码
         snackTotalPage: 0,          // 总页码
         isHideSnackLoadMore: false, // 默认显示加载更多
-        cakes: [],                  // 蛋糕列表
+        cakes1: [],                 // 蛋糕列表
+        cakes2: [],                 // 蛋糕列表
         cakeCurrentPage: 1,         // 当前页码
         cakeTotalPage: 0,           // 总页码
         isHideCakeLoadMore: false,  // 默认显示加载更多
-        drinks: [],                 // 饮料列表
+        drinks1: [],                // 饮料列表
+        drinks2: [],                // 饮料列表
         drinkCurrentPage: 1,        // 当前页码
         drinkTotalPage: 0,          // 总页码
         isHideDrinkLoadMore: false, // 默认显示加载更多
-        fruits: [],                 // 水果列表
+        fruits1: [],                // 水果列表
+        fruits2: [],                // 水果列表
         fruitCurrentPage: 1,        // 当前页码
         fruitTotalPage: 0,          // 总页码
         isHideFruitLoadMore: false, // 默认显示加载更多
@@ -393,32 +573,32 @@ export default {
         })
         switch(tabindex) {
             case 0:
-                if (this.data.flowers.length == 0) {
+                if (this.data.flowers1.length == 0) {
                     this.getFlowerListForPage(213, this.data.flowerCurrentPage)
                 }
                 break;
             case 1:
-                if (this.data.gifts.length == 0) {
+                if (this.data.gifts1.length == 0) {
                     this.getGiftListForPage(213, this.data.giftCurrentPage)
                 }
                 break;
             case 2:
-                if (this.data.snacks.length == 0) {
+                if (this.data.snacks1.length == 0) {
                     this.getSnackListForPage(213, this.data.snackCurrentPage)
                 }
                 break;
             case 3:
-                if (this.data.cakes.length == 0) {
+                if (this.data.cakes1.length == 0) {
                     this.getCakeListForPage(213, this.data.cakeCurrentPage)
                 }
                 break;
             case 4:
-                if (this.data.drinks.length == 0) {
+                if (this.data.drinks1.length == 0) {
                     this.getDrinkListForPage(213, this.data.drinkCurrentPage)
                 }
                 break;
             case 5:
-                if (this.data.fruits.length == 0) {
+                if (this.data.fruits1.length == 0) {
                     this.getFruitListForPage(213, this.data.fruitCurrentPage)
                 }
                 break;
@@ -444,32 +624,34 @@ export default {
                     })
                 }
                 if (res.data.state) {
+                    let flowers1 = [];
+                    let flowers2 = [];
                     if (concat) {
-                        that.setData({
-                            flowerCurrentPage: res.data.flowerCurrentPage,
-                            flowers: that.data.flowers.concat(res.data.flowers),
-                            flowerTotalPage: res.data.flowerTotalPage,
-                        })
-                    } else {
-                        that.setData({
-                            flowers: null,
-                        })
-                        that.setData({
-                            flowerCurrentPage: res.data.flowerCurrentPage,
-                            flowers: res.data.flowers,
-                            flowerTotalPage: res.data.flowerTotalPage,
-                        })
+                        let flowers1 = that.data.flowers1;
+                        let flowers2 = that.data.flowers2;
                     }
-                } else {
-                    that.setData({
-                        flowers: null,
-                    })
-                    that.setData({
+                    res.data.flowers.forEach(element => {
+                        //判断当前图片添加到左列还是右列
+                        if (flowers1.length <= flowers2.length) {
+                            flowers1.push(element);
+                        } else {
+                            flowers2.push(element);
+                        }
+                    });
+                    let data = {
+                        flowers1: flowers1,
+                        flowers2: flowers2,
                         flowerCurrentPage: res.data.flowerCurrentPage,
-                        flowers: res.data.flowers,
+                        flowerTotalPage: res.data.flowerTotalPage,
+                    };
+                    that.setData(data)
+                } else {
+                    let data = {
+                        flowerCurrentPage: res.data.flowerCurrentPage,
                         flowerTotalPage: res.data.flowerTotalPage,
                         isHideFlowerLoadMore: true,
-                    })
+                    };
+                    that.setData(data)
                 }
             }
         })
@@ -493,32 +675,34 @@ export default {
                     })
                 }
                 if (res.data.state) {
+                    let gifts1 = [];
+                    let gifts2 = [];
                     if (concat) {
-                        that.setData({
-                            giftCurrentPage: res.data.giftCurrentPage,
-                            gifts: that.data.gift.concat(res.data.gifts),
-                            giftTotalPage: res.data.giftTotalPage,
-                        })
-                    } else {
-                        that.setData({
-                            gifts: null,
-                        })
-                        that.setData({
-                            giftCurrentPage: res.data.giftCurrentPage,
-                            gifts: res.data.gifts,
-                            giftTotalPage: res.data.giftTotalPage,
-                        })
+                        let gifts1 = that.data.gifts1;
+                        let gifts2 = that.data.gifts2;
                     }
-                } else {
-                    that.setData({
-                        gifts: null,
-                    })
-                    that.setData({
+                    res.data.gifts.forEach(element => {
+                        //判断当前图片添加到左列还是右列
+                        if (gifts1.length <= gifts2.length) {
+                            gifts1.push(element);
+                        } else {
+                            gifts2.push(element);
+                        }
+                    });
+                    let data = {
+                        gifts1: gifts1,
+                        gifts2: gifts2,
                         giftCurrentPage: res.data.giftCurrentPage,
-                        gifts: res.data.gifts,
+                        giftTotalPage: res.data.giftTotalPage,
+                    };
+                    that.setData(data)
+                } else {
+                    let data = {
+                        giftCurrentPage: res.data.giftCurrentPage,
                         giftTotalPage: res.data.giftTotalPage,
                         isHideGiftLoadMore: true,
-                    })
+                    };
+                    that.setData(data)
                 }
             }
         })
@@ -542,32 +726,34 @@ export default {
                     })
                 }
                 if (res.data.state) {
+                    let snacks1 = [];
+                    let snacks2 = [];
                     if (concat) {
-                        that.setData({
-                            snackCurrentPage: res.data.snackCurrentPage,
-                            snacks: that.data.snacks.concat(res.data.snacks),
-                            snackTotalPage: res.data.snackTotalPage,
-                        })
-                    } else {
-                        that.setData({
-                            snacks: null,
-                        })
-                        that.setData({
-                            snackCurrentPage: res.data.snackCurrentPage,
-                            snacks: res.data.snacks,
-                            snackTotalPage: res.data.snackTotalPage,
-                        })
+                        let snacks1 = that.data.snacks1;
+                        let snacks2 = that.data.snacks2;
                     }
-                } else {
-                    that.setData({
-                        snacks: null,
-                    })
-                    that.setData({
+                    res.data.snacks.forEach(element => {
+                        //判断当前图片添加到左列还是右列
+                        if (snacks1.length <= snacks2.length) {
+                            snacks1.push(element);
+                        } else {
+                            snacks2.push(element);
+                        }
+                    });
+                    let data = {
+                        snacks1: snacks1,
+                        snacks2: snacks2,
                         snackCurrentPage: res.data.snackCurrentPage,
-                        snacks: res.data.snacks,
+                        snackTotalPage: res.data.snackTotalPage,
+                    };
+                    that.setData(data)
+                } else {
+                    let data = {
+                        snackCurrentPage: res.data.snackCurrentPage,
                         snackTotalPage: res.data.snackTotalPage,
                         isHideSnackLoadMore: true,
-                    })
+                    };
+                    that.setData(data)
                 }
             }
         })
@@ -591,32 +777,34 @@ export default {
                     })
                 }
                 if (res.data.state) {
+                    let cakes1 = [];
+                    let cakes2 = [];
                     if (concat) {
-                        that.setData({
-                            cakeCurrentPage: res.data.cakeCurrentPage,
-                            cakes: that.data.cakes.concat(res.data.cakes),
-                            cakeTotalPage: res.data.cakeTotalPage,
-                        })
-                    } else {
-                        that.setData({
-                            cakes: null,
-                        })
-                        that.setData({
-                            cakeCurrentPage: res.data.cakeCurrentPage,
-                            cakes: res.data.cakes,
-                            cakeTotalPage: res.data.cakeTotalPage,
-                        })
+                        let cakes1 = that.data.cakes1;
+                        let cakes2 = that.data.cakes2;
                     }
-                } else {
-                    that.setData({
-                        cakes: null,
-                    })
-                    that.setData({
+                    res.data.cakes.forEach(element => {
+                        //判断当前图片添加到左列还是右列
+                        if (cakes1.length <= cakes2.length) {
+                            cakes1.push(element);
+                        } else {
+                            cakes2.push(element);
+                        }
+                    });
+                    let data = {
+                        cakes1: cakes1,
+                        cakes2: cakes2,
                         cakeCurrentPage: res.data.cakeCurrentPage,
-                        cakes: res.data.cakes,
+                        cakeTotalPage: res.data.cakeTotalPage,
+                    };
+                    that.setData(data)
+                } else {
+                    let data = {
+                        cakeCurrentPage: res.data.cakeCurrentPage,
                         cakeTotalPage: res.data.cakeTotalPage,
                         isHideCakeLoadMore: true,
-                    })
+                    };
+                    that.setData(data)
                 }
             }
         })
@@ -640,32 +828,34 @@ export default {
                     })
                 }
                 if (res.data.state) {
+                    let drinks1 = [];
+                    let drinks2 = [];
                     if (concat) {
-                        that.setData({
-                            drinkCurrentPage: res.data.drinkCurrentPage,
-                            drinks: that.data.drinks.concat(res.data.drinks),
-                            drinkTotalPage: res.data.drinkTotalPage,
-                        })
-                    } else {
-                        that.setData({
-                            drinks: null,
-                        })
-                        that.setData({
-                            drinkCurrentPage: res.data.drinkCurrentPage,
-                            drinks: res.data.drinks,
-                            drinkTotalPage: res.data.drinkTotalPage,
-                        })
+                        let drinks1 = that.data.drinks1;
+                        let drinks2 = that.data.drinks2;
                     }
-                } else {
-                    that.setData({
-                        drinks: null,
-                    })
-                    that.setData({
+                    res.data.drinks.forEach(element => {
+                        //判断当前图片添加到左列还是右列
+                        if (drinks1.length <= drinks2.length) {
+                            drinks1.push(element);
+                        } else {
+                            drinks2.push(element);
+                        }
+                    });
+                    let data = {
+                        drinks1: drinks1,
+                        drinks2: drinks2,
                         drinkCurrentPage: res.data.drinkCurrentPage,
-                        drinks: res.data.drinks,
+                        drinkTotalPage: res.data.drinkTotalPage,
+                    };
+                    that.setData(data)
+                } else {
+                    let data = {
+                        drinkCurrentPage: res.data.drinkCurrentPage,
                         drinkTotalPage: res.data.drinkTotalPage,
                         isHideDrinkLoadMore: true,
-                    })
+                    };
+                    that.setData(data)
                 }
             }
         })
@@ -689,32 +879,34 @@ export default {
                     })
                 }
                 if (res.data.state) {
+                    let fruits1 = [];
+                    let fruits2 = [];
                     if (concat) {
-                        that.setData({
-                            fruitCurrentPage: res.data.fruitCurrentPage,
-                            fruits: that.data.fruits.concat(res.data.fruits),
-                            fruitTotalPage: res.data.fruitTotalPage,
-                        })
-                    } else {
-                        that.setData({
-                            fruits: null,
-                        })
-                        that.setData({
-                            fruitCurrentPage: res.data.fruitCurrentPage,
-                            fruits: res.data.fruits,
-                            fruitTotalPage: res.data.fruitTotalPage,
-                        })
+                        let fruits1 = that.data.fruits1;
+                        let fruits2 = that.data.fruits2;
                     }
-                } else {
-                    that.setData({
-                        fruits: null,
-                    })
-                    that.setData({
+                    res.data.fruits.forEach(element => {
+                        //判断当前图片添加到左列还是右列
+                        if (fruits1.length <= fruits2.length) {
+                            fruits1.push(element);
+                        } else {
+                            fruits2.push(element);
+                        }
+                    });
+                    let data = {
+                        fruits1: fruits1,
+                        fruits2: fruits2,
                         fruitCurrentPage: res.data.fruitCurrentPage,
-                        fruits: res.data.fruits,
+                        fruitTotalPage: res.data.fruitTotalPage,
+                    };
+                    that.setData(data)
+                } else {
+                    let data = {
+                        fruitCurrentPage: res.data.fruitCurrentPage,
                         fruitTotalPage: res.data.fruitTotalPage,
                         isHideFruitLoadMore: true,
-                    })
+                    };
+                    that.setData(data)
                 }
             }
         })
@@ -866,37 +1058,32 @@ export default {
 ui-tabs {
     padding-bottom: 1px;
 }
-.content {
-    height: 60px;
-    line-height: 60px;
-    margin:0 10px
-}
-.comments {
+.fixedClass {
+    position: fixed;  /* 初始化为相对定位 滑动时改为绝对定位fixed*/
+    top: 66px;
+    left: 0;
+    right: 0;         /* 决定了搜索框置顶 */
+    z-index: 2;
     background-color: #FFFFFF;
-    .fixedClass {
-        position: fixed;  /* 初始化为相对定位 滑动时改为绝对定位fixed*/
-        top: 66px;
-        left: 0;
-        right: 0;         /* 决定了搜索框置顶 */
-        z-index: 2;
-        background-color: #FFFFFF;
-    }
 }
 // 鲜花展
 .show-groupsources {
-    padding: 0px 10px 10px 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
     .show-group-item {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        flex-wrap: wrap;
+        margin-top: -5px;
+        width: 49.5%;
         .show-buttonitem {
+            margin-bottom: 4px;
             background-color: #ffffff;
-            width: 48%;
+            border-radius: 5px;
+            width: 100%;
             display: flex;
             flex-direction: column;
             .mix-flex-center();
-            .mix-1px(1, 1, 1, 1, #ccc);
+            box-shadow: 0 2px 4px 1px rgb(240, 240, 240);
             .ranking-image {
                 text-align: center;
                 border-radius: 5px 5px 0px 0px;
@@ -907,20 +1094,6 @@ ui-tabs {
                     width: 100%;
                     height: 171px;
                 }
-                .ranking-label {
-                    width: 100%;
-                    height: 171px;
-                    position: relative;     /* 生成相对定位的元素，相对于其正常位置进行定位 */
-                    top: -171px;
-                    display: flex;
-                    flex-direction: row;
-                    flex-wrap: nowrap;
-                    justify-content: flex-end;
-                    .label-image {
-                        width: 33px;
-                        height: 51px;
-                    }
-                }
             }
             .show-content {
                 display: flex;
@@ -928,35 +1101,35 @@ ui-tabs {
                 width: 100%;
                 .mix-flex-center();
                 padding: 5px;
+                font-size: 12px;
                 .show-content-title {
-                    display: flex;
-                    flex-direction: row;
-                    flex-wrap: nowrap;
                     width: 100%;
-                    .mix-text-overflow();
                 }
                 .show-content-des {
                     display: flex;
                     flex-direction: row;
                     flex-wrap: nowrap;
                     width: 100%;
-                    .mix-flex-center();
+                    .mix-flex-y-center();
                     .show-content-des-left {
-                        width: 65%;
-                        font-size: 13px;
-                        color: #888888;
+                        width: 50%;
+                        color: #ffd100;
                         text-align: left;
                     }
+                    .show-content-des-price {
+                        width: 50%;
+                        text-align: right;
+                    }
                     .show-content-des-right {
-                        width: 35%;
+                        width: 50%;
+                        .mix-flex-x-center();
                         display: flex;
-                        flex-direction: row;
-                        flex-wrap: nowrap;
-                        justify-content: flex-end;
+                        justify-content:flex-end; 
                         .btn {
                             .mix-flex-center();
-                            width: 100%;
-                            border-radius: 10px;
+                            width: 55px;
+                            height: 18px;
+                            border-radius: 20px;
                             background-color: #ffd100;
                         }
                     }
