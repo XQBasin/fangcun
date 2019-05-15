@@ -210,19 +210,6 @@ const selectStyle = `background: #ffd100;
     align-items: center;
     margin-top: 10px;
     `
-const searchTagsStyle = `
-    background: url('../../static/image/jianzhi/yichu.png') no-repeat 60px center ;
-    border: 1px solid #ff5800;
-    color: #ff5800;
-    border-radius: 10px;
-    text-align: left;
-    height: 25px;
-    width: 76px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-size:12px;
-    `
 let interstitialAd = null
 // 引入腾讯地图SDK核心类
 var QQMapWX = require('../../static/utils/qqmap-wx-jssdk.min.js')

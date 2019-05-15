@@ -224,12 +224,12 @@
       <view class="top">
         <image class="product-image" src="../../static/image/details/test/img2.png" />
         <view class="product-info">
-          <view class="name">海兴县信用卡三大哈哈</view>
-          <view class="price"><text class="pre">¥</text>80.9　<text class="number">+44</text><text class="unit">寸金</text></view>
-          <view class="reserve">存库12340箱</view>
+          <view class="name">{{goods.title}}</view>
+          <view class="price"><text style="font-size: 12px;">¥</text>{{goods.show_price}}<text class="number">￥{{goods.show_price * 0.1}}元预定</text></view>
+          <view class="reserve">已选 黑色，XL，数量：1</view>
         </view>
       </view>
-      <ui-icon type="shanchu" color="#333333" size="40rpx;" class="cancel-icon" bindtap="buyHide"></ui-icon>
+      <ui-icon type="plus-close" color="#333333" size="20px;" class="cancel-icon" bindtap="buyHide"></ui-icon>
       <view class="content">
         <view class="title">味道</view>
         <view class="item">
@@ -1281,19 +1281,14 @@ export default {
       .price{
         font-size: 36rpx;
         color: rgb(235, 2, 2);
-        .pre{
-          font-size: 24rpx;
-        }
         .number{
-          font-size: 18rpx;
-          color: rgb(235, 2, 2)
-        }
-        .unit{
-          font-size: 18rpx;
-          color: rgb(25, 25, 25)
+          margin-left: 10px;
+          font-size: 12px;
+          color: #888;
         }
       }
       .reserve{
+        font-size: 12px;
         color: #999999;
       }
     }
@@ -1306,8 +1301,8 @@ export default {
   }
   .content{
     padding: 20rpx;
-    padding-bottom: 0;
-    border-bottom: 1px solid #eeeeee;
+    margin-top: 5px;
+    .mix-1px(1, 0, 0, 0, #ccc);
     .item::after{
       display: block;
       height: 0;
