@@ -47,25 +47,25 @@
                         <button class="authorise_btn" data-route="social/index" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
                             <view class='buttonitem'>
                                 <image src="../../static/image/menu/shejiao.png"/>
-                                <text>社交圈</text>
+                                <text>树洞</text>
                             </view>
                         </button>
                         <button class="authorise_btn" data-route="parttime/index" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
                             <view class='buttonitem'>
                                 <image src="../../static/image/menu/jianzhi.png"/>
-                                <text>兼职圈</text>
+                                <text>代跑</text>
                             </view>
                         </button>
                         <button class="authorise_btn" data-route="activity/index" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
                             <view class='buttonitem'>
                                 <image src="../../static/image/menu/huodong.png"/>
-                                <text>活动圈</text>
+                                <text>社团</text>
                             </view>
                         </button>
                         <button class="authorise_btn" data-route="mall/index" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
                             <view class='buttonitem'>
                                 <image src="../../static/image/menu/ceshi.png"/>
-                                <text>思必达</text>
+                                <text>闲置</text>
                             </view>
                         </button>
                     </view>
