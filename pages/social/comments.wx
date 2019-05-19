@@ -27,7 +27,7 @@
                 </view>
                 <view class="sj_bc_red">
                     <view class='sj_title'>
-                        <view>{{social.userInfo.username}}</view>
+                        <view>{{social.userInfo.name}}</view>
                         <view><ui-icon type="xiangxiajiantou" color="#888888" style="margin:0px 0px 0px 2px;" size="14px;"></ui-icon></view>
                     </view>
                     <view class='sj_description'>
@@ -61,7 +61,7 @@
                     </view>
                     <view class="sj_bc_red">
                         <view class='sj_title'>
-                            <view>{{social.spsocial.userInfo.username}}</view>
+                            <view>{{social.spsocial.userInfo.name}}</view>
                             <view><ui-icon type="xiangxiajiantou" color="#888888" style="margin:0px 0px 0px 2px;" size="14px;"></ui-icon></view>
                         </view>
                         <view class='sj_description'>
@@ -91,17 +91,17 @@
         </view>
         <view class="comments">
             <!-- 导航占位 -->
-            <view style="height: 52px;" wx:if="{{fixedHid == false}}"></view><view wx:else></view>
+            <view style="height: 66px;" wx:if="{{fixedHid == false}}"></view><view wx:else></view>
             <view class="{{fixedNav}}">
-                <ui-tabs index="{{index}}" data-socialid="{{social.id}}" bindchange="handleChange">
-                    <ui-tab>评论（{{social.comnum}}）</ui-tab>
+                <ui-tabs index="{{index}}" ink-bar="true" catchchange="handleChange" active-tab-style="{{activeTabStyle}}">
+                    <ui-tab>评论（{{comtotalNum}}）</ui-tab>
                     <ui-tab>转发（{{social.shanum}}）</ui-tab>
                     <ui-tab>点赞（{{social.likenum}}）</ui-tab>
                 </ui-tabs>
             </view>
             <view id="tabitems">
                 <!-- 评论列表 -->
-                <view wx:if="{{ comfilm && index === 0 }}">
+                <view wx:if="{{ index === 0 }}">
                     <view wx:for="{{ comfilm }}" wx:key="com" wx:for-item="com" height="80" border-bottom>
                         <view class="pl_item">
                             <view class="pl_flex_wrp">
@@ -140,9 +140,15 @@
                             </view>
                         </view>
                     </view>
+                    <!-- 加载更多 -->
+                    <view class="weui-loadmore" hidden="{{isHideComLoadMore}}">
+                        <view class="weui-loading"></view>
+                        <view class="weui-loadmore__tips" style="font-size:13px; color:#848484;">加载中...</view>
+                    </view>
+                    <ui-divider wx:if="{{isHideComLoadMore}}" padding="20">没有更多评论了</ui-divider>
                 </view>
                 <!-- 转发列表 -->
-                <view wx:elif="{{ sharfilm && index === 1 }}">
+                <view wx:elif="{{ index === 1 }}">
                     <view wx:for="{{ sharfilm }}" wx:key="share" wx:for-item="share" height="80" border-bottom>
                         <view class="pl_item">
                             <view class="pl_flex_wrp">
@@ -161,7 +167,7 @@
                     </view>
                 </view>
                 <!-- 点赞列表 -->
-                <view wx:elif="{{ lovefilm && index === 2 }}">
+                <view wx:elif="{{ index === 2 }}">
                     <view wx:for="{{ lovefilm }}" wx:key="love" wx:for-item="love" height="80" border-bottom>
                         <view class="pl_item">
                             <view class="pl_flex_wrp">
@@ -169,7 +175,7 @@
                                     <image src="{{love.userInfo.avatar}}"/>
                                 </view>
                                 <view class="pl_right">
-                                    <view class='pl_title'>{{love.content}}</view>
+                                    <view class='pl_title'>喜欢</view>
                                     <view class='pl_description'>
                                         <view class="pl_des_left">{{love.userInfo.username}}</view>
                                         <view class="pl_des_center">{{dateUtil.formatTime(love.timestamp, 'M/D h:m:s')}}</view>
@@ -180,11 +186,6 @@
                     </view>
                 </view>
             </view>
-        </view>
-        <!-- 加载更多 -->
-        <view class="weui-loadmore" hidden="{{isHideLoadMore}}">
-            <view class="weui-loading"></view>
-            <view class="weui-loadmore__tips" style="font-size:13px; color:#848484;">加载中...</view>
         </view>
         <!-- 页面公共广告 -->
         <view style="margin:10px;">
@@ -270,7 +271,13 @@ export default {
         fixedNav: '',               // 绝对定位关闭
         fixedHid: true,             // 导航占位影藏
         index: 0,                   // tab初始索引
+        socialid: '',               // 社交消息标识
         comfilm: [],                // 初始显示论坛数据
+        comfield: [],               // 条件字段标识
+        comcurrentpage: 1,          // 当前页码
+        comtotalNum: 0,             // 总评论数量
+        comtotalPage: 0,            // 总页码
+        isHideComLoadMore: false,   // 默认显示加载更多
         sharfilm: [],               // 论坛数据对象
         lovefilm: [],               // 论坛数据对象
         place: '',                  // 默认回复提示
@@ -282,11 +289,36 @@ export default {
         plfocus: false,             // 评论框是否自动获得焦点
         zffocus: false,             // 转发框是否自动获得焦点
         cpid: 0,                    // 评论消息标识
-        isHideLoadMore: false,      // 默认显示加载更多
+        activeTabStyle: {
+            'color': '#ffd100',
+            'font-size': '17px',
+            'font-weight': 600,
+        },
     },
     onLoad(options) {
-        var that = this
-        that.initValidate()
+        this.initValidate()
+        // 自动登录并返回登录信息
+        this.autoLogin(this)
+        // 获取消息详情
+        this.getSocial(options.socialid)
+        // 分页获取评论列表
+        this.setData({
+            socialid: options.socialid,
+            comfield: this.data.comfield.concat({
+                key: 'status',
+                value: 1,
+            },{
+                key: 'parentid',
+                value: 0,
+            })
+        })
+        this.getCommentsForPage(this.data.comfield, options.socialid, this.data.comcurrentpage)
+        wx.showShareMenu({
+            withShareTicket: true
+        })
+    },
+    // 自动登录
+    autoLogin (thisobj) {
         wx.login({
             success(res) {
                 if (res.code) {
@@ -301,7 +333,7 @@ export default {
                         },
                         success(res) {
                             if (res.data) {
-                                that.setData({
+                                thisobj.setData({
                                     uid: res.data
                                 })
                             }
@@ -311,11 +343,6 @@ export default {
                     console.log('登录失败，请检查网络设置！' + res.errMsg)
                 }
             }
-        })
-        that.getSocial(options.socialid)
-        that.getComments(options.socialid)
-        wx.showShareMenu({
-            withShareTicket: true
         })
     },
     // 初始化表单校验
@@ -339,7 +366,7 @@ export default {
     onPullDownRefresh:function() {
         wx.showNavigationBarLoading() //在标题栏中显示加载
         //模拟加载
-        this.getComments(this.data.social.id)
+        this.getCommentsForPage(this.data.comfield, this.data.socialid, 1)
         setTimeout(function() {
             // complete
             wx.hideNavigationBarLoading()   //完成停止加载
@@ -348,12 +375,13 @@ export default {
     },
     //加载更多
     onReachBottom: function () {
-        console.log('加载更多')
-        setTimeout(() => {
+        if (this.data.comcurrentpage >= this.data.comtotalPage) {
             this.setData({
-                isHideLoadMore: true,
+                isHideComLoadMore: true,
             })
-        }, 2000)
+        } else {
+            this.getCommentsForPage(this.data.comfield, this.data.socialid, parseInt(this.data.comcurrentpage) + 1, true)
+        }
     },
     // 获取用户基本信息
     bindGetUserInfo(e) {
@@ -427,14 +455,29 @@ export default {
         })
     },
     handleChange (e) {
-        let socialid = e.currentTarget.dataset.socialid
         let index = e.detail.index
-        if (index === 0) {
-            this.getComments(socialid)
-        } else if (index === 1) {
-            this.getShares(socialid)
-        } else {
-            this.getLikes(socialid)
+        this.setData({
+            index: index
+        })
+        switch(index) {
+            case 0:
+                if (this.data.comfilm.length == 0) {
+                    this.getCommentsForPage(this.data.comfield, this.data.socialid, 1)
+                }
+                break;
+            case 1:
+                if (this.data.sharfilm.length == 0) {
+                    // 以后根据需要调整为分页查询
+                    this.getShares(this.data.socialid)
+                }
+                break;
+            case 2:
+                if (this.data.lovefilm.length == 0) {
+                    // 以后根据需要调整为分页查询
+                    this.getLikes(this.data.socialid)
+                }
+                break;
+            default:
         }
     },
     onPageScroll (e) {
@@ -522,7 +565,7 @@ export default {
                         icon: 'success',
                         duration: 2000
                     })
-                    that.getComments(that.data.social.id)
+                    that.getCommentsForPage(that.data.comfield, that.data.socialid, 1)
                     that.setData({
                         plshow:false
                     })
@@ -625,24 +668,55 @@ export default {
             }
         })
     },
-    // 评论列表
-    getComments: function (socialid) {
+    // 分页获取评论列表
+    getCommentsForPage: function (comfield, socialid, comcurrentpage, concat) {
         var that = this;
         wx.request({
-            url: 'https://wx.taoyuantoday.com/mini.Wesocial/getComments.html',
+            url: 'https://wx.taoyuantoday.com/mini.Wesocial/getCommentsForPage.html',
             data: {
+                comfield: comfield,
                 socialid: socialid,
+                comcurrentpage: comcurrentpage
             },
             header: {
                 'content-type': 'application/json' // 默认值
             },
             success(res) {
-                if (res.data) {
+                if (res.data.state) {
+                    if (concat) {
+                        that.setData({
+                            comcurrentpage: res.data.comcurrentpage,
+                            comfilm: that.data.comfilm.concat(res.data.comfilm),
+                            comtotalNum: res.data.comtotalNum,
+                            comtotalPage: res.data.comtotalPage,
+                        })
+                    } else {
+                        that.setData({
+                            comfilm: null,
+                        })
+                        that.setData({
+                            comcurrentpage: res.data.comcurrentpage,
+                            comfilm: res.data.comfilm,
+                            comtotalNum: res.data.comtotalNum,
+                            comtotalPage: res.data.comtotalPage,
+                        })
+                    }
+                } else {
                     that.setData({
-                        comfilm:res.data,
-                        index:0
+                        comfilm: null,
                     })
-                    that.getSocial(socialid)
+                    that.setData({
+                        comcurrentpage: res.data.comcurrentpage,
+                        comfilm: res.data.comfilm,
+                        comtotalNum: res.data.comtotalNum,
+                        comtotalPage: res.data.comtotalPage,
+                        isHideComLoadMore: true,
+                    })
+                }
+                if (that.data.comcurrentpage >= that.data.comtotalPage) {
+                    that.setData({
+                        isHideComLoadMore: true,
+                    })
                 }
             }
         })
@@ -662,9 +736,7 @@ export default {
                 if (res.data) {
                     that.setData({
                         sharfilm:res.data,
-                        index:1,
                     })
-                    that.getSocial(socialid)
                 }
             }
         })
@@ -684,9 +756,7 @@ export default {
                 if (res.data) {
                     that.setData({
                         lovefilm:res.data,
-                        index:2,
                     })
-                    that.getSocial(socialid)
                 }
             }
         })
@@ -807,7 +877,6 @@ export default {
 // 评论列表样式
 .comments {
     background-color: #FFFFFF;
-    margin: 10px;
     border-radius: 5px;
     box-shadow: 0 3px 6px 0 rgb(240, 240, 240);
     .imgbox {
@@ -828,7 +897,6 @@ export default {
     }
 }
 ui-tabs {
-    background-color: #FFFFFF;
     padding-bottom: 1px;
 }
 .fixedClass {
@@ -837,6 +905,7 @@ ui-tabs {
     left: 0;
     right: 0;         /* 决定了搜索框置顶 */
     z-index: 2;
+    background-color: #FFFFFF;
 }
 // 表单样式
 .pocket_input {

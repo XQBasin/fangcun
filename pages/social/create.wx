@@ -37,7 +37,7 @@
                                 <view class="weui-uploader__files" id="uploaderFiles">
                                     <block wx:for="{{files}}" wx:key="*this">
                                         <view class="weui-uploader__file" bindtap="previewImage" id="{{item}}">
-                                            <image class="weui-uploader__img" style="border-radius:5px; width: 200px;" src="{{item}}" mode="widthFix" />
+                                            <image class="weui-uploader__img" style="border-radius:5px; width: 80px;" src="{{item}}" />
                                         </view>
                                     </block>
                                 </view>
@@ -50,8 +50,8 @@
                 </view>
             </view>
             <view class="share-switch">
-                <view class="label">加入方寸奶爸用户体验计划</view>
-                <view class="des"><switch checked bindchange="switchChange"/></view>
+                <view class="label">是否匿名</view>
+                <view class="des"><switch bindchange="openChange" name="open" checked="{{open}}"/></view>
             </view>
         </view>
         <!-- 底部授权信息 -->
@@ -68,7 +68,7 @@
         <!-- 底部导航 -->
         <ui-fixed-view bottom="0" left="0" right="0">
             <view class='groupsources'>
-                <view>存为草稿</view>
+                <view>说说你的心里话</view>
                 <button class="button-style-huodong" bindtap="submitForm">确认发布</button>
             </view>
         </ui-fixed-view>
@@ -99,7 +99,7 @@ export default {
         files: [],          // 文件列表
         count: 9,           // 最多可以选择的图片张数
         serverSrc: [],      // 文件服务器路径
-        switch: 'true',     // 默认同时分享到社交圈
+        open: 'true',     // 默认同时分享到社交圈
     },
     onLoad(options) {
         var that = this
@@ -197,7 +197,7 @@ export default {
                     production: that.data.serverSrc,
                     content: content,
                     uid: that.data.uid,
-                    switch: that.data.switch,
+                    open: that.data.open,
                 },
                 header: {
                     'Content-Type': 'application/x-www-form-urlencoded'     // 默认值
@@ -231,9 +231,9 @@ export default {
             })
         }
     },
-    switchChange: function (e) {
+    openChange: function (e) {
         var value = e.detail.value
-        this.data.switch = value
+        this.data.open = value
         $digest(this)
     },
     // 客服消息

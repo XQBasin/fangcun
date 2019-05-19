@@ -87,7 +87,7 @@
                     </view>
                     <view class="row-group">
                         <view class="yewu-column">
-                            <view class="label">公开真实姓名</view>
+                            <view class="label">是否匿名</view>
                             <view class="des"><switch bindchange="openChange" name="open" checked="{{true}}"/></view>
                         </view>
                         <checkbox-group name="agree" bindchange="checkboxChange" style="margin:8px;">

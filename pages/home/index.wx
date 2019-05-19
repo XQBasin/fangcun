@@ -21,10 +21,10 @@
             </ui-row>
         </ui-nav-bar>
         <view style="height:{{NAV_HEIGHT}}"></view>
-        <view class="search">
+        <!-- <view class="search">
             <ui-icon type="sousuo" color="#848484" size="13px;"></ui-icon>
             <input type='text' placeholder="搜索看看" placeholder-style="color:#848484;" confirm-type='search'>
-        </view>
+        </view> -->
         <!-- 自动播放广告 -->
         <view class="swiper-container">
             <swiper circular autoplay interval="5000" duration="500" bindchange="swiperChange" class="swiper">
@@ -206,7 +206,6 @@ export default {
         NAV_HEIGHT:wx.STATUS_BAR_HEIGHT+wx.DEFAULT_HEADER_HEIGHT+'px',
         DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
         banner: [
-            {src: 'http://file.taoyuantoday.com/213/20190118/696af11d6687092383174fddfb463137.jpg_0x0.jpg'},
             {src: 'http://file.taoyuantoday.com/213/20190109/cd0bd4b383fb190dbafddc93edcc562d.jpg'},
             {src: 'http://file.taoyuantoday.com/213/20190111/f7e9684f2a50926daa2361c19173e582.png'},
             {src: 'http://file.taoyuantoday.com/213/20190114/29224e27cb98ee82ac2486bbc303bd53.jpg'},

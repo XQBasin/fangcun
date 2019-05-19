@@ -20,7 +20,7 @@
         <view style="height:{{NAV_HEIGHT}}"></view>
         <view class="search">
             <ui-icon type="sousuo" color="#848484" size="13px;"></ui-icon>
-            <input type='text' placeholder="搜索看看" placeholder-style="color:#848484;" confirm-type='search'>
+            <input type='text' placeholder="帮你搜索看看吧" placeholder-style="color:#848484;" confirm-type='search' bindconfirm="search">
         </view>
         <!-- 自动播放广告 -->
         <view class="swiper-container">
@@ -48,7 +48,7 @@
                     </view>
                     <view class="sj_bc_red">
                         <view class='sj_title'>
-                            <view>{{social.userInfo.username}}</view>
+                            <view>{{social.userInfo.name}}</view>
                             <view><ui-icon type="xiangxiajiantou" color="#888888" style="margin:0px 0px 0px 2px;" size="14px;"></ui-icon></view>
                         </view>
                         <view class='sj_description'>
@@ -85,7 +85,7 @@
                         </view>
                         <view class="sj_bc_red">
                             <view class='sj_title'>
-                                <view>{{social.spsocial.userInfo.username}}</view>
+                                <view>{{social.spsocial.userInfo.name}}</view>
                                 <view><ui-icon type="xiangxiajiantou" color="#888888" style="margin:0px 0px 0px 2px;" size="14px;"></ui-icon></view>
                             </view>
                             <view class='sj_description'>
@@ -136,6 +136,7 @@
                 <view class="weui-loading"></view>
                 <view class="weui-loadmore__tips" style="font-size:13px; color:#848484;">加载中...</view>
             </view>
+            <ui-divider wx:if="{{isHideLoadMore}}" padding="20">我是有底线的</ui-divider>
             <!-- 公众号关注向导 -->
             <official-account></official-account>
             <!-- 底部授权信息 -->
@@ -180,17 +181,34 @@ export default {
         swiperCurrent: 0,
         uid: '',                // 用户标识
         socials: [],            // 社交消息列表
+        field: [],              // 条件字段标识
+        currentpage: 1,         // 当前页码
+        totalPage: 0,           // 总页码
         isHideLoadMore: false,  // 初始显示加载更多
     },
     onLoad(options) {
-        var that = this
-        that.getSocials(1)
+        // 自动登录并返回登录信息
+        this.autoLogin(this)
+        // 获取兼职列表
+        this.setData({
+            field: this.data.field.concat({
+                key: 'status',
+                value: 1,
+            })
+        })
+        this.getSocialsForPage(this.data.field, this.data.currentpage)
+        wx.showShareMenu({
+            withShareTicket: true
+        })
+    },
+    // 自动登录
+    autoLogin (thisobj) {
         wx.login({
             success(res) {
                 if (res.code) {
                     //发起网络请求
                     wx.request({
-                        url: 'https://wx.taoyuantoday.com/mini.Wesocial/wxQuickLogin.html',
+                        url: 'https://wx.taoyuantoday.com/mini.Weparttime/wxQuickLogin.html',
                         data: {
                             code: res.code
                         },
@@ -198,8 +216,8 @@ export default {
                             'content-type': 'application/json' // 默认值
                         },
                         success(res) {
-                            if (res.data != "") {
-                                that.setData({
+                            if (res.data) {
+                                thisobj.setData({
                                     uid: res.data
                                 })
                             }
@@ -210,15 +228,12 @@ export default {
                 }
             }
         })
-        wx.showShareMenu({
-            withShareTicket: true
-        })
     },
     //下拉刷新
     onPullDownRefresh:function() {
         wx.showNavigationBarLoading() //在标题栏中显示加载
         //模拟加载
-        this.getSocials(1)
+        this.getSocialsForPage(this.data.field, 1)
         setTimeout(function() {
             // complete
             wx.hideNavigationBarLoading() //完成停止加载
@@ -227,12 +242,32 @@ export default {
     },
     //加载更多
     onReachBottom: function () {
-        console.log('加载更多')
-        setTimeout(() => {
+        if (this.data.currentpage >= this.data.totalPage) {
             this.setData({
                 isHideLoadMore: true,
             })
-        }, 2000)
+        } else {
+            this.getSocialsForPage(this.data.field, parseInt(this.data.currentpage) + 1, true)
+        }
+    },
+    search(e) {
+        var fieldvalue = e.detail.value
+        if (fieldvalue) {
+            this.setData({
+                field: this.data.field.concat({
+                    key: 'content',
+                    value: fieldvalue,
+                })
+            })
+        } else {
+            this.setData({
+                field: [{
+                    key: 'status',
+                    value: 1,
+                }]
+            })
+        }
+        this.getSocialsForPage(this.data.field, 1)
     },
     // 监听用户滑动页面事件。
     onPageScroll: function(option) {
@@ -297,21 +332,45 @@ export default {
             url: './' + route + '?' + param
         })
     },
-    // 社交列表
-    getSocials: function (status) {
+    // 分页获取社交消息列表
+    getSocialsForPage: function (field, currentpage, concat) {
         var that = this;
         wx.request({
-            url: 'https://wx.taoyuantoday.com/mini.Wesocial/index.html',
+            url: 'https://wx.taoyuantoday.com/mini.Wesocial/getSocialsForPage.html',
             data: {
-                status: status,
+                field: field,
+                currentpage: currentpage
             },
             header: {
                 'content-type': 'application/json' // 默认值
             },
             success(res) {
-                if (res.data != "") {
+                if (res.data.state) {
+                    if (concat) {
+                        that.setData({
+                            currentpage: res.data.currentpage,
+                            socials: that.data.socials.concat(res.data.socials),
+                            totalPage: res.data.totalPage,
+                        })
+                    } else {
+                        that.setData({
+                            socials: null,
+                        })
+                        that.setData({
+                            currentpage: res.data.currentpage,
+                            socials: res.data.socials,
+                            totalPage: res.data.totalPage,
+                        })
+                    }
+                } else {
                     that.setData({
-                        socials: res.data
+                        socials: null,
+                    })
+                    that.setData({
+                        currentpage: res.data.currentpage,
+                        socials: res.data.socials,
+                        totalPage: res.data.totalPage,
+                        isHideLoadMore: true,
                     })
                 }
             }

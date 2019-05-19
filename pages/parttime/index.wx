@@ -23,7 +23,7 @@
         <view style="height:{{NAV_HEIGHT}}px;"></view>
         <view class="search">
             <ui-icon type="sousuo" color="#848484" size="13px;"></ui-icon>
-            <input type='text' placeholder="搜索看看" placeholder-style="color:#848484;" confirm-type='search'>
+            <input type='text' placeholder="请输入兼职标题" placeholder-style="color:#848484;" confirm-type='search' bindconfirm="search">
         </view>
         <!-- 自动播放广告 -->
         <view class="swiper-container">
@@ -124,12 +124,13 @@
                         <view class="weui-loading"></view>
                         <view class="weui-loadmore__tips" style="font-size:13px; color:#848484;">加载中...</view>
                     </view>
+                    <ui-divider wx:if="{{isHideLoadMore}}" padding="20">我是有底线的</ui-divider>
                 </view>
             </view>
             <view class="tab-panel-item">
                 <view class="flex-title">
                     <view class="label"></view>
-                    <view class='main'>最火兼职</view>
+                    <view class='main'>推荐兼职</view>
                     <view class='more'>更多 >></view>
                 </view>
                 <view class='jz-group'>
@@ -159,32 +160,32 @@
                     </view>
                 </view>
             </view>
-        </view>
-        <!-- 页面公共广告 -->
-        <view style="margin:10px;">
-            <ad unit-id="adunit-32c386620de8cc6b"></ad>
-        </view>
-        <!-- 绑定公众号关注推荐 -->
-        <official-account></official-account>
-        <!-- 底部授权信息 -->
-        <view class="footer">
-            <view class="page__bd page__bd_spacing">
-                <view class="weui-footer">
-                    <view class="weui-footer__links">
-                        <button open-type="contact" bindcontact="handleContact" class="weui-footer__link">方寸奶爸</button>
+            <!-- 页面公共广告 -->
+            <view style="margin:10px;">
+                <ad unit-id="adunit-32c386620de8cc6b"></ad>
+            </view>
+            <!-- 绑定公众号关注推荐 -->
+            <official-account></official-account>
+            <!-- 底部授权信息 -->
+            <view class="footer">
+                <view class="page__bd page__bd_spacing">
+                    <view class="weui-footer">
+                        <view class="weui-footer__links">
+                            <button open-type="contact" bindcontact="handleContact" class="weui-footer_link">方寸奶爸</button>
+                        </view>
+                        <view class="weui-footer__text">Copyright © 2008-2019 fcdaddy.com</view>
                     </view>
-                    <view class="weui-footer__text">Copyright © 2008-2019 fcdaddy.com</view>
                 </view>
             </view>
+            <!-- 底部导航 -->
+            <ui-fixed-view bottom="0" left="0" right="0">
+                <view class='groupsources'>
+                    <button class="button-style-huodong" data-route="create" data-authorise="1" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo"><text>发布兼职</text></button>
+                </view>
+            </ui-fixed-view>
+            <!-- 导航占位 -->
+            <view style="height:52px;"></view>
         </view>
-        <!-- 底部导航 -->
-        <ui-fixed-view bottom="0" left="0" right="0">
-            <view class='groupsources'>
-                <button class="button-style-huodong" data-route="create" data-authorise="1" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo"><text>发布兼职</text></button>
-            </view>
-        </ui-fixed-view>
-        <!-- 导航占位 -->
-        <view style="height:52px;"></view>
     </view>
 </template>
 
@@ -303,7 +304,7 @@ export default {
         this.autoLogin(this)
         // 获取定位信息及所在区域兼职
         this.getLocation(this)
-        // 获取热推兼职列表
+        // 获取兼职列表
         this.getRecommpart(1)
         wx.showShareMenu({
             withShareTicket: true
@@ -441,6 +442,22 @@ export default {
             }
         })
     },
+    search(e) {
+        var fieldvalue = e.detail.value
+        if (fieldvalue) {
+            this.setData({
+                field: this.data.field.concat({
+                    key: 'title',
+                    value: fieldvalue,
+                })
+            })
+        } else {
+            this.setData({
+                field: []
+            })
+        }
+        this.getParttimesForPage(this.data.field, 1)
+    },
     // POP类型选择弹框
     openPopup(e) {
         let poptype = e.currentTarget.dataset.poptype
@@ -502,7 +519,7 @@ export default {
             item.checked = (index === opt)
         })
         this.setData({
-            parttimetypes:this.data.parttimetypes,
+            parttimetypes: this.data.parttimetypes,
             field: this.data.field.concat({
                 key: 'parttype',
                 value: this.data.parttimetypes[opt].text,
@@ -581,6 +598,11 @@ export default {
                         currentpage: res.data.currentpage,
                         parttimes: res.data.parttimes,
                         totalPage: res.data.totalPage,
+                        isHideLoadMore: true,
+                    })
+                }
+                if (that.data.currentpage >= that.data.totalPage) {
+                    that.setData({
                         isHideLoadMore: true,
                     })
                 }
@@ -809,18 +831,6 @@ export default {
         }
     }
 }
-// 底部授权信息
-.footer {
-    margin: 25px 0px;
-    .weui-footer_link {
-        color: #ffd100;
-        border: none;
-        background-color: #F4F4F4;
-    }
-    .weui-footer_link::after {
-        border: none
-    }
-}
 // 搜索框
 .search {
     width: 90%;
@@ -886,10 +896,9 @@ export default {
         .mix-1px(0, 0, 1, 0, #ccc);
         .column-content {
             text-align: center;
-            height: 60px;
-            line-height: 60px;
+            height: 50px;
+            line-height: 50px;
             width: 100%;
-            font-size: 16px;
             border-radius: 10px;
         }
         .column-line {
@@ -1068,6 +1077,18 @@ export default {
     }
     .button-style-huodong::after{
         border: none;
+    }
+}
+// 底部授权信息
+.footer {
+    margin: 25px 0px;
+    .weui-footer_link {
+        color: #ffd100;
+        border: none;
+        background-color: #F4F4F4;
+    }
+    .weui-footer_link::after {
+        border: none
     }
 }
 </style>

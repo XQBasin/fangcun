@@ -222,26 +222,23 @@
     </view>
     <ui-popup show="{{ buyFlag }}" position="bottom" class="buy-mask" >
       <view class="top">
-        <image class="product-image" src="../../static/image/details/test/img2.png" />
+        <image class="product-image" src="{{goods.original_img}}" />
         <view class="product-info">
           <view class="name">{{goods.title}}</view>
-          <view class="price"><text style="font-size: 12px;">¥</text>{{goods.show_price}}<text class="number">￥{{goods.show_price * 0.1}}元预定</text></view>
-          <view class="reserve">已选 黑色，XL，数量：1</view>
+          <view class="price" wx:if="{{specGoods}}"><text style="font-size: 12px;">¥</text>{{specGoods.show_price}}<text class="number">￥{{specGoods.show_price * 0.1}}元预定</text></view>
+          <view class="price" wx:else><text style="font-size: 12px;">¥</text>{{goods.show_price}}<text class="number">￥{{goods.show_price * 0.1}}元预定</text></view>
+          <view class="reserve">已选 {{selectSpec}}，数量：{{number}}</view>
         </view>
       </view>
       <ui-icon type="plus-close" color="#333333" size="20px;" class="cancel-icon" bindtap="buyHide"></ui-icon>
-      <view class="content">
-        <view class="title">味道</view>
-        <view class="item">
-          <ui-tags data="{{taste}}" bindchange="singleTaste" fixed-width item-space="1" col-number="3"></ui-tags>
+      <scroll-view scroll-y class="scrollview">
+        <view class="content" wx:key="speckey" wx:for="{{specsitem}}" wx:for-item="item" wx:for-index="itemindex">
+          <view class="title">{{item.name}}</view>
+          <view class="item">
+            <ui-tags data="{{item.spec}}" data-itemindex="{{itemindex}}" data-value="{{item.spec}}" bindchange="singleSpace"></ui-tags>
+          </view>
         </view>
-      </view>
-      <view class="content">
-        <view class="title">包装颜色</view>
-        <view class="item">
-          <ui-tags data="{{pack}}" bindchange="singlePack" fixed-width item-space="1" col-number="3"></ui-tags>
-        </view>
-      </view>
+      </scroll-view>
       <view class="counts">
         <view class="title">购买数量</view>
           <view class="num-botton">
@@ -263,82 +260,27 @@
 </template>
 
 <script>
-// 选择颜色样式
-const tagColorStyle = `float: left;
-  width: 129rpx;
-  height: 44rpx;
-  text-align: center;
-  line-height: 44rpx;
-  border:1px solid rgb(204, 204, 204);
-  border-radius: 22rpx;
-  color: rgb(204, 204, 204);
-  margin: 0 9rpx;
-  margin-bottom: 20rpx;
-  font-size:28rpx;
-`
-const selectColorStyle = `float: left;
-  width: 129rpx;
-  height: 44rpx;
-  text-align: center;
-  line-height: 44rpx;
-  border-radius: 22rpx;
-  margin: 0 9rpx;
-  margin-bottom: 20rpx;
-  border:1px solid #f87005;
-  color: #f87005;
-  font-size:28rpx;
-`
-// 选择尺寸样式
-const tagSizeStyle = `float: left;
-  width: 129rpx;
-  height: 44rpx;
-  text-align: center;
-  line-height: 44rpx;
-  border:1px solid rgb(204, 204, 204);
-  border-radius: 22rpx;
-  color: rgb(204, 204, 204);
-  margin: 0 9rpx;
-  margin-bottom: 20rpx;
-  font-size:28rpx;
-`
-const selectSizeStyle = `float: left;
-  width: 129rpx;
-  height: 44rpx;
-  text-align: center;
-  line-height: 44rpx;
-  border-radius: 22rpx;
-  margin: 0 9rpx;
-  margin-bottom: 20rpx;
-  border:1px solid #f87005;
-  color: #f87005;
-  font-size:28rpx;
-`
 // 立即购买弹框样式
-const tagStyle = `background: #ececec;
-  color: rgb(102, 102, 102);
-  padding: 0 5px;
-  border-radius: 10rpx;
+const tagStyle = `background: #fff;
+  border: 1px solid #ccc;
+  color: #888;
+  border-radius: 5px;
   text-align: center;
-  height: 56rpx;
+  height: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
-  line-height: 20px;
-  margin: 0 20rpx 15rpx 0;
-  font-size:28rpx;
+  padding: 2px 15px;
 `
-const selectStyle = `background: #f87005;
+const selectStyle = `background: #ffd100;
   color: #fff;
-  padding: 0 5px;
-  border-radius: 10rpx;
+  border-radius: 5px;
   text-align: center;
-  height: 56rpx;
+  height: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
-  line-height: 20px;
-  margin: 0 20rpx 15rpx 0;
-  font-size:28rpx;
+  padding: 2px 15px;
 `
 
 export default {
@@ -347,108 +289,16 @@ export default {
     navigationBarTextStyle: 'black'
   },
   data: {
-    colors: [{
-        text: '红色',
-        tagStyle: tagColorStyle,
-        tagSelectedStyle: selectColorStyle,
-        checked: true
-    }, {
-        text: '黑色',
-        tagStyle: tagColorStyle,
-        tagSelectedStyle: selectColorStyle,
-        checked: false
-    }, {
-        text: '棕色',
-        tagStyle: tagColorStyle,
-        tagSelectedStyle: selectColorStyle,
-        checked: false
-    }, {
-        text: '黄色',
-        tagStyle: tagColorStyle,
-        tagSelectedStyle: selectColorStyle,
-        checked: false
-    }, {
-        text: '红色',
-        tagStyle: tagColorStyle,
-        tagSelectedStyle: selectColorStyle,
-        checked: false
-    }, {
-        text: '红色',
-        tagStyle: tagColorStyle,
-        tagSelectedStyle: selectColorStyle,
-        checked: false
-    }],
-    sizes: [{
-        text: 'S',
-        tagStyle: tagSizeStyle,
-        tagSelectedStyle: selectSizeStyle,
-        checked: true
-    }, {
-        text: 'M',
-        tagStyle: tagSizeStyle,
-        tagSelectedStyle: selectSizeStyle,
-        checked: false
-    }, {
-        text: 'L',
-        tagStyle: tagSizeStyle,
-        tagSelectedStyle: selectSizeStyle,
-        checked: false
-    }, {
-        text: 'XL',
-        tagStyle: tagSizeStyle,
-        tagSelectedStyle: selectSizeStyle,
-        checked: false
-    }],
-    taste: [{
-        text: '草莓味',
-        tagStyle: tagStyle,
-        tagSelectedStyle: selectStyle,
-        checked: true
-    }, {
-        text: '草莓味',
-        tagStyle: tagStyle,
-        tagSelectedStyle: selectStyle,
-        checked: false
-    }, {
-        text: '草莓味',
-        tagStyle: tagStyle,
-        tagSelectedStyle: selectStyle,
-        checked: false
-    }, {
-        text: '草莓味',
-        tagStyle: tagStyle,
-        tagSelectedStyle: selectStyle,
-        checked: false
-    }, {
-        text: '草莓味',
-        tagStyle: tagStyle,
-        tagSelectedStyle: selectStyle,
-        checked: false
-    }, {
-        text: '草莓味',
-        tagStyle: tagStyle,
-        tagSelectedStyle: selectStyle,
-        checked: false
-    }],
-    pack: [{
-        text: '彩色包装',
-        tagStyle: tagStyle,
-        tagSelectedStyle: selectStyle,
-        checked: true
-    }, {
-        text: '普通包装',
-        tagStyle: tagStyle,
-        tagSelectedStyle: selectStyle,
-        checked: false
-    }],
-
     NAV_HEIGHT:wx.STATUS_BAR_HEIGHT+wx.DEFAULT_HEADER_HEIGHT+'px',
     DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
-    uid: '',  // 用户标识
+    uid: '',          // 用户标识
     banner: [],
-    imgNum:1,       //当前张数
-    totalNum:3,      //总张数
-    disFlag:false,  //优惠选项状态
+    specsitem: [],    // 商品规格选择列表
+    selectSpec: [],   // 已选择规格
+    selectSpecId: [], // 已选择规格标识
+    specGoods: [],    // 商品规格
+    number: 1,        // 默认选购数量
+    disFlag:false,    // 优惠选项状态
     disSrc:[
       {discount:'500',src:'../../static/image/details/02.png',fill:'1000',time:'2019.03.20-2019.03.28'},
       {discount:'30',src:'../../static/image/details/01.png',fill:'1000',time:'2019.03.20-2019.03.28'},
@@ -491,10 +341,29 @@ export default {
                   banner.push(item)
                 });
                 // 规格列表
-
+                let specsitem = []
+                res.data.spec_list.forEach(element1 => {
+                  let spec = []
+                  element1.value.forEach(element2 => {
+                    let item = {
+                      specid: element2.item_id,
+                      text: element2.item,
+                      tagStyle: tagStyle,
+                      tagSelectedStyle: selectStyle,
+                      checked: false
+                    }
+                    spec.push(item);
+                  });
+                  let specs = {
+                    name: element1.name,
+                    spec: spec,
+                  }
+                  specsitem.push(specs)
+                });
                 let data = {
                   banner: banner,
-                  goods: res.data
+                  goods: res.data,
+                  specsitem: specsitem,
                 }
                   // let tagitem = [{
                   //     text: parttime.parttype,
@@ -517,10 +386,42 @@ export default {
           }
       })
   },
-  swiperChange: function(option) {
-      this.setData({
-          swiperCurrent: option.detail.current
-      })
+  singleSpace (e) {
+    let itemindex = e.currentTarget.dataset.itemindex
+    let currentTag = e.currentTarget.dataset.value
+    let opt = e.detail.index
+    let selectSpec = this.data.selectSpec
+    let selectSpecId = this.data.selectSpecId
+    currentTag.forEach((item, index) => {
+      item.checked = (index === opt)
+      if (index === opt) {
+        selectSpec[itemindex] = item.text
+        selectSpecId[itemindex] = item.specid
+      }
+    })
+    this.data.specsitem[itemindex].spec = currentTag
+    let specGoods = this.getSpecsGoods(selectSpecId)
+    this.setData({
+      specsitem:this.data.specsitem,
+      selectSpec: selectSpec,
+      selectSpecId: selectSpecId,
+      specGoods: specGoods,
+    })
+  },
+  getSpecsGoods(selectSpecId) {
+    let specGoods = {}
+    let sort1 = selectSpecId.sort(this.sortNumber)
+    let spec_price = this.data.goods.spec_goods_price
+    spec_price.forEach(element => {
+      let sort2 = element.key.split('_').sort(this.sortNumber)
+      if (sort2.toString() == sort1.toString()) {
+        specGoods = element
+      }
+    });
+    return specGoods
+  },
+  sortNumber(a, b) {
+    return a - b
   },
   // 跳转到选择区域地址页面
   toSelectAddress(){
@@ -592,32 +493,6 @@ export default {
       buyFlag:false
     })
   },
-  singleTaste (e) {
-      let opt = e.detail.index
-      wx.showToast({
-          title: this.data.taste[opt].text,
-          icon:'none'
-      })
-      this.data.taste.forEach((item, index) => {
-          item.checked = (index === opt)
-      })
-      this.setData({
-          taste:this.data.taste
-      })
-  },
-  singlePack (e) {
-      let opt = e.detail.index
-      wx.showToast({
-          title: this.data.pack[opt].text,
-          icon:'none'
-      })
-      this.data.pack.forEach((item, index) => {
-          item.checked = (index === opt)
-      })
-      this.setData({
-          pack:this.data.pack
-      })
-  }
 }
 </script>
 
@@ -1266,7 +1141,8 @@ export default {
     line-height: 72rpx;
   }
   .top{
-    padding-left: 20rpx;
+    padding: 5px 20rpx;
+    box-shadow: 0 1px 2px 2px rgb(248, 248, 248);
     .product-image{
       width: 200rpx;
       height: 200rpx;
@@ -1299,22 +1175,29 @@ export default {
     content: '';
     clear: both;
   }
-  .content{
-    padding: 20rpx;
-    margin-top: 5px;
-    .mix-1px(1, 0, 0, 0, #ccc);
-    .item::after{
-      display: block;
-      height: 0;
-      content: '';
-      clear: both;
+  .scrollview {
+    height: 180px;
+    margin-top: 10px;
+    .content {
+      padding: 20rpx;
+      margin-top: 5px;
+      .mix-1px(0, 0, 1, 0, #ccc);
+      .title {
+        margin-bottom: 5px;
+      }
+      .item::after{
+        display: block;
+        height: 0;
+        content: '';
+        clear: both;
+      }
     }
   }
   .counts{
     position: relative;
     height: 120rpx;
-    padding-left: 20rpx;
-    margin-bottom: 80rpx;
+    padding:20rpx;
+    margin-bottom: 50px;
     .title{
       position: absolute;
       line-height: 120rpx;
@@ -1349,11 +1232,11 @@ export default {
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: 80rpx;
+    height: 50px;
     background: #f87005;
     font-size: 30rpx;
     text-align: center;
-    line-height: 80rpx;
+    line-height: 50px;
     color:#fff;
   }
 }
