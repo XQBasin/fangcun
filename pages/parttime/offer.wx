@@ -1,0 +1,335 @@
+<template>
+    <view>
+        <!-- 自定义导航栏 -->
+        <ui-nav-bar slot="nav-bar" custom-style="{{ {backgroundColor:'#FFFFFF'} }}">
+            <ui-row height="{{DEFAULT_HEADER_HEIGHT}}" class="nav_bar">
+                <ui-col vertical-align="middle" class="nav-bar-col" align="left" width="100px" bindtap="navigateBack">
+                    <view class="containertitle">
+                        <view class='dingwei'>
+                            <ui-icon type="zuojiantou" color="#333333" size="20"></ui-icon>
+                        </view>
+                    </view>
+                </ui-col>
+                <ui-col vertical-align="middle" class="nav-bar-col">
+                    <view class="nav-bar-title">申请详情</view>
+                </ui-col>
+                <ui-col vertical-align="middle" class="nav-bar-col" align="right"  width="100px">
+                </ui-col>
+            </ui-row>
+        </ui-nav-bar>
+        <view style="height:{{NAV_HEIGHT}}"></view>
+        <view class='content'>
+            <view class="content-row">
+                <view class="content-label">姓名：</view>
+                <view class="content-boday">{{apply.name}}</view>
+            </view>
+            <view class="content-row">
+                <view class="content-label">性别：</view>
+                <view class="content-boday">{{apply.sex}}</view>
+            </view>
+            <view class="content-row">
+                <view class="content-label">年龄：</view>
+                <view class="content-boday">{{apply.age}}</view>
+            </view>
+            <view class="content-row">
+                <view class="content-biglabel">联系电话：</view>
+                <view class="content-bigboday">
+                    <view class="content-minlabel">{{apply.phone}}</view>
+                    <view class="content-minboday" data-phone="{{apply.phone}}" bindtap="call"><ui-icon type="lianxiwomen" color="#ffd100" size="20"></ui-icon></view>
+                </view>
+            </view>
+            <view class="content-column">
+                <view class="column-label">任职描述（简历）</view>
+                <view class="column-boday">
+                    <ui-summary height="66" animate="{{false}}">
+                        <rich-text nodes="{{apply.desc}}"></rich-text>
+                    </ui-summary>
+                </view>
+            </view>
+        </view>
+        <!-- 页面公共广告 -->
+        <view style="margin:10px;">
+            <ad unit-id="adunit-32c386620de8cc6b"></ad>
+        </view>
+        <!-- 公众号关注引导 -->
+        <official-account></official-account>
+        <!-- 底部授权信息 -->
+        <view class="footer">
+            <view class="page__bd page__bd_spacing">
+                <view class="weui-footer">
+                    <view class="weui-footer__links">
+                        <button open-type="contact" bindcontact="handleContact" class="weui-footer_link">方寸奶爸</button>
+                    </view>
+                    <view class="weui-footer__text">Copyright © 2008-2019 fcdaddy.com</view>
+                </view>
+            </view>
+        </view>
+        <!-- 底部导航 -->
+        <ui-fixed-view bottom="0" left="0" right="0">
+            <view class='groupsources'>
+                <button class="button-style-guanzhu" bindtap="saySorry">
+                    <ui-icon type="plus-close" size="15" color="#ffd100" style="margin:0px 0px 0px 2px;"></ui-icon> 拒绝Ta
+                </button>
+                <button class="button-style-huodong" data-phone="{{apply.phone}}" bindtap="call">
+                    <ui-icon type="lianxiwomen" size="15" color="#ffffff" style="margin:0px 0px 0px 2px;"></ui-icon> 联系Ta
+                </button>
+            </view>
+        </ui-fixed-view>
+        <!-- 导航占位 -->
+        <view style="height:52px;"></view>
+    </view>
+</template>
+
+<script>
+export default {
+    config: {
+        navigationBarTitleText: '申请详情',
+        navigationBarTextStyle: 'black',
+        backgroundColor: "#F8F8F8",
+        backgroundTextStyle: "light",
+        enablePullDownRefresh: true,
+    },
+    data: {
+        NAV_HEIGHT:wx.STATUS_BAR_HEIGHT+wx.DEFAULT_HEADER_HEIGHT+'px',
+        DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
+        uid: '',                // 当前用户标识
+        createid: '',           // 发布人标识
+        apply: {},              // 申请人信息
+    },
+    onLoad(options) {
+        // 自动登录并返回登录信息
+        this.autoLogin(this)
+        // 获取申请详情
+        this.parttimeApply(options.id)
+        wx.showShareMenu({
+            withShareTicket: true
+        })
+    },
+    // 自动登录
+    autoLogin (thisobj) {
+        wx.login({
+            success(res) {
+                if (res.code) {
+                    //发起网络请求
+                    wx.request({
+                        url: 'https://wx.taoyuantoday.com/mini.Weparttime/wxQuickLogin.html',
+                        data: {
+                            code: res.code
+                        },
+                        header: {
+                            'content-type': 'application/json' // 默认值
+                        },
+                        success(res) {
+                            if (res.data) {
+                                thisobj.setData({
+                                    uid: res.data
+                                })
+                            }
+                        }
+                    })
+                } else {
+                    console.log('登录失败，请检查网络设置！' + res.errMsg)
+                }
+            }
+        })
+    },
+    parttimeApply(id) {
+        var that = this;
+        wx.request({
+            url: 'https://wx.taoyuantoday.com/mini.Weparttime/parttimeApply.html',
+            data: {
+                id: id,
+            },
+            header: {
+                'content-type': 'application/json' // 默认值
+            },
+            success(res) {
+                if (res.data) {
+                    that.setData({
+                        apply: res.data
+                    })
+                }
+            }
+        })
+    },
+    call(e) {
+        var that = this
+        if (that.data.apply.status == 2) {
+            let phone = e.currentTarget.dataset.phone
+            wx.makePhoneCall({
+                phoneNumber: phone // 真实的电话号码
+            })
+        } else {
+            // 生成交易订单
+            wx.request({
+                url: 'https://wx.taoyuantoday.com/mini.Weparttime/createOrder.html',
+                data: {
+                    uid: that.data.uid,
+                    money: 2,
+                    msg: '兼职订单',
+                },
+                header: {
+                    'content-type': 'application/json' // 默认值
+                },
+                success(res) {
+                    if (res.data) {
+                        wx.navigateTo({
+                            url: './payment?orderid=' + res.data
+                        })
+                    }
+                }
+            })
+        }
+    },
+    saySorry(e) {
+        wx.showModal({
+            title: '温馨提示',
+            content: '确认拒绝该申请吗？',
+            showCancel: false,
+            confirmColor: '#ffd100',
+            confirmText: '确认',
+            success(res) {
+                if (res.confirm) {
+                    wx.navigateBack()
+                }
+            }
+        })
+    },
+    // 客服消息
+    handleContact(e) {
+        console.log(e.path)
+        console.log(e.query)
+    },
+    // 导航返回
+    navigateBack () {
+        wx.navigateBack()
+    },
+}
+</script>
+
+<style lang="less">
+@import '../../static/styles/weui.wxss';
+// 自定义导航栏
+.nav_bar {
+    .mix-flex-center();
+    .nav-bar-col {
+        text-align: center;
+        .containertitle {
+            padding: 6px 10px;
+            display: flex;
+            background-color: #FFFFFF;
+            .dingwei {
+                height: 25px;
+                display: flex;
+                .mix-flex-y-center();
+            }
+            .dingwei text {
+                size: 16px;
+                color: #FFFFFF;
+                margin: 0px 3px;
+            }
+        }
+        .nav-bar-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+    }
+}
+// 底部授权信息
+.footer {
+    margin: 25px 0px;
+    .weui-footer_link {
+        color: #ffd100;
+        border: none;
+        background-color: #F4F4F4;
+    }
+    .weui-footer_link::after {
+        border: none
+    }
+}
+// 主题内容
+.content {
+    display: flex;
+    flex-direction: column;
+    .content-row {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        width: 100%;
+        .mix-1px(1, 0, 0, 0, #ccc);
+        line-height: 30px;
+        .mix-flex-center();
+        padding: 5px 10px;
+        background-color: #FFFFFF;
+        .content-label {
+            width: 15%;
+        }
+        .content-boday {
+            width: 85%;
+        }
+        .content-biglabel {
+            width: 22%;
+        }
+        .content-bigboday {
+            width: 78%;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            .content-minlabel {
+                width: 80%;
+            }
+            .content-minboday {
+                .mix-flex-center();
+                width: 20%;
+                padding-left: 10px;
+                .mix-1px(0, 0, 0, 1, #ccc);
+            }
+        }
+    }
+    .content-column {
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
+        padding: 5px 10px;
+        line-height: 30px;
+        background: #FFFFFF;
+        .column-label {
+            width: 100%;
+            .mix-1px(0, 0, 1, 0, #ccc);
+        }
+        .column-boday {
+            width: 100%;
+        }
+    }
+}
+// 按钮样式组
+.groupsources {
+    padding: 8px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    .mix-flex-y-center();
+    font-size: 12px;
+    background-color: #FFFFFF;
+    .mix-1px(1, 0, 0, 0, #ccc);
+    .view {
+        width: 40%;
+        .mix-flex-x-center();
+    }
+    .button-style-huodong {
+        background-color: #ffd100;
+        color: #FFFFFF;
+        width: 50%;
+        margin: 5px 5px;
+    }
+    .button-style-guanzhu {
+        background-color: #FFFFFF;
+        color: #ffd100;
+        width: 50%;
+        margin: 5px 5px;
+    }
+    .button-style-huodong::after{
+        border: none;
+    }
+}
+</style>

@@ -11,7 +11,7 @@
                     </view>
                 </ui-col>
                 <ui-col vertical-align="middle" class="nav-bar-col">
-                    <view class="nav-bar-title">社交圈</view>
+                    <view class="nav-bar-title">树洞</view>
                 </ui-col>
                 <ui-col vertical-align="middle" class="nav-bar-col" align="right"  width="100px">
                 </ui-col>
@@ -165,7 +165,7 @@
 <script>
 export default {
     config: {
-        navigationBarTitleText: '社交圈',
+        navigationBarTitleText: '树洞',
         navigationBarTextStyle: 'black',
         backgroundColor: "#888888",
         backgroundTextStyle: "light",
@@ -370,6 +370,10 @@ export default {
                         currentpage: res.data.currentpage,
                         socials: res.data.socials,
                         totalPage: res.data.totalPage,
+                    })
+                }
+                if (that.data.currentpage >= that.data.totalPage) {
+                    that.setData({
                         isHideLoadMore: true,
                     })
                 }

@@ -87,12 +87,6 @@
                         <ui-tags data="{{areas}}" fixed-width col-number="3" bindchange="singleTapArea"></ui-tags>
                     </view>
                 </view>
-                <!-- <view class="searchpopup" wx:if="{{ searchTags.length > 0 }}">
-                    <view class="tagsview">
-                        <ui-tags data="{{ searchTags }}" bindchange="deleteSearch"></ui-tags>
-                        <image src="../../static/image/jianzhi/yichu.png" hidden/>
-                    </view>
-                </view> -->
                 <view class='jz-group'>
                     <wxs module="dateUtil" src="../../static/utils/util.wxs"></wxs>
                     <view class='jz-group-item' wx:key="parttimekey" wx:for="{{parttimes}}" wx:for-item="parttime" wx:for-index="index">
@@ -598,7 +592,6 @@ export default {
                         currentpage: res.data.currentpage,
                         parttimes: res.data.parttimes,
                         totalPage: res.data.totalPage,
-                        isHideLoadMore: true,
                     })
                 }
                 if (that.data.currentpage >= that.data.totalPage) {
@@ -917,14 +910,6 @@ export default {
             border-bottom: 1px solid #eee;
         }
     }
-    .searchpopup {
-        background-color: #FFFFFF;
-        z-index: 2;
-        .tagsview {
-            padding: 10px 0 10px 20px;
-            border-bottom: 1px solid #eee;
-        }
-    }
 }
 // 推荐模块
 .tab-panel-item {
@@ -977,8 +962,8 @@ export default {
             width: 16%;
             float: left;
             image {
-                width: 40px;
-                height: 40px;
+                width: 45px;
+                height: 45px;
             }
         }
         .jz-buttonitem {

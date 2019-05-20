@@ -111,7 +111,7 @@
                     <view class="page__bd page__bd_spacing">
                         <view class="weui-footer">
                             <view class="weui-footer__links">
-                                <button open-type="contact" bindcontact="handleContact" class="weui-footer__link">方寸奶爸</button>
+                                <button open-type="contact" bindcontact="handleContact" class="weui-footer_link">方寸奶爸</button>
                             </view>
                             <view class="weui-footer__text">Copyright © 2008-2019 fcdaddy.com</view>
                         </view>

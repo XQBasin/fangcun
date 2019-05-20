@@ -11,14 +11,14 @@
                     </view>
                 </ui-col>
                 <ui-col vertical-align="middle" class="nav-bar-col">
-                    <view class="nav-bar-title">社交消息评论</view>
+                    <view class="nav-bar-title">消息评论</view>
                 </ui-col>
                 <ui-col vertical-align="middle" class="nav-bar-col" align="right"  width="100px">
                 </ui-col>
             </ui-row>
         </ui-nav-bar>
         <view style="height:{{NAV_HEIGHT}}px"></view>
-        <!-- 社交内容 -->
+        <!-- 内容 -->
         <wxs module="dateUtil" src="../../static/utils/util.wxs"></wxs>
         <view class="sj_tab_panel_item">
             <view class="sj_flex_wrp">
@@ -257,7 +257,7 @@
 import WxValidate from '../../static/utils/WxValidate.js'
 export default {
     config: {
-        navigationBarTitleText: '社交信息评论',
+        navigationBarTitleText: '信息评论',
         navigationBarTextStyle: 'black',
         backgroundColor: "#888888",
         backgroundTextStyle: "light",
@@ -267,11 +267,11 @@ export default {
         NAV_HEIGHT:wx.STATUS_BAR_HEIGHT+wx.DEFAULT_HEADER_HEIGHT,
         DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
         uid: '',                    // 用户标识
-        social: {},                 // 社交消息对象
+        social: {},                 // 消息对象
         fixedNav: '',               // 绝对定位关闭
         fixedHid: true,             // 导航占位影藏
         index: 0,                   // tab初始索引
-        socialid: '',               // 社交消息标识
+        socialid: '',               // 消息标识
         comfilm: [],                // 初始显示论坛数据
         comfield: [],               // 条件字段标识
         comcurrentpage: 1,          // 当前页码
@@ -710,7 +710,6 @@ export default {
                         comfilm: res.data.comfilm,
                         comtotalNum: res.data.comtotalNum,
                         comtotalPage: res.data.comtotalPage,
-                        isHideComLoadMore: true,
                     })
                 }
                 if (that.data.comcurrentpage >= that.data.comtotalPage) {
@@ -801,7 +800,7 @@ export default {
         }
     }
 }
-// 社交列表
+// 列表
 .sj_tab_panel_item {
     background: #FFFFFF;
     border-radius: 5px;

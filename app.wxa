@@ -8,7 +8,6 @@ export default {
   config: {
     usingComponents: {},
     pages: [
-      // 'pages/mall/index',
       // 首页
       'pages/home/index',
       // 社交
@@ -22,6 +21,8 @@ export default {
       'pages/parttime/info',
       'pages/parttime/apply',
       'pages/parttime/create',
+      'pages/parttime/offer',
+      'pages/parttime/payment',
       // 活动
       'pages/activity/index',
       'pages/activity/info',
@@ -31,7 +32,7 @@ export default {
       'pages/activity/show',
       'pages/activity/fieldset',
       'pages/activity/fieldadd',
-      // 商城
+      // 闲置
       'pages/mall/index',
       'pages/mall/details',
       // 性格测试

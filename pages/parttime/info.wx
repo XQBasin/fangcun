@@ -41,7 +41,7 @@
                             <ui-row space-top="6">
                                 <ui-col space-right="5">
                                     <view class="column-content">
-                                        <ui-tags data="{{tagitem}}" bindchange="singleTap" fixed-width col-number="4"></ui-tags>
+                                        <ui-tags data="{{tagitem}}" fixed-width col-number="4"></ui-tags>
                                     </view>
                                 </ui-col>
                             </ui-row>
@@ -173,15 +173,18 @@
                                 <image src="../../static/image/man.png" hidden/>
                                 <image src="../../static/image/woman.png" hidden/>
                             </view>
-                            <view class='sj-buttonitem' bindtap='getSocInfo'>
-                                <view class="sjtitle" data-id="{{apply.id}}">
-                                    <view class="left">{{apply.name}}</view>
+                            <view class='sj-buttonitem'>
+                                <view class="sjtitle">
+                                    <view class="left">
+                                        <view class="name">{{apply.name}}</view>
+                                        <view wx:if="{{apply.status == 2}}" class="tag"><text>可邀请</text></view>
+                                    </view>
                                     <view class="center">{{dateUtil.formatTime(apply.timestamp, 'M/D h:m:s')}}</view>
                                 </view>
                                 <view class="sjdes">
-                                    <view class="left" data-id="{{apply.id}}">{{apply.desc}}</view>
+                                    <view class="left">{{apply.desc}}</view>
                                     <view class="right_content">
-                                        <view class="btn">查看</view>
+                                        <view class="btn" id="{{apply.id}}" bindtap='navOffer'>查看</view>
                                     </view>
                                 </view>
                             </view>
@@ -192,12 +195,9 @@
                         <view class="weui-loading"></view>
                         <view class="weui-loadmore__tips" style="font-size:13px; color:#848484;">加载中...</view>
                     </view>
+                    <ui-divider wx:if="{{isHideLoadMore}}" padding="20">我是有底线的</ui-divider>
                 </view>
             </view>
-        </view>
-        <!-- 页面公共广告 -->
-        <view style="margin:10px;">
-            <ad unit-id="adunit-32c386620de8cc6b"></ad>
         </view>
         <!-- 公众号关注引导 -->
         <official-account></official-account>
@@ -206,7 +206,7 @@
             <view class="page__bd page__bd_spacing">
                 <view class="weui-footer">
                     <view class="weui-footer__links">
-                        <button open-type="contact" bindcontact="handleContact" class="weui-footer__link">方寸奶爸</button>
+                        <button open-type="contact" bindcontact="handleContact" class="weui-footer_link">方寸奶爸</button>
                     </view>
                     <view class="weui-footer__text">Copyright © 2008-2019 fcdaddy.com</view>
                 </view>
@@ -218,7 +218,7 @@
                 <button class="button-style-guanzhu" open-type="share">
                     <ui-icon type="fenxiang" size="15" color="#ffd100" style="margin:0px 0px 0px 2px;"></ui-icon> 分享
                 </button>
-                <button class="button-style-huodong" data-route="apply" data-authorise="1" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
+                <button class="button-style-huodong" data-route="apply" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
                     <ui-icon type="jiahao" size="15" color="#ffffff" style="margin:0px 0px 0px 2px;"></ui-icon> 申请
                 </button>
             </view>
@@ -234,10 +234,11 @@ var QQMapWX = require('../../static/utils/qqmap-wx-jssdk.min.js')
 var qqmapsdk
 let interstitialAd = null
 const tagStyle = `
-  background: #eee;
+  background: #fff;
   color: #848484;
   padding: 5px 10px;
   border-radius: 5px;
+  border: 1px solid #848484;
   text-align: center;
   height: 25px;
   display: flex;
@@ -311,7 +312,6 @@ export default {
     bindGetUserInfo(e) {
         var that = this;
         let route = e.currentTarget.dataset.route
-        let authorise = e.currentTarget.dataset.authorise
         // 判断是否同意授权
         if (e.detail.userInfo == undefined) {
             wx.showModal({
@@ -327,11 +327,11 @@ export default {
                 }
             })
         } else {
-            that.updateUser(e.detail.userInfo, that.data.uid, route, authorise)
+            that.updateUser(e.detail.userInfo, that.data.uid, route)
         }
     },
     // 更新用户信息
-    updateUser: function (userInfo, uid, route, authorise) {
+    updateUser: function (userInfo, uid, route) {
         var that = this;
         wx.request({
             url: 'https://wx.taoyuantoday.com/mini.Weparttime/updateUser.html',
@@ -343,46 +343,16 @@ export default {
                 'content-type': 'application/json' // 默认值
             },
             success(res) {
-                that.navigateTo(route, authorise)
+                that.navigateTo(route)
             }
         })
     },
     // 获取路由页面
-    navigateTo: function (route, authorise) {
-        var that = this
+    navigateTo: function (route) {
         // 若实名认证则再判断是否认证通过，若通过则正常路由，否则跳转至审核提示页
-        if (authorise) {
-            if (that.data.userInfo.authentic) {
-                wx.request({
-                    url: 'https://wx.taoyuantoday.com/mini.Weparttime/authenticApply.html',
-                    data: {
-                        id: that.data.userInfo.authentic,
-                    },
-                    header: {
-                        'content-type': 'application/json' // 默认值
-                    },
-                    success(res) {
-                        if (res.data) {
-                            wx.navigateTo({
-                                url: './' + route + '?uid=' + that.data.uid + "&parttimeid=" + that.data.parttime.id
-                            })
-                        } else {
-                            wx.navigateTo({
-                                url: './authstat?uid=' + that.data.uid
-                            })
-                        }
-                    }
-                })
-            } else {
-                wx.navigateTo({
-                    url: './authentic?uid=' + that.data.uid
-                })
-            }
-        } else {
-            wx.navigateTo({
-                url: './' + route + '?uid=' + that.data.uid + "&parttimeid=" + that.data.parttime.id
-            })
-        }
+        wx.navigateTo({
+            url: './' + route + '?uid=' + this.data.uid + "&parttimeid=" + this.data.parttime.id
+        })
     },
     onPageScroll (e) {
         let query = wx.createSelectorQuery()
@@ -428,7 +398,7 @@ export default {
                         parttime: parttime,
                         tagitem: tagitem,
                     })
-                    // 根据用户标识获取用户基本信息
+                    // 根据用户标识获取发布人基本信息
                     that.getUserInfoById(parttime.uid)
                     // 路径规划
                     that.getLocation(that, parttime.latitude+','+parttime.longitude)
@@ -596,6 +566,10 @@ export default {
                         applies: res.data.applies,
                         totalNum: res.data.totalNum,
                         totalPage: res.data.totalPage,
+                    })
+                }
+                if (that.data.currentpage >= that.data.totalPage) {
+                    that.setData({
                         isHideLoadMore: true,
                     })
                 }
@@ -611,6 +585,19 @@ export default {
         } else {
             this.getAppliesForPage(this.data.parttime.id, parseInt(this.data.currentpage) + 1, true)
         }
+    },
+    // 获取申请人信息
+    navOffer(e) {
+        if (this.data.uid != this.data.userInfo.uid) {
+            wx.showToast({
+                title: '非发布人无法查看兼职申请人信息！',
+                icon: 'none'
+            })
+            return false
+        }
+        wx.navigateTo({
+            url: './offer?id=' + e.target.id
+        })
     },
     // 客服消息
     handleContact(e) {
@@ -851,8 +838,8 @@ export default {
         .sj-title {
             width: 20%;
             image {
-                width: 60px;
-                height: 60px;
+                width: 45px;
+                height: 45px;
                 border-radius: 50%;
                 border: 1px solid #FFD100;
             }
@@ -866,15 +853,32 @@ export default {
                 display: flex;
                 flex-direction: row;
                 flex-wrap: nowrap;
-                .mix-flex-center();
                 .left {
-                    width: 30%;
-                    font-size: 14px;
-                    .mix-text-overflow();
+                    display: flex;
+                    flex-direction: row;
+                    width: 50%;
+                    .mix-flex-y-center();
+                    .name {
+                        width: 70%;
+                        font-size: 14px;
+                        .mix-text-overflow();
+                    }
+                    .tag {
+                        border: 1px solid #ffd100;
+                        width: 30%;
+                        height: 14px;
+                        font-size: 8px;
+                        .mix-flex-center();
+                        border-radius: 3px;
+                        margin-left: 5px;
+                        text {
+                            color: #ffd100;
+                        }
+                    }
                 }
                 .center {
                     text-align: right;
-                    width: 70%;
+                    width: 50%;
                     font-size: 11px;
                     color: #ccc;
                 }

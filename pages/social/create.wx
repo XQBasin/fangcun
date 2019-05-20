@@ -11,14 +11,14 @@
                     </view>
                 </ui-col>
                 <ui-col vertical-align="middle" class="nav-bar-col">
-                    <view class="nav-bar-title">社交消息发布</view>
+                    <view class="nav-bar-title">消息发布</view>
                 </ui-col>
                 <ui-col vertical-align="middle" class="nav-bar-col" align="right"  width="100px">
                 </ui-col>
             </ui-row>
         </ui-nav-bar>
         <view style="height:{{NAV_HEIGHT}}"></view>
-        <!-- 发布社交圈 -->
+        <!-- 发布 -->
         <view class="content">
             <view class="textarea">
                 <textarea wx:if="{{!isShowText}}" placeholder="此刻你想说点什么~" name="description" value="{{content}}" bindblur="onContentInput" bindconfirm="onShowText" auto-focus="{{onFocus}}" maxlength="500" style="width:100%;" bindinput="handleContentInput"></textarea>
@@ -81,7 +81,7 @@
 import { $init, $digest } from '../../static/utils/common.util'
 export default {
     config: {
-        navigationBarTitleText: '发布社交圈',
+        navigationBarTitleText: '发布',
         navigationBarTextStyle: 'black',
         backgroundColor: "#888888",
         backgroundTextStyle: "light"
@@ -99,7 +99,7 @@ export default {
         files: [],          // 文件列表
         count: 9,           // 最多可以选择的图片张数
         serverSrc: [],      // 文件服务器路径
-        open: 'true',     // 默认同时分享到社交圈
+        open: 'true',     // 默认同时分享到
     },
     onLoad(options) {
         var that = this
