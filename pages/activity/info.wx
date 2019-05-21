@@ -311,6 +311,7 @@ export default {
         plfocus: false,             // 评论框是否自动获得焦点
         cpid: 0,                    // 评论消息标识
         formId: '',                 // 用于发送模板消息
+        fields: [],                 // 自定义字段
     },
     onLoad(options) {
         this.setData({
@@ -318,7 +319,7 @@ export default {
         })
         // 自动登录并返回登录信息
         this.autoLogin(this)
-        //可以在页面 onLoad 中去获取页面 url 中的参数( 下面 onShareAppMessage 函数中配置)
+        // 可以在页面 onLoad 中去获取页面 url 中的参数( 下面 onShareAppMessage 函数中配置)
         if (options.isshare == 1) {
             this.setData({
                 isshare: options.isshare
@@ -457,9 +458,31 @@ export default {
                 'content-type': 'application/json' // 默认值
             },
             success(res) {
-                if (res.data != "") {
+                if (res.data) {
                     that.setData({
                         activity: res.data
+                    })
+                    // 获取报名字段
+                    that.getApplyFields(res.data.configsid)
+                }
+            }
+        })
+    },
+    // 获取报名字段
+    getApplyFields(configsid) {
+        var that = this;
+        wx.request({
+            url: 'https://wx.taoyuantoday.com/mini.Weactivity/getApplyFields.html',
+            data: {
+                id: configsid,
+            },
+            header: {
+                'content-type': 'application/json' // 默认值
+            },
+            success(res) {
+                if (res.data) {
+                    that.setData({
+                        fields: res.data
                     })
                 }
             }
