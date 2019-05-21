@@ -79,13 +79,13 @@
                 </view>
                 <view id="tabitems">
                     <!-- 活动详情 -->
-                    <view wx:if="{{ activity.content && tabindex === 0 }}">
+                    <view wx:if="{{ tabindex === 0 }}">
                         <view class="rich-text-wrp">
                             <rich-text nodes="{{activity.content}}" bindtap="tap"></rich-text>
                         </view>
                     </view>
                     <!-- 评论列表 -->
-                    <view wx:elif="{{ comfilm && tabindex === 1 }}">
+                    <view wx:elif="{{ tabindex === 1 }}">
                         <view wx:for="{{ comfilm }}" wx:key="com" wx:for-item="com" height="80" border-bottom>
                             <view class="pl_item">
                                 <view class="pl_flex_wrp">
@@ -129,9 +129,10 @@
                             <view class="weui-loading"></view>
                             <view class="weui-loadmore__tips" style="font-size:13px; color:#848484;">加载中...</view>
                         </view>
+                        <ui-divider wx:if="{{isHideComLoadMore}}" padding="20">我是有底线的</ui-divider>
                     </view>
                     <!-- 已报名列表 -->
-                    <view wx:elif="{{ products && tabindex === 2 }}">
+                    <view wx:elif="{{ tabindex === 2 }}">
                         <view class="top_tip">
                             <wxs module="dateUtil" src="../../static/utils/util.wxs"></wxs>
                             <view class='show-groupsources'>
@@ -172,6 +173,7 @@
                             <view class="weui-loading"></view>
                             <view class="weui-loadmore__tips" style="font-size:13px; color:#848484;">加载中...</view>
                         </view>
+                        <ui-divider wx:if="{{isHideProLoadMore}}" padding="20">我是有底线的</ui-divider>
                     </view>
                 </view>
             </view>
@@ -192,7 +194,7 @@
         <!-- 底部导航 -->
         <ui-fixed-view bottom="0" left="0" right="0">
             <view class='groupsources'>
-                <button class="button-style-guanzhu" size="mini" data-plshow="{{true}}" data-parentid="0" data-level="0" data-touser="随便说点什么吧~" data-bindtap="openPLPopup" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
+                <button class="button-style-guanzhu" size="mini" data-plshow="{{true}}" data-parentid="0" data-level="0" data-touser="说点什么吧~" data-bindtap="openPLPopup" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
                     <ui-icon type="wodefankui" size="13px;" color="#ffd100" style="margin:0px 0px 0px 2px;"></ui-icon> 评论
                 </button>
                 <button class="button-style-huodong" size="mini" data-show="{{true}}" data-bindtap="openPopup" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
@@ -311,7 +313,27 @@ export default {
         formId: '',                 // 用于发送模板消息
     },
     onLoad(options) {
-        var that = this
+        this.setData({
+            activityid: options.activityid
+        })
+        // 自动登录并返回登录信息
+        this.autoLogin(this)
+        //可以在页面 onLoad 中去获取页面 url 中的参数( 下面 onShareAppMessage 函数中配置)
+        if (options.isshare == 1) {
+            this.setData({
+                isshare: options.isshare
+            })
+        }
+        this.initPlValidate()
+        this.getActivity(options.activityid)
+        this.getActCommentsForPage(options.activityid, 1)
+        this.getProListForPage(options.activityid, 1)
+        wx.showShareMenu({
+            withShareTicket: true
+        })
+    },
+    // 自动登录
+    autoLogin (thisobj) {
         wx.login({
             success(res) {
                 if (res.code) {
@@ -326,7 +348,7 @@ export default {
                         },
                         success(res) {
                             if (res.data) {
-                                that.setData({
+                                thisobj.setData({
                                     uid: res.data
                                 })
                             }
@@ -336,22 +358,6 @@ export default {
                     console.log('登录失败，请检查网络设置！' + res.errMsg)
                 }
             }
-        })
-        //可以在页面 onLoad 中去获取页面 url 中的参数( 下面 onShareAppMessage 函数中配置)
-        if (options.isshare == 1) {
-            that.setData({
-                isshare: options.isshare
-            })
-        }
-        that.initPlValidate()
-        that.getActivity(options.activityid)
-        that.setData({
-            activityid: options.activityid
-        })
-        that.getActCommentsForPage(options.activityid, that.data.comcurrentpage)
-        that.getProListForPage(options.activityid, that.data.procurrentpage)
-        wx.showShareMenu({
-            withShareTicket: true
         })
     },
     // 初始化评论表单校验
@@ -403,7 +409,7 @@ export default {
                             icon: 'success',
                             duration: 2000
                         })
-                        that.getActivity(that.data.activity.id)
+                        that.getProListForPage(that.data.activity.id, 1)
                         that.setData({
                             show: false
                         })
@@ -439,7 +445,7 @@ export default {
             mass:value
         })
     },
-    // 获取活动列表
+    // 获取活动详情
     getActivity: function (activityid) {
         var that = this;
         wx.request({
@@ -460,7 +466,7 @@ export default {
         })
     },
     // 作品列表
-    getProListForPage: function (activityid, procurrentpage) {
+    getProListForPage: function (activityid, procurrentpage, concat) {
         var that = this;
         wx.request({
             url: 'https://wx.taoyuantoday.com/mini.Weactivity/getProListForPage.html',
@@ -473,11 +479,28 @@ export default {
             },
             success(res) {
                 if (res.data.state) {
+                    if (concat) {
+                        that.setData({
+                            procurrentpage: res.data.procurrentpage,
+                            products: that.data.products.concat(res.data.products),
+                            prototalNum: res.data.prototalNum,
+                            prototalPage: res.data.prototalPage,
+                        })
+                    } else {
+                        that.setData({
+                            products: null,
+                        })
+                        that.setData({
+                            procurrentpage: res.data.procurrentpage,
+                            products: res.data.products,
+                            prototalNum: res.data.prototalNum,
+                            prototalPage: res.data.prototalPage,
+                        })
+                    }
+                }
+                if (that.data.procurrentpage >= that.data.prototalPage) {
                     that.setData({
-                        procurrentpage: res.data.procurrentpage,
-                        products: that.data.products.concat(res.data.prolist),
-                        prototalNum: res.data.prototalNum,
-                        prototalPage: res.data.prototalPage,
+                        isHideProLoadMore: true,
                     })
                 }
             }
@@ -491,6 +514,19 @@ export default {
             url: './' + route + '?' + param
         })
     },
+    //下拉刷新
+    onPullDownRefresh:function() {
+        wx.showNavigationBarLoading() //在标题栏中显示加载
+        //模拟加载
+        this.getActivity(this.data.activityid)
+        this.getActCommentsForPage(this.data.activityid, 1)
+        this.getProListForPage(this.data.activityid, 1)
+        setTimeout(function() {
+            // complete
+            wx.hideNavigationBarLoading() //完成停止加载
+            wx.stopPullDownRefresh() //停止下拉刷新
+        }, 1500);
+    },
     //加载更多
     onReachBottom: function () {
         if (this.data.tabindex === 1) {
@@ -499,7 +535,7 @@ export default {
                     isHideComLoadMore: true,
                 })
             } else {
-                this.getActCommentsForPage(this.data.activityid, this.data.comcurrentpage)
+                this.getActCommentsForPage(this.data.activityid, parseInt(this.data.comcurrentpage) + 1, true)
             }
         } else if (this.data.tabindex === 2) {
             if (this.data.procurrentpage > this.data.prototalPage) {
@@ -507,7 +543,7 @@ export default {
                     isHideProLoadMore: true,
                 })
             } else {
-                this.getProListForPage(this.data.activityid, this.data.procurrentpage)
+                this.getProListForPage(this.data.activityid, parseInt(this.data.procurrentpage) + 1, true)
             }
         }
     },
@@ -670,22 +706,27 @@ export default {
     },
     handleChange (e) {
         let tabindex = e.detail.index
-        if (tabindex === 1) {
-            this.setData({
-                tabindex: 1
-            })
-        } else if (tabindex === 2) {
-            this.setData({
-                tabindex: 2
-            })
-        } else {
-            this.setData({
-                tabindex: 0
-            })
+        this.setData({
+            tabindex: tabindex
+        })
+        switch(tabindex) {
+            case 1:
+                if (this.data.comfilm.length == 0) {
+                    // 以后根据需要调整为分页查询
+                    this.getActCommentsForPage(this.data.activityid, 1)
+                }
+                break;
+            case 2:
+                if (this.data.products.length == 0) {
+                    // 以后根据需要调整为分页查询
+                    this.getProListForPage(this.data.activityid, 1)
+                }
+                break;
+            default:
         }
     },
     // 评论列表
-    getActCommentsForPage: function (activityid, comcurrentpage) {
+    getActCommentsForPage: function (activityid, comcurrentpage, concat) {
         var that = this;
         wx.request({
             url: 'https://wx.taoyuantoday.com/mini.Weactivity/getActCommentsForPage.html',
@@ -698,11 +739,28 @@ export default {
             },
             success(res) {
                 if (res.data.state) {
+                    if (concat) {
+                        that.setData({
+                            comcurrentpage: res.data.comcurrentpage,
+                            comfilm: that.data.comfilm.concat(res.data.comfilm),
+                            comtotalNum: res.data.comtotalNum,
+                            comtotalPage: res.data.comtotalPage,
+                        })
+                    } else {
+                        that.setData({
+                            comfilm: null,
+                        })
+                        that.setData({
+                            comcurrentpage: res.data.comcurrentpage,
+                            comfilm: res.data.comfilm,
+                            comtotalNum: res.data.comtotalNum,
+                            comtotalPage: res.data.comtotalPage,
+                        })
+                    }
+                }
+                if (that.data.comcurrentpage >= that.data.comtotalPage) {
                     that.setData({
-                        comcurrentpage: res.data.comcurrentpage,
-                        comfilm: that.data.comfilm.concat(res.data.comfilm),
-                        comtotalNum: res.data.comtotalNum,
-                        comtotalPage: res.data.comtotalPage,
+                        isHideComLoadMore: true,
                     })
                 }
             }

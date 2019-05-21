@@ -23,7 +23,7 @@
         <view style="height:{{NAV_HEIGHT}}px;"></view>
         <view class="search">
             <ui-icon type="sousuo" color="#848484" size="13px;"></ui-icon>
-            <input type='text' placeholder="请输入兼职标题" placeholder-style="color:#848484;" confirm-type='search' bindconfirm="search">
+            <input type='text' placeholder="请输入兼职标题查询" placeholder-style="color:#848484;" confirm-type='search' bindconfirm="search">
         </view>
         <!-- 自动播放广告 -->
         <view class="swiper-container">
@@ -584,15 +584,6 @@ export default {
                             totalPage: res.data.totalPage,
                         })
                     }
-                } else {
-                    that.setData({
-                        parttimes: null,
-                    })
-                    that.setData({
-                        currentpage: res.data.currentpage,
-                        parttimes: res.data.parttimes,
-                        totalPage: res.data.totalPage,
-                    })
                 }
                 if (that.data.currentpage >= that.data.totalPage) {
                     that.setData({

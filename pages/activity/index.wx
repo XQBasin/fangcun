@@ -20,7 +20,7 @@
         <view style="height:{{NAV_HEIGHT}}"></view>
         <view class="search">
             <ui-icon type="sousuo" color="#848484" size="13px;"></ui-icon>
-            <input type='text' placeholder="搜索看看" placeholder-style="color:#848484;" confirm-type='search'>
+            <input type='text' placeholder="请输入活动主题查询" placeholder-style="color:#848484;" confirm-type='search' bindconfirm="search">
         </view>
         <!-- 自动播放广告 -->
         <view class="swiper-container">
@@ -67,18 +67,8 @@
                 <!-- 评论菜单 -->
                 <view class='sj_description_btn'>
                     <view>
-                        <button class="fenxiang-btn" data-route="comments" data-param="activityid={{activity.id}}" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
+                        <button class="fenxiang-btn" data-route="info" data-param="activityid={{activity.id}}" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
                             <ui-icon type="wodefankui" color="#888888" size="14px;"> {{activity.comnum}}</ui-icon>
-                        </button>
-                    </view>
-                    <view>
-                        <button class="fenxiang-btn" data-route="comments" data-param="activityid={{activity.id}}" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
-                            <ui-icon type="jushoucang" color="#888888" size="14px;"> {{activity.likenum}}</ui-icon>
-                        </button>
-                    </view>
-                    <view>
-                        <button class="fenxiang-btn" data-route="comments" data-param="activityid={{activity.id}}" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
-                            <ui-icon type="fenxiang" color="#888888" size="14px;"> {{activity.shanum}}</ui-icon>
                         </button>
                     </view>
                 </view>
@@ -88,6 +78,11 @@
         <view class="weui-loadmore" hidden="{{isHideLoadMore}}">
             <view class="weui-loading"></view>
             <view class="weui-loadmore__tips" style="font-size:13px; color:#848484;">加载中...</view>
+        </view>
+        <ui-divider wx:if="{{isHideLoadMore}}" padding="20">我是有底线的</ui-divider>
+        <!-- 页面公共广告 -->
+        <view style="margin:10px;">
+            <ad unit-id="adunit-32c386620de8cc6b"></ad>
         </view>
         <!-- 公众号关注向导 -->
         <official-account></official-account>
@@ -129,13 +124,24 @@ export default {
             {src: 'http://file.taoyuantoday.com/213/20190118/696af11d6687092383174fddfb463137.jpg_0x0.jpg'},
         ],
         swiperCurrent: 0,
-        activities: [],
-        uid: '',                // 用户标识
-        isHideLoadMore: false,  // 初始显示加载更多
+        currentpage: 1,             // 当前页码
+        field: [],                  // 条件字段标识
+        totalPage: 0,               // 总页码
+        activities: [],             // 活动列表
+        uid: '',                    // 用户标识
+        isHideLoadMore: false,      // 初始显示加载更多
     },
     onLoad(options) {
-        var that = this
-        that.getActivities(1)
+        // 自动登录并返回登录信息
+        this.autoLogin(this)
+        // 获取活动列表
+        this.getActivitiesForPage(this.data.field, this.data.currentpage)
+        wx.showShareMenu({
+            withShareTicket: true
+        })
+    },
+    // 自动登录
+    autoLogin (thisobj) {
         wx.login({
             success(res) {
                 if (res.code) {
@@ -149,8 +155,8 @@ export default {
                             'content-type': 'application/json' // 默认值
                         },
                         success(res) {
-                            if (res.data != "") {
-                                that.setData({
+                            if (res.data) {
+                                thisobj.setData({
                                     uid: res.data
                                 })
                             }
@@ -161,15 +167,28 @@ export default {
                 }
             }
         })
-        wx.showShareMenu({
-            withShareTicket: true
-        })
+    },
+    search(e) {
+        var fieldvalue = e.detail.value
+        if (fieldvalue) {
+            this.setData({
+                field: this.data.field.concat({
+                    key: 'title',
+                    value: fieldvalue,
+                })
+            })
+        } else {
+            this.setData({
+                field: []
+            })
+        }
+        this.getActivitiesForPage(this.data.field, 1)
     },
     //下拉刷新
     onPullDownRefresh:function() {
         wx.showNavigationBarLoading() //在标题栏中显示加载
         //模拟加载
-        this.getActivities(1)
+        this.getActivitiesForPage(this.data.field, 1)
         setTimeout(function() {
             // complete
             wx.hideNavigationBarLoading() //完成停止加载
@@ -178,12 +197,13 @@ export default {
     },
     //加载更多
     onReachBottom: function () {
-        console.log('加载更多')
-        setTimeout(() => {
+        if (this.data.currentpage >= this.data.totalPage) {
             this.setData({
                 isHideLoadMore: true,
             })
-        }, 2000)
+        } else {
+            this.getActivitiesForPage(this.data.field, parseInt(this.data.currentpage) + 1, true)
+        }
     },
     // 获取用户基本信息
     bindGetUserInfo(e) {
@@ -237,20 +257,39 @@ export default {
         })
     },
     // 活动列表
-    getActivities: function (status) {
+    getActivitiesForPage: function (field, currentpage, concat) {
         var that = this;
         wx.request({
-            url: 'https://wx.taoyuantoday.com/mini.Weactivity/index.html',
+            url: 'https://wx.taoyuantoday.com/mini.Weactivity/getActivitiesForPage.html',
             data: {
-                status: status,
+                field: field,
+                currentpage: currentpage
             },
             header: {
                 'content-type': 'application/json' // 默认值
             },
             success(res) {
-                if (res.data != "") {
+                if (res.data.state) {
+                    if (concat) {
+                        that.setData({
+                            currentpage: res.data.currentpage,
+                            activities: that.data.activities.concat(res.data.activities),
+                            totalPage: res.data.totalPage,
+                        })
+                    } else {
+                        that.setData({
+                            activities: null,
+                        })
+                        that.setData({
+                            currentpage: res.data.currentpage,
+                            activities: res.data.activities,
+                            totalPage: res.data.totalPage,
+                        })
+                    }
+                }
+                if (that.data.currentpage >= that.data.totalPage) {
                     that.setData({
-                        activities: res.data
+                        isHideLoadMore: true,
                     })
                 }
             }

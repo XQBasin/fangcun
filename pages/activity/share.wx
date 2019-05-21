@@ -89,26 +89,6 @@
                     </view>
                 </view>
             </view>
-            <!-- 活动素材展示 -->
-            <!-- <view class="tab-panel-item">
-                <view class="flex-title">
-                    <view class='main'>素材展示栏({{oriSwiperCurrent+1}}/{{original.length}})</view>
-                </view>
-                <view class="swiper-container">
-                    <swiper interval="5000" duration="500" bindchange="oriSwiperChange" class="swiper">
-                        <block wx:for="{{original}}" wx:key="ori">
-                            <swiper-item>
-                                <image src="{{item}}" class="img" mode="aspectFill" data-urls="{{original}}" bindtap="previewImage" id="{{item}}"/>
-                            </swiper-item>
-                        </block>
-                    </swiper>
-                    <view class="dots">
-                        <block wx:for="{{original}}" wx:key="ori">
-                            <view class="dot{{index == oriSwiperCurrent ? ' active' : ''}}"></view>
-                        </block>
-                    </view>
-                </view>
-            </view> -->
             <!-- 作品评论 -->
             <view class="tab-panel-item">
                 <view class="flex-title">
@@ -155,6 +135,12 @@
                         </view>
                     </view>
                 </view>
+                <!-- 加载更多 -->
+                <view class="weui-loadmore" hidden="{{isHideComLoadMore}}">
+                    <view class="weui-loading"></view>
+                    <view class="weui-loadmore__tips" style="font-size:13px; color:#848484;">加载中...</view>
+                </view>
+                <ui-divider wx:if="{{isHideComLoadMore}}" padding="20">我是有底线的</ui-divider>
             </view>
         </view>
         <!-- 公众号关注向导 -->
@@ -173,7 +159,7 @@
         <!-- 底部导航 -->
         <ui-fixed-view bottom="0" left="0" right="0">
             <view class='groupsources'>
-                <button class="button-style-guanzhu" size="mini" data-plshow="{{true}}" data-parentid="0" data-level="0" data-touser="随便说点什么吧~" data-bindtap="openPLPopup" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
+                <button class="button-style-guanzhu" size="mini" data-plshow="{{true}}" data-parentid="0" data-level="0" data-touser="说点什么吧~" data-bindtap="openPLPopup" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
                     <ui-icon type="wodefankui" color="#ffd100" style="margin:0px 0px 0px 2px;"></ui-icon> 评论
                 </button>
                 <button class="button-style-guanzhu" size="mini" data-zfshow="{{true}}" data-bindtap="openZFPopup" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
@@ -245,28 +231,30 @@ export default {
     data: {
         NAV_HEIGHT:wx.STATUS_BAR_HEIGHT+wx.DEFAULT_HEADER_HEIGHT+'px',
         DEFAULT_HEADER_HEIGHT: wx.DEFAULT_HEADER_HEIGHT,
-        uid: '',                // 当前用户标识
-        apply: {},              // 报名人信息
-        viewnum: 0,             // 总浏览量
-        votenum: 0,             // 投票数量
-        productid: '',          // 作品标识
-        products: [],           // 作品图
-        original: [],           // 素材图
-        content: '',            // 作品描述
-        proSwiperCurrent: 0,    // 作品图当前索引
-        // oriSwiperCurrent: 0,    // 素材图图当前索引
-        plshow: false,          // 评论弹窗是否显示
-        cpid: 0,                // 评论消息标识
-        plfocus: false,         // 评论框是否自动获得焦点
-        place: '',              // 默认回复提示
-        level: 1,               // 默认评论等级
-        plcontent: '',          // 评论内容
-        comfilm: [],            // 评论列表
-        zfshow: false,          // 转发弹窗是否显示
-        show: false,            // 遮罩状态
-        shareimage: {},         // 分享图路径
-        isHideLoadMore: false,  // 默认显示加载更多
-        isshare: false,         // 默认不是通过分享进入
+        uid: '',                    // 当前用户标识
+        apply: {},                  // 报名人信息
+        viewnum: 0,                 // 总浏览量
+        votenum: 0,                 // 投票数量
+        productid: '',              // 作品标识
+        products: [],               // 作品图
+        original: [],               // 素材图
+        content: '',                // 作品描述
+        proSwiperCurrent: 0,        // 作品图当前索引
+        plshow: false,              // 评论弹窗是否显示
+        cpid: 0,                    // 评论消息标识
+        plfocus: false,             // 评论框是否自动获得焦点
+        place: '',                  // 默认回复提示
+        level: 1,                   // 默认评论等级
+        plcontent: '',              // 评论内容
+        comcurrentpage: 1,          // 当前页码
+        comfilm: [],                // 初始显示论坛数据
+        comtotalNum: 0,             // 总记录数
+        comtotalPage: 0,            // 总页码
+        zfshow: false,              // 转发弹窗是否显示
+        show: false,                // 遮罩状态
+        shareimage: {},             // 分享图路径
+        isHideComLoadMore: false,   // 默认显示加载更多
+        isshare: false,             // 默认不是通过分享进入
     },
     onLoad(options) {
         // 外部进入校验
@@ -290,8 +278,18 @@ export default {
                 isshare: options.isshare
             })
         }
-        var that = this
-        that.initValidate()
+        this.initValidate()
+        // 自动登录并返回登录信息
+        this.autoLogin(this)
+        this.addView(activityid, uid)
+        this.getApply(activityid, uid)
+        this.getProductions(activityid, uid)
+        wx.showShareMenu({
+            withShareTicket: true
+        })
+    },
+    // 自动登录
+    autoLogin (thisobj) {
         wx.login({
             success(res) {
                 if (res.code) {
@@ -305,8 +303,8 @@ export default {
                             'content-type': 'application/json' // 默认值
                         },
                         success(res) {
-                            if (res.data != "") {
-                                that.setData({
+                            if (res.data) {
+                                thisobj.setData({
                                     uid: res.data
                                 })
                             }
@@ -316,12 +314,6 @@ export default {
                     console.log('登录失败，请检查网络设置！' + res.errMsg)
                 }
             }
-        })
-        that.addView(activityid, uid)
-        that.getApply(activityid, uid)
-        that.getProductions(activityid, uid)
-        wx.showShareMenu({
-            withShareTicket: true
         })
     },
     // 初始化表单校验
@@ -346,11 +338,6 @@ export default {
             proSwiperCurrent: option.detail.current
         })
     },
-    // oriSwiperChange: function(option) {
-    //     this.setData({
-    //         oriSwiperCurrent: option.detail.current
-    //     })
-    // },
     handleShow(e) {
         let show = e.currentTarget.dataset.show
         this.setData({
@@ -413,14 +400,14 @@ export default {
                 'content-type': 'application/json' // 默认值
             },
             success(res) {
-                if (res.data != null) {
+                if (res.data) {
                     that.setData({
                         products: res.data.pro_file.split(','),
                         original: res.data.ori_file.split(','),
                         content: res.data.content,
                         productid: res.data.id
                     })
-                    that.getProComments(res.data.id)
+                    that.getProCommentsForPage(res.data.id, 1)
                 } else {
                     wx.showModal({
                         title: '温馨提示',
@@ -548,7 +535,7 @@ export default {
                         icon: 'success',
                         duration: 2000
                     })
-                    that.getProComments(that.data.productid)
+                    that.getProCommentsForPage(that.data.productid, 1)
                     that.setData({
                         plshow:false
                     })
@@ -566,24 +553,55 @@ export default {
         })
     },
     // 评论列表
-    getProComments: function (productid) {
+    getProCommentsForPage: function (productid, comcurrentpage, concat) {
         var that = this;
         wx.request({
-            url: 'https://wx.taoyuantoday.com/mini.Weactivity/getProComments.html',
+            url: 'https://wx.taoyuantoday.com/mini.Weactivity/getProCommentsForPage.html',
             data: {
                 productid: productid,
+                comcurrentpage: comcurrentpage,
             },
             header: {
                 'content-type': 'application/json' // 默认值
             },
             success(res) {
-                if (res.data) {
+                if (res.data.state) {
+                    if (concat) {
+                        that.setData({
+                            comcurrentpage: res.data.comcurrentpage,
+                            comfilm: that.data.comfilm.concat(res.data.comfilm),
+                            comtotalNum: res.data.comtotalNum,
+                            comtotalPage: res.data.comtotalPage,
+                        })
+                    } else {
+                        that.setData({
+                            comfilm: null,
+                        })
+                        that.setData({
+                            comcurrentpage: res.data.comcurrentpage,
+                            comfilm: res.data.comfilm,
+                            comtotalNum: res.data.comtotalNum,
+                            comtotalPage: res.data.comtotalPage,
+                        })
+                    }
+                }
+                if (that.data.comcurrentpage >= that.data.comtotalPage) {
                     that.setData({
-                        comfilm:res.data,
+                        isHideComLoadMore: true,
                     })
                 }
             }
         })
+    },
+    //加载更多
+    onReachBottom: function () {
+        if (this.data.comcurrentpage > this.data.comtotalPage) {
+            this.setData({
+                isHideComLoadMore: true,
+            })
+        } else {
+            this.getProCommentsForPage(this.data.productid, parseInt(this.data.comcurrentpage) + 1, true)
+        }
     },
     // 打开转发组件
     openZFPopup (e) {

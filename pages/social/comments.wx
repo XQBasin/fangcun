@@ -210,7 +210,7 @@
         <ui-fixed-view bottom="0" left="0" right="0">
             <view class='pl_bar'>
                 <view>
-                    <button class="pl-btn" data-plshow="{{true}}" data-parentid="0" data-level="0" data-touser="随便说点什么吧~" data-bindtap="openPLPopup" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
+                    <button class="pl-btn" data-plshow="{{true}}" data-parentid="0" data-level="0" data-touser="说点什么吧~" data-bindtap="openPLPopup" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
                         <ui-icon type="wodefankui" color="#888888" size="14px;"> 评论</ui-icon>
                     </button>
                 </view>
@@ -701,16 +701,6 @@ export default {
                             comtotalPage: res.data.comtotalPage,
                         })
                     }
-                } else {
-                    that.setData({
-                        comfilm: null,
-                    })
-                    that.setData({
-                        comcurrentpage: res.data.comcurrentpage,
-                        comfilm: res.data.comfilm,
-                        comtotalNum: res.data.comtotalNum,
-                        comtotalPage: res.data.comtotalPage,
-                    })
                 }
                 if (that.data.comcurrentpage >= that.data.comtotalPage) {
                     that.setData({

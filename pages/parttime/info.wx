@@ -557,16 +557,6 @@ export default {
                             totalPage: res.data.totalPage,
                         })
                     }
-                } else {
-                    that.setData({
-                        applies: null,
-                    })
-                    that.setData({
-                        currentpage: res.data.currentpage,
-                        applies: res.data.applies,
-                        totalNum: res.data.totalNum,
-                        totalPage: res.data.totalPage,
-                    })
                 }
                 if (that.data.currentpage >= that.data.totalPage) {
                     that.setData({

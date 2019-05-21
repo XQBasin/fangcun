@@ -8,6 +8,7 @@ export default {
   config: {
     usingComponents: {},
     pages: [
+      'pages/activity/index',
       // 首页
       'pages/home/index',
       // 社交
@@ -29,7 +30,7 @@ export default {
       'pages/activity/upload',
       'pages/activity/create',
       'pages/activity/share',
-      'pages/activity/show',
+      // 'pages/activity/show', // 作品展暂时不用
       'pages/activity/fieldset',
       'pages/activity/fieldadd',
       // 闲置

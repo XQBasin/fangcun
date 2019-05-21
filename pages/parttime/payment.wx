@@ -158,13 +158,13 @@ export default {
             signType: this.data.jsApiParameters.signType,
             paySign: this.data.jsApiParameters.paySign,
             success:function(res) {
-
+                console.log(res)
             },
             fail:function(res) {
-
+                console.log(res)
             },
             complete:function(res) {
-
+                console.log(res)
             }
         })
     },
@@ -254,7 +254,7 @@ export default {
         position: relative;
         .main {
             position: absolute;
-            left: 0;
+            left: 10px;
             bottom: 0;
         }
     }
