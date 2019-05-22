@@ -21,10 +21,6 @@
             </ui-row>
         </ui-nav-bar>
         <view style="height:{{NAV_HEIGHT}}"></view>
-        <!-- <view class="search">
-            <ui-icon type="sousuo" color="#848484" size="13px;"></ui-icon>
-            <input type='text' placeholder="搜索看看" placeholder-style="color:#848484;" confirm-type='search'>
-        </view> -->
         <!-- 自动播放广告 -->
         <view class="swiper-container">
             <swiper circular autoplay interval="5000" duration="500" bindchange="swiperChange" class="swiper">
@@ -59,7 +55,7 @@
                         <button class="authorise_btn" data-route="activity/index" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
                             <view class='buttonitem'>
                                 <image src="../../static/image/menu/huodong.png"/>
-                                <text>社团</text>
+                                <text>活动</text>
                             </view>
                         </button>
                         <button class="authorise_btn" data-route="mall/index" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
@@ -75,13 +71,13 @@
         <view class='content'>
             <wxs module="dateUtil" src="../../static/utils/util.wxs"></wxs>
             <!-- 广告位 -->
-            <view class="manuad">
+            <!-- <view class="manuad">
                 <button class="authorise_btn" data-route="main/index" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
                     <view class="image">
                         <image src="http://file.taoyuantoday.com/213/20190115/3fd5d9348a62a75ec3dc3b8363627706.jpg"/>
                     </view>
                 </button>
-            </view>
+            </view> -->
             <view class="tab-panel-item">
                 <view class="flex-title">
                     <view class="label">
@@ -98,8 +94,8 @@
                             <image src="{{social.userInfo.avatar}}" mode="aspectFill"/>
                             <view class="label{{index+1}}"><text>{{index+1}}</text></view>
                         </view>
-                        <view class='sj-buttonitem'>
-                            <view class="sjtitle" data-id="{{social.id}}" bindtap='getSocInfo'>
+                        <view class='sj-buttonitem' data-id="{{social.id}}" bindtap='getSocInfo'>
+                            <view class="sjtitle">
                                 <view class="left">{{social.userInfo.username}}</view>
                                 <view class="center">{{dateUtil.formatTime(social.timestamp, 'M/D h:m:s')}}</view>
                                 <view class="right">
@@ -107,10 +103,10 @@
                                 </view>
                             </view>
                             <view class="sjdes">
-                                <view class="left" data-id="{{social.id}}" bindtap='getSocInfo'>{{social.content}}</view>
+                                <view class="left">{{social.content}}</view>
                                 <view class="right_content">
                                     <view class="btn" bindtap="guanzhu">
-                                        <ui-icon type="guanzhu" color="#FFFFFF" size="13px"></ui-icon> 关注
+                                        <ui-icon type="guanzhu" color="#FFFFFF" size="13px"></ui-icon> 查看
                                     </view>
                                 </view>
                             </view>

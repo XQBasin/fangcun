@@ -362,6 +362,15 @@ export default {
                             totalPage: res.data.totalPage,
                         })
                     }
+                } else {
+                    that.setData({
+                        socials: null,
+                    })
+                    that.setData({
+                        currentpage: res.data.currentpage,
+                        socials: res.data.socials,
+                        totalPage: res.data.totalPage,
+                    })
                 }
                 if (that.data.currentpage >= that.data.totalPage) {
                     that.setData({

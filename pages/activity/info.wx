@@ -62,7 +62,7 @@
                     <button class="button-style-huodong" size="mini" bindtap="guanzhu">
                         <ui-icon type="guanzhu" color="#FFFFFF" style="margin:0px 0px 0px 2px;"></ui-icon> 关注Ta
                     </button>
-                    <button class="button-style-guanzhu" size="mini" bindtap="lianxi">
+                    <button class="button-style-guanzhu" size="mini" data-phone="{{activity.phone}}" bindtap="call">
                         <ui-icon type="lianxiwomen" color="#ffd100" style="margin:0px 0px 0px 2px;"></ui-icon> 联系Ta
                     </button>
                 </view>
@@ -833,6 +833,25 @@ export default {
             }
         }
     },
+    call(e) {
+        let phone = e.currentTarget.dataset.phone
+        if (phone) {
+            wx.makePhoneCall({
+                phoneNumber: phone // 真实的电话号码
+            })
+        } else {
+            wx.showModal({
+                title: '温馨提示',
+                content: '该发布人未预留手机号！',
+                showCancel: false,
+                confirmColor: '#ffd100',
+                confirmText: '确认',
+                success(res) {
+                    console.log("用户确认看到提示！")
+                }
+            })
+        }
+    }
 }
 </script>
 

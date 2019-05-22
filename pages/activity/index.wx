@@ -286,6 +286,15 @@ export default {
                             totalPage: res.data.totalPage,
                         })
                     }
+                } else {
+                    that.setData({
+                        activities: null,
+                    })
+                    that.setData({
+                        currentpage: res.data.currentpage,
+                        activities: res.data.activities,
+                        totalPage: res.data.totalPage,
+                    })
                 }
                 if (that.data.currentpage >= that.data.totalPage) {
                     that.setData({

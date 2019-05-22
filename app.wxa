@@ -29,18 +29,21 @@ export default {
       'pages/activity/upload',
       'pages/activity/create',
       'pages/activity/share',
-      // 'pages/activity/show', // 作品展暂时不用
       'pages/activity/fieldset',
       'pages/activity/fieldadd',
       // 闲置
       'pages/mall/index',
-      'pages/mall/details',
+      // 'pages/mall/details',
       // 性格测试
       // 'pages/character/index',
       // 'pages/character/questions',
       // 'pages/character/result',
       // 我的
       'pages/main/index',
+      'pages/main/mysocial',
+      'pages/main/myparttime',
+      'pages/main/myactivity',
+      'pages/main/mymall',
     ],
     window: {
       backgroundTextStyle: 'dark',
