@@ -58,23 +58,30 @@
                             </view>
                             <input name="reverse" value="{{serverReverse}}" hidden/>
                         </button>
+                    </view>
+                </view>
+                <!-- 公众号关注引导 -->
+                <official-account></official-account>
+                <!-- 底部授权信息 -->
+                <view class="footer">
+                    <view class="page__bd page__bd_spacing">
+                        <view class="weui-footer">
+                            <view class="weui-footer__links">
+                                <button open-type="contact" bindcontact="handleContact" class="weui-footer_link">方寸奶爸</button>
+                            </view>
+                            <view class="weui-footer__text">Copyright © 2008-2019 fcdaddy.com</view>
+                        </view>
+                    </view>
+                </view>
+                <!-- 底部导航 -->
+                <ui-fixed-view bottom="0" left="0" right="0">
+                    <view class="btn">
                         <button form-type="submit" class="button-style-huodong"><text>提交认证</text></button>
                     </view>
-                </view>
+                </ui-fixed-view>
+                <!-- 导航占位 -->
+                <view style="height:52px;"></view>
             </form>
-        </view>
-        <!-- 公众号关注引导 -->
-        <official-account></official-account>
-        <!-- 底部授权信息 -->
-        <view class="footer">
-            <view class="page__bd page__bd_spacing">
-                <view class="weui-footer">
-                    <view class="weui-footer__links">
-                        <button open-type="contact" bindcontact="handleContact" class="weui-footer_link">方寸奶爸</button>
-                    </view>
-                    <view class="weui-footer__text">Copyright © 2008-2019 fcdaddy.com</view>
-                </view>
-            </view>
         </view>
     </view>
 </template>
@@ -227,7 +234,7 @@ export default {
                         duration: 2000
                     })
                     wx.navigateTo({
-                        url: './status'
+                        url: './authstat'
                     })
                 } else {
                     wx.showToast({
@@ -357,6 +364,23 @@ export default {
         .button-style-huodong::after{
             border: none;
         }
+    }
+}
+// 底部导航
+.btn {
+    padding: 2px 10px;
+    .mix-flex-center();
+    .mix-1px(1, 0, 0, 0, #ccc);
+    background-color: #FFFFFF;
+    .button-style-huodong {
+        width: 100%;
+        margin: 10px;
+        padding: 5px;
+        background-color: #ffd100;
+        color: #FFFFFF;
+    }
+    .button-style-huodong::after {
+        border: none;
     }
 }
 </style>

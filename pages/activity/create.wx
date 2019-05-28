@@ -189,7 +189,7 @@
                     </view>
                 </view>
                 <view class="yewu-column" style="margin-top: 5px;">
-                    <view class="label">加入方寸奶爸流量增长计划 <ui-icon type="wenhao" color="#FFD100" style="margin:0px 0px 0px 2px;" size="16px;"></ui-icon></view>
+                    <view class="label">是否匿名 <ui-icon type="wenhao" color="#FFD100" style="margin:0px 0px 0px 2px;" size="16px;"></ui-icon></view>
                     <view class="des"><switch checked name="switch" bindchange="switchChange"/></view>
                 </view>
                 <checkbox-group name="agree" bindchange="checkboxChange" style="margin:8px; color:#576b95;">

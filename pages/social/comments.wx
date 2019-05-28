@@ -175,10 +175,9 @@
                                     <image src="{{love.userInfo.avatar}}"/>
                                 </view>
                                 <view class="pl_right">
-                                    <view class='pl_title'>喜欢</view>
+                                    <view class='pl_title'>{{love.userInfo.username}}</view>
                                     <view class='pl_description'>
-                                        <view class="pl_des_left">{{love.userInfo.username}}</view>
-                                        <view class="pl_des_center">{{dateUtil.formatTime(love.timestamp, 'M/D h:m:s')}}</view>
+                                        <view style="width:100%; color: #848484;">{{dateUtil.formatTime(love.timestamp, 'M/D h:m:s')}}</view>
                                     </view>
                                 </view>
                             </view>

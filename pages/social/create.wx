@@ -194,6 +194,7 @@ export default {
             wx.request({
                 url: 'https://wx.taoyuantoday.com/mini.Wesocial/upProduction.html',
                 data: {
+                    id: that.data.id,
                     production: that.data.serverSrc,
                     content: content,
                     uid: that.data.uid,
@@ -204,7 +205,7 @@ export default {
                 },
                 method: "POST",
                 success(res) {
-                    if (res.data != "") {
+                    if (res.data) {
                         wx.hideLoading()
                         wx.showToast({
                             title: '发布成功',

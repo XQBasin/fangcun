@@ -676,33 +676,11 @@ export default {
                                 thisobj.setData({
                                     uid: res.data
                                 })
-                                // 根据用户标识获取用户基本信息
-                                thisobj.getUserInfoById(res.data)
                             }
                         }
                     })
                 } else {
                     console.log('登录失败，请检查网络设置！' + res.errMsg)
-                }
-            }
-        })
-    },
-    // 获取用户基本信息
-    getUserInfoById: function (uid) {
-        var that = this
-        wx.request({
-            url: 'https://wx.taoyuantoday.com/mini.Weparttime/getUserInfoById.html',
-            data: {
-                uid: uid
-            },
-            header: {
-                'content-type': 'application/json' // 默认值
-            },
-            success(res) {
-                if (res.data) {
-                    that.setData({
-                        userInfo: res.data
-                    })
                 }
             }
         })
@@ -752,37 +730,55 @@ export default {
         var that = this
         // 若实名认证则再判断是否认证通过，若通过则正常路由，否则跳转至审核提示页
         if (authorise) {
-            if (that.data.userInfo.authentic) {
-                wx.request({
-                    url: 'https://wx.taoyuantoday.com/mini.Weparttime/authenticApply.html',
-                    data: {
-                        id: that.data.userInfo.authentic,
-                    },
-                    header: {
-                        'content-type': 'application/json' // 默认值
-                    },
-                    success(res) {
-                        if (res.data) {
-                            wx.navigateTo({
-                                url: './' + route + '?uid=' + that.data.uid
-                            })
-                        } else {
-                            wx.navigateTo({
-                                url: './authstat?uid=' + that.data.uid
-                            })
-                        }
-                    }
-                })
-            } else {
-                wx.navigateTo({
-                    url: './authentic?uid=' + that.data.uid
-                })
-            }
+            that.checkAuthenticApply(that.data.uid, route)
         } else {
             wx.navigateTo({
                 url: './' + route + "?uid=" + that.data.uid
             })
         }
+    },
+    // 获取用户基本信息
+    checkAuthenticApply: function (uid, route) {
+        var that = this
+        wx.request({
+            url: 'https://wx.taoyuantoday.com/mini.Weparttime/getUserInfoById.html',
+            data: {
+                uid: uid
+            },
+            header: {
+                'content-type': 'application/json' // 默认值
+            },
+            success(res) {
+                if (res.data) {
+                    wx.request({
+                        url: 'https://wx.taoyuantoday.com/mini.Weparttime/authenticApply.html',
+                        data: {
+                            id: res.data.authenticid,
+                        },
+                        header: {
+                            'content-type': 'application/json' // 默认值
+                        },
+                        success(res) {
+                            if (res.data) {
+                                if (res.data.status) {
+                                    wx.navigateTo({
+                                        url: './' + route + '?uid=' + that.data.uid
+                                    })
+                                } else {
+                                    wx.navigateTo({
+                                        url: './authstat?uid=' + that.data.uid
+                                    })
+                                }
+                            } else {
+                                wx.navigateTo({
+                                    url: './authentic?uid=' + that.data.uid
+                                })
+                            }
+                        }
+                    })
+                }
+            }
+        })
     },
     // 客服消息
     handleContact(e) {

@@ -90,7 +90,7 @@ export default {
                 'content-type': 'application/json' // 默认值
             },
             success(res) {
-                if (res.data != null) {
+                if (res.data) {
                     that.setData({
                         characterInfo: res.data
                     })

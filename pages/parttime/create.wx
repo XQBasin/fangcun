@@ -689,7 +689,7 @@ export default {
                         duration: 3000
                     })
                     wx.navigateTo({
-                        url: './lists'
+                        url: './index'
                     })
                 } else {
                     wx.showToast({

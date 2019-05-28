@@ -566,15 +566,16 @@ export default {
             }
         })
     },
-    //加载更多
-    onReachBottom: function () {
-        if (this.data.currentpage >= this.data.totalPage) {
-            this.setData({
-                isHideLoadMore: true,
-            })
-        } else {
-            this.getAppliesForPage(this.data.parttime.id, parseInt(this.data.currentpage) + 1, true)
-        }
+    //下拉刷新
+    onPullDownRefresh:function() {
+        wx.showNavigationBarLoading() //在标题栏中显示加载
+        // 获取兼职详情
+        this.getPartInfo(this.data.parttime.id)
+        setTimeout(function() {
+            // complete
+            wx.hideNavigationBarLoading() //完成停止加载
+            wx.stopPullDownRefresh() //停止下拉刷新
+        }, 1500);
     },
     // 获取申请人信息
     navOffer(e) {
