@@ -99,7 +99,7 @@ export default {
         files: [],          // 文件列表
         count: 9,           // 最多可以选择的图片张数
         serverSrc: [],      // 文件服务器路径
-        open: 'true',     // 默认同时分享到
+        open: 'true',       // 默认开启匿名
     },
     onLoad(options) {
         var that = this

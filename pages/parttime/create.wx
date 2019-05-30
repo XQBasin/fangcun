@@ -272,11 +272,9 @@
                 </checkbox-group>
             </view>
             <ui-mask show="{{showMask}}" custom-style="{{customStyle}}" effect="scale-in" top="{{NAV_HEIGHT}}" blur="light" bindhide="maskHide">
-                <view class="nav_content">
-                    <scroll-view scroll-y style="height: 200px;" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
-                        <rich-text nodes="方寸奶爸用户服务协议" bindtap="tap"></rich-text>
-                    </scroll-view>
-                </view>
+                <scroll-view scroll-y style="height: {{windowHeight}}px;">
+                    <rich-text nodes="{{agreement.content}}"></rich-text>
+                </scroll-view>
             </ui-mask>
             <!-- 公众号关注向导 -->
             <official-account></official-account>
@@ -425,16 +423,20 @@ export default {
             longitude: 113.324520,
             width: 32,
             height: 32,
-            callout: { //可根据需求是否展示经纬度
+            callout: {      //可根据需求是否展示经纬度
                 content: 23.099994 + ',' + 113.32452,
                 color: '#ffd100',
                 display: 'ALWAYS'
             }
-        }],      // 地图选点
+        }],                 // 地图选点
         showmore: false,    // 显示更多状态关闭
         showMask: false,    // 服务协议查看
+        windowWidth: 0,     // 系统屏幕宽度
+        windowHeight: 0,    // 系统屏幕高度
+        agreement: {},      // 用户服务协议
     },
     onLoad(options) {
+        this.getSystemInfo()
         this.initValidate()
         $init(this)
         if (options.uid) {
@@ -483,6 +485,18 @@ export default {
         }
         // 创建实例对象
         this.validate = new WxValidate(rules, messages)
+    },
+    // 获取系统参数
+    getSystemInfo() {
+        var that = this
+        wx.getSystemInfo({
+            success: function(res) {
+                that.setData({
+                    windowWidth: res.windowWidth,
+                    windowHeight: res.windowHeight,
+                })
+            },
+        })
     },
     handleTitleInput(e) {
         const value = e.detail.value
@@ -649,6 +663,26 @@ export default {
     handleShowMask () {
         this.setData({
             showMask:true
+        })
+        this.getAgreement(1)
+    },
+    getAgreement(id) {
+        var that = this;
+        wx.request({
+            url: 'https://wx.taoyuantoday.com/mini.Weparttime/getAgreement.html',
+            data: {
+                id: id,
+            },
+            header: {
+                'content-type': 'application/json' // 默认值
+            },
+            success(res) {
+                if (res.data) {
+                    that.setData({
+                        agreement: res.data
+                    })
+                }
+            }
         })
     },
     formSubmit(e) {

@@ -76,7 +76,7 @@
                 </view>
             </view>
             <view class="share-switch">
-                <view class="label">加入方寸奶爸用户体验计划</view>
+                <view class="label">是否匿名</view>
                 <view class="des"><switch checked bindchange="switchChange"/></view>
             </view>
         </view>

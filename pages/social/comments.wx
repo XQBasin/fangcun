@@ -111,9 +111,9 @@
                                 <view class="pl_right">
                                     <view class='pl_title'>{{com.content}}</view>
                                     <view class='pl_description'>
-                                        <view class="pl_des_left">{{com.userInfo.username}}</view>
+                                        <view class="pl_des_left">{{com.userInfo.name}}</view>
                                         <view class="pl_des_center">{{dateUtil.formatTime(com.timestamp, 'M/D h:m:s')}}</view>
-                                        <view wx:if="{{ com.reply }}" class="pl_des_right" data-plshow="{{true}}" data-parentid="{{com.id}}" data-level=1 data-touser="@ {{com.userInfo.username}}" bindtap="openPLPopup">
+                                        <view wx:if="{{ com.reply }}" class="pl_des_right" data-plshow="{{true}}" data-parentid="{{com.id}}" data-level=1 data-touser="@ {{com.userInfo.name}}" bindtap="openPLPopup">
                                             回复 <ui-icon type="huifucopy" color="#FFD100" size="12px;"></ui-icon>
                                         </view>
                                     </view>
@@ -128,9 +128,9 @@
                                         <view class="pl_right">
                                             <view class='pl_title'>{{comchild.content}}</view>
                                             <view class='pl_description'>
-                                                <view class="pl_des_left">{{comchild.userInfo.username}}</view>
+                                                <view class="pl_des_left">{{comchild.userInfo.name}}</view>
                                                 <view class="pl_des_center">{{dateUtil.formatTime(comchild.timestamp, 'M/D h:m:s')}}</view>
-                                                <view wx:if="{{ comchild.reply }}" class="pl_des_right" data-plshow="{{true}}" data-parentid="{{com.id}}" data-level=2 data-touser="@ {{comchild.userInfo.username}}" bindtap="openPLPopup">
+                                                <view wx:if="{{ comchild.reply }}" class="pl_des_right" data-plshow="{{true}}" data-parentid="{{com.id}}" data-level=2 data-touser="@ {{comchild.userInfo.name}}" bindtap="openPLPopup">
                                                     回复 <ui-icon type="huifucopy" color="#FFD100" size="12px;"></ui-icon>
                                                 </view>
                                             </view>
@@ -158,7 +158,7 @@
                                 <view class="pl_right">
                                     <view class='pl_title'>{{share.content}}</view>
                                     <view class='pl_description'>
-                                        <view class="pl_des_left">{{share.userInfo.username}}</view>
+                                        <view class="pl_des_left">{{share.userInfo.name}}</view>
                                         <view class="pl_des_center">{{dateUtil.formatTime(share.timestamp, 'M/D h:m:s')}}</view>
                                     </view>
                                 </view>
@@ -227,33 +227,34 @@
         </ui-fixed-view>
         <!-- 评论POP -->
         <ui-popup show="{{plshow}}" position="bottom">
-            <form bindsubmit="plFormSubmit">
-                <view class='pocket_input'>
-                    <input name="parentid" value="{{cpid}}" hidden />
-                    <input class='input_style' name="content" value="{{content}}" placeholder="{{place}}" placeholder-class='input-placeholder' focus='{{plfocus}}' cursor-spacing="16"/>
-                    <view class='groupsources'>
-                        <button form-type="submit" class="button-style-huodong">评论</button>
+            <view class='pocket_input'>
+                <input name="parentid" value="{{cpid}}" hidden />
+                <input class='input_style' name="content" value="{{content}}" placeholder="{{place}}" placeholder-class='input-placeholder' focus='{{plfocus}}' cursor-spacing="16" confirm-type="send" bindconfirm="plFormSubmit"/>
+                <view class='groupsources'>
+                    <view class="share-switch">
+                        <view class="label">匿名</view>
+                        <view class="des"><switch bindchange="openChange" name="open" checked="{{open}}"/></view>
                     </view>
                 </view>
-            </form>
+            </view>
         </ui-popup>
         <!-- 转发POP -->
         <ui-popup show="{{zfshow}}" position="bottom">
-            <form bindsubmit="zfFormSubmit">
-                <view class='pocket_input'>
-                    <input name="socialid" value="{{social.id}}" hidden />
-                    <input class='input_style' name="content" value="{{content}}" placeholder="{{zface}}" placeholder-class='input-placeholder' focus='{{zffocus}}' cursor-spacing="16"/>
-                    <view class='groupsources'>
-                        <button form-type="submit" class="button-style-huodong">转发</button>
+            <view class='pocket_input'>
+                <input name="socialid" value="{{social.id}}" hidden />
+                <input class='input_style' name="content" value="{{content}}" placeholder="{{zface}}" placeholder-class='input-placeholder' focus='{{zffocus}}' cursor-spacing="16" confirm-type="send" bindconfirm="zfFormSubmit"/>
+                <view class='groupsources'>
+                    <view class="share-switch">
+                        <view class="label">匿名</view>
+                        <view class="des"><switch bindchange="openChange" name="open" checked="{{open}}"/></view>
                     </view>
                 </view>
-            </form>
+            </view>
         </ui-popup>
     </view>
 </template>
 
 <script>
-import WxValidate from '../../static/utils/WxValidate.js'
 export default {
     config: {
         navigationBarTitleText: '信息评论',
@@ -288,6 +289,7 @@ export default {
         plfocus: false,             // 评论框是否自动获得焦点
         zffocus: false,             // 转发框是否自动获得焦点
         cpid: 0,                    // 评论消息标识
+        open: 'true',               // 默认开启匿名
         activeTabStyle: {
             'color': '#ffd100',
             'font-size': '17px',
@@ -295,7 +297,6 @@ export default {
         },
     },
     onLoad(options) {
-        this.initValidate()
         // 自动登录并返回登录信息
         this.autoLogin(this)
         // 获取消息详情
@@ -343,23 +344,6 @@ export default {
                 }
             }
         })
-    },
-    // 初始化表单校验
-    initValidate() {
-        // 验证字段的规则
-        const rules = {
-            content: {
-                required: true,
-            },
-        }
-        // 验证字段的提示信息，若不传则调用默认的信息
-        const messages = {
-            content: {
-                required: '请至少说点什么吧！',
-            },
-        }
-        // 创建实例对象
-        this.validate = new WxValidate(rules, messages)
     },
     //下拉刷新
     onPullDownRefresh:function() {
@@ -527,15 +511,14 @@ export default {
         var that = this
         var data = e.detail.value
         if (that.data.level == 2) {
-            var content = data.content + that.data.place
+            var content = data + that.data.place
         } else {
-            var content = data.content
+            var content = data
         }
         // 校验表单
-        if (!that.validate.checkForm(data)) {
-            const error = that.validate.errorList[0];
+        if (!content) {
             wx.showToast({
-                title: error.msg,
+                title: '至少说点什么吧！',
                 icon: 'none'
             })
             return false
@@ -550,7 +533,8 @@ export default {
                 uid: that.data.uid,
                 socialid: that.data.social.id,
                 content: content,
-                parentid: that.data.cpid
+                parentid: that.data.cpid,
+                open: that.data.open,
             },
             header: {
                 'Content-Type': 'application/x-www-form-urlencoded'     // 默认值
@@ -585,16 +569,7 @@ export default {
     zfFormSubmit: function(e) {
         var that = this
         var data = e.detail.value
-        var content = data.content
-        // 校验表单
-        if (!that.validate.checkForm(data)) {
-            const error = that.validate.errorList[0];
-            wx.showToast({
-                title: error.msg,
-                icon: 'none'
-            })
-            return false
-        }
+        var content = data
         wx.showLoading({
             title: '请稍后...',
             mask: true
@@ -605,6 +580,7 @@ export default {
                 uid: that.data.uid,
                 socialid: that.data.social.id,
                 content: content,
+                open: that.data.open,
             },
             header: {
                 'Content-Type': 'application/x-www-form-urlencoded'     // 默认值
@@ -747,6 +723,13 @@ export default {
                     })
                 }
             }
+        })
+    },
+    // 匿名状态更改
+    openChange: function (e) {
+        var value = e.detail.value
+        this.setData({
+            open: value
         })
     },
     // 客服消息
@@ -914,16 +897,31 @@ ui-tabs {
         display: flex;
         flex-direction: column;
         width: 30%;
-        .button-style-huodong {
-            border-radius: 30px;
-            background-color: #ffd100;
-            color: #FFFFFF;
-        }
-        .button-style-huodong::after{
-            border: none;
+        .share-switch {
+            display: flex;
+            padding: 10px;
+            flex-direction: row;
+            justify-content: space-between;
+            .mix-flex-center();
+            .label {
+                width: 80%;
+                margin: 0px 5px;
+                color: #848484;
+                .mix-flex-y-center();
+            }
+            .des {
+                width: 20%;
+                color: #ffd100;
+                .mix-flex-x-center();
+            }
         }
     }
 }
+
+// 重写小程序开关组件样式
+.wx-switch-input{width:42px !important;height:20px !important;}
+.wx-switch-input::before{width:41px !important;height: 20px !important;}
+.wx-switch-input::after{width: 18px !important;height: 18px !important;}//中间小圆球
 // 评论插件
 .pl_bar {
     display: flex;

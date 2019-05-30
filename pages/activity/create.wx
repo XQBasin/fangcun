@@ -155,7 +155,7 @@
                     </view>
                 </view>
                 <view class="row-column-group" wx:if="{{showmore == true}}">
-                    <view class="row-column">
+                    <!-- <view class="row-column">
                         <view class="label">设置：</view>
                         <view class="content">
                             <view class="placep" data-route='fieldset' bindtap='navigateToFieldSet'>
@@ -170,7 +170,7 @@
                                 </view>
                             </view>
                         </view>
-                    </view>
+                    </view> -->
                     <view class="row-column">
                         <view class="label">电话：</view>
                         <view class="content">
@@ -194,10 +194,15 @@
                 </view>
                 <checkbox-group name="agree" bindchange="checkboxChange" style="margin:8px; color:#576b95;">
                     <label class="checkbox" wx:key="agree" wx:for="{{items}}">
-                        <checkbox value="{{item.name}}" checked="{{item.checked}}"/>{{item.value}}
+                        <checkbox value="{{item.name}}" checked="{{item.checked}}"/>我已阅读并同意<text style="color: #ffd100;" bindtap="handleShowMask">《方寸奶爸用户服务协议》</text>
                     </label>
                 </checkbox-group>
             </view>
+            <ui-mask show="{{showMask}}" custom-style="{{customStyle}}" effect="scale-in" top="{{NAV_HEIGHT}}" blur="light" bindhide="maskHide">
+                <scroll-view scroll-y style="height: {{windowHeight}}px;">
+                    <rich-text nodes="{{agreement.content}}"></rich-text>
+                </scroll-view>
+            </ui-mask>
             <!-- 公众号关注向导 -->
             <official-account></official-account>
             <!-- 底部授权信息 -->
@@ -245,7 +250,6 @@ export default {
         isShowText: false,  // 控制显示 textarea 还是 text
         items: [{
             name: '1',
-            value: '我已阅读并同意《方寸奶爸用户服务协议》',
             checked: false
         }],
         showtype: true,     // 默认为线上活动
@@ -273,8 +277,12 @@ export default {
         content: '',    // 活动详情
         cunjin: 0,      // 报名费用
         switch: true,   // 默认同意加入流量增长计划
+        windowWidth: 0, // 系统屏幕宽度
+        windowHeight: 0,// 系统屏幕高度
+        agreement: {},  // 用户服务协议
     },
     onLoad(options) {
+        this.getSystemInfo()
         this.initValidate()
         $init(this)
         if (options.uid) {
@@ -360,6 +368,18 @@ export default {
         }
         // 创建实例对象
         this.validate = new WxValidate(rules, messages)
+    },
+    // 获取系统参数
+    getSystemInfo() {
+        var that = this
+        wx.getSystemInfo({
+            success: function(res) {
+                that.setData({
+                    windowWidth: res.windowWidth,
+                    windowHeight: res.windowHeight,
+                })
+            },
+        })
     },
     handleTitleInput(e) {
         const value = e.detail.value
@@ -536,30 +556,56 @@ export default {
         $digest(this)
     },
     // 获取路由页面
-    navigateToFieldSet  (e) {
-        let route = e.currentTarget.dataset.route
-        let formdata = {
-            uid: this.data.uid,
-            title: this.data.title,
-            image: this.data.serverSrc,
-            localSrc: this.data.localSrc,
-            startdate: this.data.startdate,
-            starttime: this.data.starttime,
-            enddate: this.data.enddate,
-            endtime: this.data.endtime,
-            type: this.data.type,
-            address: this.data.address,
-            addressdes: this.data.addressdes,
-            content: this.data.content,
-            cunjin: this.data.cunjin,
-            switch: this.data.switch,
-            configsid: this.data.configsid,
-            phone: this.data.phone,
-            titleCount: this.data.titleCount,
-            contentCount: this.data.contentCount
-        }
-        wx.navigateTo({
-            url: './' + route + '?formdata=' + JSON.stringify(formdata)
+    // navigateToFieldSet  (e) {
+    //     let route = e.currentTarget.dataset.route
+    //     let formdata = {
+    //         uid: this.data.uid,
+    //         title: this.data.title,
+    //         image: this.data.serverSrc,
+    //         localSrc: this.data.localSrc,
+    //         startdate: this.data.startdate,
+    //         starttime: this.data.starttime,
+    //         enddate: this.data.enddate,
+    //         endtime: this.data.endtime,
+    //         type: this.data.type,
+    //         address: this.data.address,
+    //         addressdes: this.data.addressdes,
+    //         content: this.data.content,
+    //         cunjin: this.data.cunjin,
+    //         switch: this.data.switch,
+    //         configsid: this.data.configsid,
+    //         phone: this.data.phone,
+    //         titleCount: this.data.titleCount,
+    //         contentCount: this.data.contentCount
+    //     }
+    //     wx.navigateTo({
+    //         url: './' + route + '?formdata=' + JSON.stringify(formdata)
+    //     })
+    // },
+    // 服务协议展示
+    handleShowMask () {
+        this.setData({
+            showMask:true
+        })
+        this.getAgreement(1)
+    },
+    getAgreement(id) {
+        var that = this;
+        wx.request({
+            url: 'https://wx.taoyuantoday.com/mini.Weactivity/getAgreement.html',
+            data: {
+                id: id,
+            },
+            header: {
+                'content-type': 'application/json' // 默认值
+            },
+            success(res) {
+                if (res.data) {
+                    that.setData({
+                        agreement: res.data
+                    })
+                }
+            }
         })
     },
     // 更多显示属性切换

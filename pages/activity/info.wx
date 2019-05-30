@@ -225,6 +225,8 @@
                 <form report-submit="true" bindsubmit="formSubmit">
                     <view class="row-column">
                         <view class="label">姓名：</view>
+                        <input name="uid" value="{{uid}}" hidden/>
+                        <input name="activityid" value="{{activityid}}" hidden/>
                         <input class="content" type="text" name="name" value="{{name}}" placeholder="请填写姓名" maxlength="20"/>
                     </view>
                     <view class="row-column">
@@ -310,7 +312,6 @@ export default {
         plshow: false,              // 是否显示评论组件
         plfocus: false,             // 评论框是否自动获得焦点
         cpid: 0,                    // 评论消息标识
-        formId: '',                 // 用于发送模板消息
         fields: [],                 // 自定义字段
     },
     onLoad(options) {
@@ -382,11 +383,6 @@ export default {
     formSubmit: function(e) {
         var that = this
         var data = e.detail.value
-        if (e.detail.formId) {
-            that.setData({
-                formId: e.detail.formId
-            })
-        }
         wx.showLoading({
             title: '请稍后...',
             mask: true
@@ -394,10 +390,7 @@ export default {
         if (that.data.uid) {
             wx.request({
                 url: 'https://wx.taoyuantoday.com/mini.Weactivity/user.html',
-                data: {
-                    formdata: JSON.stringify(data),
-                    formId: that.data.formId
-                },
+                data: data,
                 header: {
                     'Content-Type': 'application/x-www-form-urlencoded'     // 默认值
                 },
@@ -463,31 +456,31 @@ export default {
                         activity: res.data
                     })
                     // 获取报名字段
-                    that.getApplyFields(res.data.configsid)
+                    // that.getApplyFields(res.data.configsid)
                 }
             }
         })
     },
     // 获取报名字段
-    getApplyFields(configsid) {
-        var that = this;
-        wx.request({
-            url: 'https://wx.taoyuantoday.com/mini.Weactivity/getApplyFields.html',
-            data: {
-                id: configsid,
-            },
-            header: {
-                'content-type': 'application/json' // 默认值
-            },
-            success(res) {
-                if (res.data) {
-                    that.setData({
-                        fields: res.data
-                    })
-                }
-            }
-        })
-    },
+    // getApplyFields(configsid) {
+    //     var that = this;
+    //     wx.request({
+    //         url: 'https://wx.taoyuantoday.com/mini.Weactivity/getApplyFields.html',
+    //         data: {
+    //             id: configsid,
+    //         },
+    //         header: {
+    //             'content-type': 'application/json' // 默认值
+    //         },
+    //         success(res) {
+    //             if (res.data) {
+    //                 that.setData({
+    //                     fields: res.data
+    //                 })
+    //             }
+    //         }
+    //     })
+    // },
     // 作品列表
     getProListForPage: function (activityid, procurrentpage, concat) {
         var that = this;
@@ -1203,7 +1196,7 @@ export default {
 // 评论列表样式
 .comments {
     background-color: #FFFFFF;
-    margin: 10px;
+    padding: 10px;
     border-radius: 5px;
     box-shadow: 0 3px 6px 0 rgb(240, 240, 240);
     .imgbox {
