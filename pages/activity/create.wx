@@ -407,7 +407,7 @@ export default {
                     name: 'file',
                     success (res) {
                         const result = JSON.parse(res.data)
-                        that.data.serverSrc = result.data.url
+                        that.data.serverSrc = result.url
                         $digest(that)
                     }
                 })

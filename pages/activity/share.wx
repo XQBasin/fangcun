@@ -105,15 +105,14 @@
                             <view class="pl_right">
                                 <view class='pl_title'>{{com.content}}</view>
                                 <view class='pl_description'>
-                                    <view class="pl_des_left">{{com.userInfo.username}}</view>
+                                    <view class="pl_des_left">{{com.userInfo.name}}</view>
                                     <view class="pl_des_center">{{dateUtil.formatTime(com.timestamp, 'M/D h:m:s')}}</view>
-                                    <view wx:if="{{ com.reply }}" class="pl_des_right" data-plshow="{{true}}" data-parentid="{{com.id}}" data-level=1 data-touser="@ {{com.userInfo.username}}" bindtap="openPLPopup">
+                                    <view wx:if="{{ com.reply }}" class="pl_des_right" data-plshow="{{true}}" data-parentid="{{com.id}}" data-level=1 data-touser="@ {{com.userInfo.name}}" bindtap="openPLPopup">
                                         回复 <ui-icon type="huifucopy" color="#FFD100" size="12px;"></ui-icon>
                                     </view>
                                 </view>
                             </view>
                         </view>
-                        <!-- 回复列表 -->
                         <view wx:if="{{ com.child }}">
                             <view style="background-color:#F4F4F4;border-radius:10px;font-size:12px;margin-left:10%;">
                                 <view class="pl_flex_wrp_child" wx:for="{{ com.child }}" wx:key="comchild" wx:for-item="comchild">
@@ -123,9 +122,9 @@
                                     <view class="pl_right">
                                         <view class='pl_title'>{{comchild.content}}</view>
                                         <view class='pl_description'>
-                                            <view class="pl_des_left">{{comchild.userInfo.username}}</view>
+                                            <view class="pl_des_left">{{comchild.userInfo.name}}</view>
                                             <view class="pl_des_center">{{dateUtil.formatTime(comchild.timestamp, 'M/D h:m:s')}}</view>
-                                            <view wx:if="{{ comchild.reply }}" class="pl_des_right" data-plshow="{{true}}" data-parentid="{{com.id}}" data-level=2 data-touser="@ {{comchild.userInfo.username}}" bindtap="openPLPopup">
+                                            <view wx:if="{{ comchild.reply }}" class="pl_des_right" data-plshow="{{true}}" data-parentid="{{com.id}}" data-level=2 data-touser="@ {{comchild.userInfo.name}}" bindtap="openPLPopup">
                                                 回复 <ui-icon type="huifucopy" color="#FFD100" size="12px;"></ui-icon>
                                             </view>
                                         </view>
@@ -169,41 +168,42 @@
                     <ui-icon type="guanzhu" color="#FFFFFF" style="margin:0px 0px 0px 2px;"></ui-icon> 投票
                 </button>
             </view>
-            <!-- 评论POP -->
-            <ui-popup show="{{plshow}}" position="bottom">
-                <form bindsubmit="plFormSubmit">
-                    <view class='pocket_input'>
-                        <input name="parentid" value="{{cpid}}" hidden />
-                        <input class='input_style' name="plcontent" value="{{plcontent}}" placeholder="{{place}}" placeholder-class='input-placeholder' focus='{{plfocus}}' cursor-spacing="16"/>
-                        <view class='sub-btn'>
-                            <button form-type="submit" class="button-style-sub">评论</button>
-                        </view>
-                    </view>
-                </form>
-            </ui-popup>
-            <!-- 转发弹窗 -->
-            <ui-popup show="{{zfshow}}" position="bottom">
-                <view class="nav_content">
-                    <ui-row height="100">
-                        <ui-col vertical-align="middle" align="center">
-                            <button class='share-img-button' open-type="share" hover-class="none" plain>
-                                <ui-icon type="haoyou" size="24" color="#fff" class="nav_1"></ui-icon>
-                                <view>好友</view>
-                            </button>
-                        </ui-col>
-                        <ui-col vertical-align="middle" align="center">
-                            <button class='share-img-button' data-show="{{true}}" bindtap="getWxacodeunlimit" hover-class="none" plain>
-                                <ui-icon type="pengyouquan" size="24" color="#fff" class="nav_2"></ui-icon>
-                                <view>图片</view>
-                            </button>
-                        </ui-col>
-                    </ui-row>
-                </view>
-                <view style="padding: 15px;">
-                    <button bindtap="handleZFPopShow" plain type="primary">取消</button>
-                </view>
-            </ui-popup>
         </ui-fixed-view>
+        <!-- 评论POP -->
+        <ui-popup show="{{plshow}}" position="bottom">
+            <view class='pocket_input'>
+                <input name="parentid" value="{{cpid}}" hidden />
+                <input class='input_style' name="content" value="{{plcontent}}" placeholder="{{place}}" placeholder-class='input-placeholder' focus='{{plfocus}}' cursor-spacing="16" confirm-type="send" bindconfirm="plFormSubmit"/>
+                <view class='pl_groupsources'>
+                    <view class="share-switch">
+                        <view class="label">匿名</view>
+                        <view class="des"><switch bindchange="openChange" name="open" checked="{{open}}"/></view>
+                    </view>
+                </view>
+            </view>
+        </ui-popup>
+        <!-- 转发弹窗 -->
+        <ui-popup show="{{zfshow}}" position="bottom">
+            <view class="nav_content">
+                <ui-row height="100">
+                    <ui-col vertical-align="middle" align="center">
+                        <button class='share-img-button' open-type="share" hover-class="none" plain>
+                            <ui-icon type="haoyou" size="24" color="#fff" class="nav_1"></ui-icon>
+                            <view>好友</view>
+                        </button>
+                    </ui-col>
+                    <ui-col vertical-align="middle" align="center">
+                        <button class='share-img-button' data-show="{{true}}" bindtap="getWxacodeunlimit" hover-class="none" plain>
+                            <ui-icon type="pengyouquan" size="24" color="#fff" class="nav_2"></ui-icon>
+                            <view>图片</view>
+                        </button>
+                    </ui-col>
+                </ui-row>
+            </view>
+            <view style="padding: 15px;">
+                <button bindtap="handleZFPopShow" plain type="primary">取消</button>
+            </view>
+        </ui-popup>
         <!-- 导航占位 -->
         <view style="height:52px;"></view>
         <!-- 分享图预览 -->
@@ -246,6 +246,7 @@ export default {
         place: '',                  // 默认回复提示
         level: 1,                   // 默认评论等级
         plcontent: '',              // 评论内容
+        open: 'true',               // 默认开启匿名
         comcurrentpage: 1,          // 当前页码
         comfilm: [],                // 初始显示论坛数据
         comtotalNum: 0,             // 总记录数
@@ -278,7 +279,6 @@ export default {
                 isshare: options.isshare
             })
         }
-        this.initValidate()
         // 自动登录并返回登录信息
         this.autoLogin(this)
         this.addView(activityid, uid)
@@ -315,23 +315,6 @@ export default {
                 }
             }
         })
-    },
-    // 初始化表单校验
-    initValidate() {
-        // 验证字段的规则
-        const rules = {
-            plcontent: {
-                required: true,
-            },
-        }
-        // 验证字段的提示信息，若不传则调用默认的信息
-        const messages = {
-            plcontent: {
-                required: '请至少说点什么吧！',
-            },
-        }
-        // 创建实例对象
-        this.validate = new WxValidate(rules, messages)
     },
     proSwiperChange: function(option) {
         this.setData({
@@ -493,20 +476,26 @@ export default {
             plcontent: ''
         })
     },
+    // 匿名状态更改
+    openChange: function (e) {
+        var value = e.detail.value
+        this.setData({
+            open: value
+        })
+    },
     // 提交评论
     plFormSubmit: function(e) {
         var that = this
         var data = e.detail.value
         if (that.data.level == 2) {
-            var plcontent = data.plcontent + that.data.place
+            var plcontent = data + that.data.place
         } else {
-            var plcontent = data.plcontent
+            var plcontent = data
         }
         // 校验表单
-        if (!that.validate.checkForm(data)) {
-            const error = that.validate.errorList[0];
+        if (!plcontent) {
             wx.showToast({
-                title: error.msg,
+                title: '至少说点什么吧！',
                 icon: 'none'
             })
             return false
@@ -521,7 +510,8 @@ export default {
                 uid: that.data.uid,
                 productid: that.data.productid,
                 content: plcontent,
-                parentid: that.data.cpid
+                parentid: that.data.cpid,
+                open: that.data.open,
             },
             header: {
                 'Content-Type': 'application/x-www-form-urlencoded'     // 默认值
@@ -619,13 +609,13 @@ export default {
     addVote: function () {
         var that = this;
         let activityid = that.data.apply.activityid
-        let uid = that.data.apply.uid
+        let applyid = that.data.apply.id
         wx.request({
             url: 'https://wx.taoyuantoday.com/mini.Weactivity/addVote.html',
             data: {
                 activityid: activityid,
-                uid: uid,
-                userid: that.data.uid
+                applyid: applyid,
+                uid: that.data.uid
             },
             header: {
                 'content-type': 'application/json' // 默认值
@@ -1068,21 +1058,36 @@ export default {
         background-color: #FFFFFF;
         border-radius: 5px;
     }
-    .sub-btn {
+    .pl_groupsources {
         padding: 2px 10px;
         display: flex;
         flex-direction: column;
         width: 30%;
-        .button-style-sub {
-            border-radius: 30px;
-            background-color: #ffd100;
-            color: #FFFFFF;
-        }
-        .button-style-sub::after{
-            border: none;
+        .share-switch {
+            display: flex;
+            padding: 10px;
+            flex-direction: row;
+            justify-content: space-between;
+            .mix-flex-center();
+            .label {
+                width: 80%;
+                margin: 0px 5px;
+                color: #848484;
+                .mix-flex-y-center();
+            }
+            .des {
+                width: 20%;
+                color: #ffd100;
+                .mix-flex-x-center();
+            }
         }
     }
 }
+
+// 重写小程序开关组件样式
+.wx-switch-input{width:42px !important;height:20px !important;}
+.wx-switch-input::before{width:41px !important;height: 20px !important;}
+.wx-switch-input::after{width: 18px !important;height: 18px !important;}//中间小圆球
 // 评论列表
 .pl_item {
     display: flex;
@@ -1187,13 +1192,5 @@ export default {
             }
         }
     }
-}
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
 }
 </style>

@@ -189,7 +189,7 @@ export default {
     onLoad(options) {
         // 自动登录并返回登录信息
         this.autoLogin(this)
-        // 获取兼职列表
+        // 获取社交列表
         this.setData({
             field: this.data.field.concat({
                 key: 'status',

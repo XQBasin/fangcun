@@ -78,7 +78,7 @@
                                 </ui-row>
                                 <ui-row>
                                     <ui-col>
-                                        <view class="column-content">
+                                        <view class="column-content" bindtap="openLocationMap">
                                             <view class="col-content">
                                                 <view class="col-content-des">驾车{{dateUtil.numberFormat(distance, 2)}}km</view>
                                                 <view class="col-content-des">|</view>
@@ -401,7 +401,7 @@ export default {
                     // 根据用户标识获取发布人基本信息
                     that.getUserInfoById(parttime.uid)
                     // 路径规划
-                    that.getLocation(that, parttime.latitude+','+parttime.longitude)
+                    that.getLocation(that, true)
                     // 获取已申请人员列表
                     that.getAppliesForPage(parttime.id, that.data.currentpage)
                 }
@@ -429,7 +429,7 @@ export default {
         })
     },
     // 获取定位
-    getLocation (thisobj, to) {
+    getLocation (thisobj, guihua) {
         // 实例化API核心类
         qqmapsdk = new QQMapWX({
             key: '645BZ-HZBCU-G4OVM-4VJWZ-OTWTQ-66F3T'
@@ -439,33 +439,13 @@ export default {
             success(res) {
                 const latitude = res.latitude
                 const longitude = res.longitude
-                // 路径规划
-                qqmapsdk.calculateDistance({
-                    mode: 'driving',    //可选值：'driving'（驾车）、'walking'（步行），不填默认：'walking',可不填
-                    // from参数不填默认当前地址
-                    //获取表单提交的经纬度并设置from和to参数（示例为string格式）
-                    from: latitude+','+longitude,   // 若起点有数据则采用起点坐标，若为空默认当前地址
-                    to: to,                         // 终点坐标
-                    success: function(res) {        //成功后的回调
-                        var res = res.result;
-                        var dis = [];
-                        var dur = [];
-                        for (var i = 0; i < res.elements.length; i++) {
-                            dis.push(res.elements[i].distance);     // 将返回数据存入dis数组，起点到终点的距离，单位：米，
-                            dur.push(res.elements[i].duration);     // 将返回数据存入dur数组，表示从起点到终点的结合路况的时间，秒为单位 
-                        }
-                        thisobj.setData({ //设置并更新distance数据
-                            distance: dis/1000,
-                            duration: dur/60
-                        });
-                    },
-                    fail: function(error) {
-                        console.error(error);
-                    },
-                    complete: function(res) {
-                        console.log(res);
-                    }
-                });
+                if (guihua) {
+                    // 路径规划
+                    thisobj.calculateDistance(thisobj, latitude, longitude)
+                } else {
+                    // 地图导航
+                    thisobj.openLocation(latitude, longitude, 18)
+                }
             },
             fail: function(error) {
                 // 可以通过 wx.getSetting 先查询一下用户是否授权了 "scope.userLocation" 这个 scope
@@ -485,7 +465,7 @@ export default {
                                                 res.authSetting = {
                                                     "scope.userLocation": true
                                                 }
-                                                thisobj.getLocation(thisobj)
+                                                thisobj.getLocation(thisobj, guihua)
                                             }
                                         })
                                     }
@@ -500,7 +480,7 @@ export default {
                                 confirmText: '确认',
                                 success(res) {
                                     if (res.confirm) {
-                                        thisobj.getLocation(thisobj)
+                                        thisobj.getLocation(thisobj, guihua)
                                     }
                                 }
                             })
@@ -511,6 +491,46 @@ export default {
             complete: function(res) {
                 // console.log(res);
             }
+        })
+    },
+    // 路径规划
+    calculateDistance (thisobj, latitude, longitude) {
+        qqmapsdk.calculateDistance({
+            mode: 'driving',    //可选值：'driving'（驾车）、'walking'（步行），不填默认：'walking',可不填
+            // from参数不填默认当前地址
+            //获取表单提交的经纬度并设置from和to参数（示例为string格式）
+            from: latitude + ',' + longitude,   // 若起点有数据则采用起点坐标，若为空默认当前地址
+            to: thisobj.data.parttime.latitude+','+thisobj.data.parttime.longitude,// 终点坐标
+            success: function(res) {        //成功后的回调
+                var res = res.result;
+                var dis = [];
+                var dur = [];
+                for (var i = 0; i < res.elements.length; i++) {
+                    dis.push(res.elements[i].distance);     // 将返回数据存入dis数组，起点到终点的距离，单位：米，
+                    dur.push(res.elements[i].duration);     // 将返回数据存入dur数组，表示从起点到终点的结合路况的时间，秒为单位 
+                }
+                thisobj.setData({ //设置并更新distance数据
+                    distance: dis/1000,
+                    duration: dur/60
+                });
+            },
+            fail: function(error) {
+                console.error(error);
+            },
+            complete: function(res) {
+                console.log(res);
+            }
+        });
+    },
+    // 打开内置地图查看位置
+    openLocationMap (e) {
+        this.getLocation(this, false)
+    },
+    openLocation (latitude, longitude, scale) {
+        wx.openLocation({
+            latitude,
+            longitude,
+            scale: scale,
         })
     },
     handleChange (e) {

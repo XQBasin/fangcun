@@ -95,8 +95,8 @@
             <view class="{{fixedNav}}">
                 <ui-tabs index="{{index}}" ink-bar="true" catchchange="handleChange" active-tab-style="{{activeTabStyle}}">
                     <ui-tab>评论（{{comtotalNum}}）</ui-tab>
-                    <ui-tab>转发（{{social.shanum}}）</ui-tab>
-                    <ui-tab>点赞（{{social.likenum}}）</ui-tab>
+                    <ui-tab>转发（{{sharfilm.length}}）</ui-tab>
+                    <ui-tab>点赞（{{lovefilm.length}}）</ui-tab>
                 </ui-tabs>
             </view>
             <view id="tabitems">
@@ -596,7 +596,7 @@ export default {
                     })
                     that.getShares(that.data.social.id)
                     that.setData({
-                        zfshow:false
+                        zfshow:false,
                     })
                 } else {
                     wx.showToast({

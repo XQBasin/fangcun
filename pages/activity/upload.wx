@@ -217,7 +217,7 @@ export default {
                             name: 'file',
                             success (res) {
                                 const result = JSON.parse(res.data)
-                                that.data.serverProSrc = that.data.serverProSrc.concat(result.data.url)
+                                that.data.serverProSrc = that.data.serverProSrc.concat(result.url)
                                 $digest(that)
                             }
                         })
@@ -253,7 +253,7 @@ export default {
                             name: 'file',
                             success (res) {
                                 const result = JSON.parse(res.data)
-                                that.data.serverOriSrc = that.data.serverOriSrc.concat(result.data.url)
+                                that.data.serverOriSrc = that.data.serverOriSrc.concat(result.url)
                                 $digest(that)
                             }
                         })

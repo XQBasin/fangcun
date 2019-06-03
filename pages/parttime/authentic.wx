@@ -168,7 +168,7 @@ export default {
                     name: 'file',
                     success (res) {
                         const result = JSON.parse(res.data)
-                        that.data.serverPositive = result.data.url
+                        that.data.serverPositive = result.url
                         $digest(that)
                     }
                 })
@@ -189,7 +189,7 @@ export default {
                     name: 'file',
                     success (res) {
                         const result = JSON.parse(res.data)
-                        that.data.serverReverse = result.data.url
+                        that.data.serverReverse = result.url
                         $digest(that)
                     }
                 })

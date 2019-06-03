@@ -139,7 +139,7 @@ export default {
                             name: 'file',
                             success (res) {
                                 const result = JSON.parse(res.data)
-                                that.data.serverSrc = that.data.serverSrc.concat(result.data.url)
+                                that.data.serverSrc = that.data.serverSrc.concat(result.url)
                                 $digest(that)
                             }
                         })
@@ -212,7 +212,9 @@ export default {
                             icon: 'success',
                             duration: 3000
                         })
-                        wx.navigateBack()
+                        wx.navigateTo({
+                            url: './index'
+                        })
                     } else {
                         wx.showToast({
                             title: '发布失败',

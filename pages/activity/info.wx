@@ -95,9 +95,9 @@
                                     <view class="pl_right">
                                         <view class='pl_title'>{{com.content}}</view>
                                         <view class='pl_description'>
-                                            <view class="pl_des_left">{{com.userInfo.username}}</view>
+                                            <view class="pl_des_left">{{com.userInfo.name}}</view>
                                             <view class="pl_des_center">{{dateUtil.formatTime(com.timestamp, 'M/D h:m:s')}}</view>
-                                            <view wx:if="{{ com.reply }}" class="pl_des_right" data-plshow="{{true}}" data-parentid="{{com.id}}" data-level=1 data-touser="@ {{com.userInfo.username}}" bindtap="openPLPopup">
+                                            <view wx:if="{{ com.reply }}" class="pl_des_right" data-plshow="{{true}}" data-parentid="{{com.id}}" data-level=1 data-touser="@ {{com.userInfo.name}}" bindtap="openPLPopup">
                                                 回复 <ui-icon type="huifucopy" color="#FFD100" size="12px;"></ui-icon>
                                             </view>
                                         </view>
@@ -112,9 +112,9 @@
                                             <view class="pl_right">
                                                 <view class='pl_title'>{{comchild.content}}</view>
                                                 <view class='pl_description'>
-                                                    <view class="pl_des_left">{{comchild.userInfo.username}}</view>
+                                                    <view class="pl_des_left">{{comchild.userInfo.name}}</view>
                                                     <view class="pl_des_center">{{dateUtil.formatTime(comchild.timestamp, 'M/D h:m:s')}}</view>
-                                                    <view wx:if="{{ comchild.reply }}" class="pl_des_right" data-plshow="{{true}}" data-parentid="{{com.id}}" data-level=2 data-touser="@ {{comchild.userInfo.username}}" bindtap="openPLPopup">
+                                                    <view wx:if="{{ comchild.reply }}" class="pl_des_right" data-plshow="{{true}}" data-parentid="{{com.id}}" data-level=2 data-touser="@ {{comchild.userInfo.name}}" bindtap="openPLPopup">
                                                         回复 <ui-icon type="huifucopy" color="#FFD100" size="12px;"></ui-icon>
                                                     </view>
                                                 </view>
@@ -209,15 +209,16 @@
         <view style="height:52px;"></view>
         <!-- 评论POP -->
         <ui-popup show="{{plshow}}" position="bottom">
-            <form bindsubmit="plFormSubmit">
-                <view class='pocket_input'>
-                    <input name="parentid" value="{{cpid}}" hidden />
-                    <input class='input_style' name="content" value="{{content}}" placeholder="{{place}}" placeholder-class='input-placeholder' focus='{{plfocus}}' cursor-spacing="16"/>
-                    <view class='pl_btm'>
-                        <button form-type="submit" class="button-style-pinglun">评论</button>
+            <view class='pocket_input'>
+                <input name="parentid" value="{{cpid}}" hidden />
+                <input class='input_style' name="content" value="{{content}}" placeholder="{{place}}" placeholder-class='input-placeholder' focus='{{plfocus}}' cursor-spacing="16" confirm-type="send" bindconfirm="plFormSubmit"/>
+                <view class='pl_groupsources'>
+                    <view class="share-switch">
+                        <view class="label">匿名</view>
+                        <view class="des"><switch bindchange="openChange" name="open" checked="{{open}}"/></view>
                     </view>
                 </view>
-            </form>
+            </view>
         </ui-popup>
         <!-- 报名POP -->
         <ui-popup show="{{show}}" position="bottom">
@@ -279,7 +280,6 @@ export default {
         show: false,
         activity: [],
         uid: '',                // 当前用户标识
-        open: false,            // 默认匿名报名
         mass: true,             // 默认没参加社团
         totalvote: 0,           // 总票数
         files:[],               // 作品列表
@@ -309,6 +309,7 @@ export default {
         place: '',                  // 默认回复提示
         level: 1,                   // 默认评论等级
         content: '',                // 评论内容
+        open: 'true',               // 默认开启匿名
         plshow: false,              // 是否显示评论组件
         plfocus: false,             // 评论框是否自动获得焦点
         cpid: 0,                    // 评论消息标识
@@ -326,7 +327,6 @@ export default {
                 isshare: options.isshare
             })
         }
-        this.initPlValidate()
         this.getActivity(options.activityid)
         this.getActCommentsForPage(options.activityid, 1)
         this.getProListForPage(options.activityid, 1)
@@ -361,23 +361,6 @@ export default {
                 }
             }
         })
-    },
-    // 初始化评论表单校验
-    initPlValidate() {
-        // 验证字段的规则
-        const rules = {
-            content: {
-                required: true,
-            },
-        }
-        // 验证字段的提示信息，若不传则调用默认的信息
-        const messages = {
-            content: {
-                required: '请至少说点什么吧！',
-            },
-        }
-        // 创建实例对象
-        this.plvalidate = new WxValidate(rules, messages)
     },
     // 活动报名
     formSubmit: function(e) {
@@ -666,15 +649,14 @@ export default {
         var that = this
         var data = e.detail.value
         if (that.data.level == 2) {
-            var content = data.content + that.data.place
+            var content = data + that.data.place
         } else {
-            var content = data.content
+            var content = data
         }
         // 校验表单
-        if (!that.plvalidate.checkForm(data)) {
-            const error = that.plvalidate.errorList[0];
+        if (!content) {
             wx.showToast({
-                title: error.msg,
+                title: '至少说点什么吧！',
                 icon: 'none'
             })
             return false
@@ -689,7 +671,8 @@ export default {
                 uid: that.data.uid,
                 activityid: that.data.activity.id,
                 content: content,
-                parentid: that.data.cpid
+                parentid: that.data.cpid,
+                open: that.data.open,
             },
             header: {
                 'Content-Type': 'application/x-www-form-urlencoded'     // 默认值
@@ -1241,43 +1224,36 @@ ui-tabs {
         background-color: #FFFFFF;
         border-radius: 5px;
     }
-    .pl_btm {
+    .pl_groupsources {
         padding: 2px 10px;
         display: flex;
         flex-direction: column;
         width: 30%;
-        .button-style-pinglun {
-            border-radius: 30px;
-            background-color: #ffd100;
-            color: #FFFFFF;
-        }
-        .button-style-pinglun::after{
-            border: none;
+        .share-switch {
+            display: flex;
+            padding: 10px;
+            flex-direction: row;
+            justify-content: space-between;
+            .mix-flex-center();
+            .label {
+                width: 80%;
+                margin: 0px 5px;
+                color: #848484;
+                .mix-flex-y-center();
+            }
+            .des {
+                width: 20%;
+                color: #ffd100;
+                .mix-flex-x-center();
+            }
         }
     }
 }
-// 评论插件
-.pl_bar {
-    display: flex;
-    margin-top: 5px;
-    flex-direction: row;
-    justify-content: space-between;
-    color: #848484;
-    font-size: 12px;
-    background-color: #FFFFFF;
-    position: fixed;  /* 初始化为相对定位 滑动时改为绝对定位fixed*/
-    bottom: 0;
-    left: 0;
-    right: 0;         /* 决定了搜索框置顶 */
-    z-index: 2;
-    .pl-btn {
-        border: none;
-        background-color: #FFFFFF;
-    }
-    .pl-btn::after{
-        border: none;
-    }
-}
+
+// 重写小程序开关组件样式
+.wx-switch-input{width:42px !important;height:20px !important;}
+.wx-switch-input::before{width:41px !important;height: 20px !important;}
+.wx-switch-input::after{width: 18px !important;height: 18px !important;}//中间小圆球
 // 评论列表
 .pl_item {
     display: flex;
