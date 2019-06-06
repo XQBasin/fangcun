@@ -222,7 +222,7 @@ export default {
                     })
                     
                     wx.navigateTo({
-                        url: './index'
+                        url: './authstat'
                     })
 
                 } else {
