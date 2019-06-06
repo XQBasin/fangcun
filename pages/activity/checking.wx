@@ -195,7 +195,7 @@ export default {
 
         // wx.showLoading({
         //     title: '请稍后...',
-        //     mask: true
+        //     mask: true 
         // })
 
         wx.request({

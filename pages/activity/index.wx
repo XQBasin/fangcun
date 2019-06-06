@@ -335,7 +335,7 @@ export default {
                 wx.navigateTo({
                     url: './create?uid='+uid
                 })
-            
+
             }
         }
     })

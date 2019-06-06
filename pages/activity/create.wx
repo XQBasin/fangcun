@@ -580,7 +580,7 @@ export default {
     //         phone: this.data.phone,
     //         titleCount: this.data.titleCount,
     //         contentCount: this.data.contentCount
-    //     }
+    //     } 
     //     wx.navigateTo({
     //         url: './' + route + '?formdata=' + JSON.stringify(formdata)
     //     })
