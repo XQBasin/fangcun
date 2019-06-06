@@ -282,6 +282,9 @@ export default {
         agreement: {},  // 用户服务协议
     },
     onLoad(options) {
+
+        var uid = options.uid;
+
         this.getSystemInfo()
         this.initValidate()
         $init(this)

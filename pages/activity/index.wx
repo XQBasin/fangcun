@@ -100,7 +100,7 @@
         <!-- 底部导航 -->
         <ui-fixed-view bottom="0" left="0" right="0">
             <view class='groupsources'>
-                <button class="button-style-huodong" data-route="create" data-param="uid={{uid}}" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo"><text>发布</text></button>
+                <button class="button-style-huodong" bindtap="checking"  data-uid="{{uid}}" bindgetuserinfo="bindGetUserInfo"><text>发布</text></button>
             </view>
         </ui-fixed-view>
         <!-- 导航占位 -->
@@ -109,6 +109,7 @@
 </template>
 
 <script>
+
 export default {
     config: {
         navigationBarTitleText: '活动圈',
@@ -320,6 +321,37 @@ export default {
     navigateBack () {
         wx.navigateBack()
     },
+
+    // 验证是否已经社团认证
+    checking(e) {
+    var uid = e.target.dataset.uid;
+    wx.request({
+        url: 'https://wx.taoyuantoday.com/mini.Weactivity/checking.html',
+        data: {
+            uid: uid
+        },
+        header: {
+            'content-type': 'application/json' // 默认值
+        },
+        success(res) {
+           var status = res.data.status
+            // 已经验证通过，跳转到发布页面，否则跳转到验证页面
+            if(status){
+                wx.navigateTo({
+                    url: './create?uid='+uid
+                })
+            }else{
+                wx.navigateTo({
+                    url: './checking?uid='+uid
+                })
+            }
+
+        }
+    })
+
+    }
+
+
 }
 </script>
 
