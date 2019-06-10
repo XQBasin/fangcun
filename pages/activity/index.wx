@@ -332,57 +332,56 @@ export default {
         success (res) {
             // 缓存存在
             if(res.data == 1){
+
                 wx.navigateTo({
+                    
                     url: './create?uid='+uid
                 })
-
             }
-        }
-    })
-
-    
-
-    wx.request({
-        url: 'https://wx.taoyuantoday.com/mini.Weactivity/checking.html',
-        data: {
-            uid: uid
         },
-        header: {
-            'content-type': 'application/json' // 默认值
-        },
-        success(res) {
-            var status = res.data.status
+        fail (res){
+               
+                wx.request({
+                    url: 'https://wx.taoyuantoday.com/mini.Weactivity/checking.html',
+                    data: {
+                        uid: uid
+                    },
+                    header: {
+                        'content-type': 'application/json' // 默认值
+                    },
+                    success(res) {
+                        var status = res.data.status
 
-            // 已经验证通过，跳转到发布页面，否则跳转到验证页面
-            if(status == 1){
+                        // 已经验证通过，跳转到发布页面，否则跳转到验证页面
+                        if(status == 1){
 
-                // 添加缓存
-                wx.setStorage({
-                    key:"checking_status",
-                    data:"1"
-                    })
+                            // 添加缓存
+                            wx.setStorage({
+                                key:"checking_status",
+                                data:"1"
+                                })
 
-                wx.navigateTo({
-                    url: './create?uid='+uid
+                            wx.navigateTo({
+                                url: './create?uid='+uid
+                            })
+                        }else if(status == 0){
+
+                            wx.navigateTo({
+                                url: './authstat?uid='+uid
+                            })
+                        }else{
+
+                            wx.navigateTo({
+                                url: './checking?uid='+uid
+                            })
+                        }
+
+                    }
                 })
-            }else if(status == 0){
-
-                wx.navigateTo({
-                    url: './authstat?uid='+uid
-                })
-            }else{
-
-                wx.navigateTo({
-                    url: './checking?uid='+uid
-                })
-            }
-
         }
     })
 
     }
-
-
 }
 </script>
 
