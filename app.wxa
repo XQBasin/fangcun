@@ -30,7 +30,7 @@ export default {
       'pages/activity/create',
       'pages/activity/share',
       'pages/activity/fieldset',
-      'pages/activity/fieldadd',
+      'pages/activity/checking',
       // 闲置
       'pages/mall/index',
       // 'pages/mall/details',
