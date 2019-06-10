@@ -141,7 +141,7 @@ export default {
             withShareTicket: true
         })
     },
-    // 自动登录
+    // 自动登录 
     autoLogin (thisobj) {
         wx.login({
             success(res) {
