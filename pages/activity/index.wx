@@ -312,7 +312,7 @@ export default {
             url: './info?activityid='+activityid
         })
     },
-    // 客服消息  
+    // 客服消息
     handleContact(e) {
         console.log(e.path)
         console.log(e.query)
