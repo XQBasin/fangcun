@@ -140,7 +140,7 @@ export default {
             withShareTicket: true
         })
     },
-    // 自动登录
+    // 自动登录 
     autoLogin (thisobj) {
         wx.login({
             success(res) {
@@ -320,6 +320,66 @@ export default {
     navigateBack () {
         wx.navigateBack()
     },
+    // 验证是否已经社团认证
+    checking(e) {
+    var uid = e.target.dataset.uid;
+
+    // 判断缓存是否纯在，存在直接入创建页面
+    wx.getStorage({
+        key: 'checking_status',
+        success (res) {
+            // 缓存存在
+            if(res.data == 1){
+
+                wx.navigateTo({
+                    
+                    url: './create?uid='+uid
+                })
+            }
+        },
+        fail (res){
+               
+                wx.request({
+                    url: 'https://wx.taoyuantoday.com/mini.Weactivity/checking.html',
+                    data: {
+                        uid: uid
+                    },
+                    header: {
+                        'content-type': 'application/json' // 默认值
+                    },
+                    success(res) {
+                        var status = res.data.status
+
+                        // 已经验证通过，跳转到发布页面，否则跳转到验证页面
+                        if(status == 1){
+
+                            // 添加缓存
+                            wx.setStorage({
+                                key:"checking_status",
+                                data:"1"
+                                })
+
+                            wx.navigateTo({
+                                url: './create?uid='+uid
+                            })
+                        }else if(status == 0){
+
+                            wx.navigateTo({
+                                url: './authstat?uid='+uid
+                            })
+                        }else{
+
+                            wx.navigateTo({
+                                url: './checking?uid='+uid
+                            })
+                        }
+
+                    }
+                })
+        }
+    })
+
+    }
 }
 </script>
 
