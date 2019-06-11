@@ -282,9 +282,6 @@ export default {
         agreement: {},  // 用户服务协议
     },
     onLoad(options) {
-
-        var uid = options.uid;
-
         this.getSystemInfo()
         this.initValidate()
         $init(this)
@@ -580,7 +577,7 @@ export default {
     //         phone: this.data.phone,
     //         titleCount: this.data.titleCount,
     //         contentCount: this.data.contentCount
-    //     } 
+    //     }
     //     wx.navigateTo({
     //         url: './' + route + '?formdata=' + JSON.stringify(formdata)
     //     })

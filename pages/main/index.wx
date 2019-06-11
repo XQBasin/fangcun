@@ -67,15 +67,6 @@
                     <view class="item_center">我的闲置</view>
                     <view class="item_right"><ui-icon type="gengduo" color="#848484" size="12px;"></ui-icon></view>
                 </view>
-
-                <view class="item_list" data-route="../activity/checking" bindtap="navigateToShow">
-                    <view class="item_left">
-                        <image src="../../static/image/main/lie4.png"/>
-                    </view>
-                    <view class="item_center">跳转验证</view>
-                    <view class="item_right"><ui-icon type="gengduo" color="#848484" size="12px;"></ui-icon></view>
-                </view>
-
             </view>
         </view>
         <official-account></official-account>
